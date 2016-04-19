@@ -2,10 +2,6 @@ This is BibTeX, Version 0.99d (TeX Live 2015/Arch Linux)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: LiteratureReview.aux
 The style file: plainnat.bst
-Illegal, another \bibstyle command---line 29 of file LiteratureReview.aux
- : \bibstyle
- :          {plain}
-I'm skipping whatever remains of this command
 Database file #1: Bibliography.bib
 Warning--empty journal in ahsan11
 Warning--empty journal in bender12
@@ -54,4 +50,4 @@ warning$ -- 6
 while$ -- 48
 width$ -- 0
 write$ -- 162
-(There was 1 error message)
+(There were 6 warnings)

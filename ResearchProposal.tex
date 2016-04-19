@@ -4,6 +4,7 @@
 \usepackage{tabularx}
 \usepackage{comment}
 \usepackage{titlesec}
+\usepackage[round]{natbib}
 \usepackage{enumitem}
 \setlist{nosep}
 \setcounter{secnumdepth}{4}
@@ -15,14 +16,14 @@
 Place one's own research into context
 \begin{itemize}
 \item given that benthic mapping represents only 10\% (cite?) compared to mapped land, how accurate and certain can we be of mappings and predictions made - would it be of consdierably more value to decision makers if we provided them with the probability of which the predictions being made are correct, given the relatively low amount of data compared to land habitat mapping?
-\item we want to eschew the traditional mapping of bathymetric and backscatter data to discrete habitat labels, but instead, to contiuous cluster probabilities as in (Bender, Williams \& Pizarro 2012) \cite{bender12}, using the cluster probabilities from (Steinberg 2011) \cite{steinberg11}
+\item we want to eschew the traditional mapping of bathymetric and backscatter data to discrete habitat labels, but instead, to contiuous cluster probabilities as in (Bender, Williams \& Pizarro 2012) ~\citep{bender12}, using the cluster probabilities from (Steinberg 2011) ~\citep{steinberg11}
 \end{itemize}
 
 \subsection{Gap in Research}
 Show a Gap in Research
 \begin{itemize}
 \item most if not all studies are deterministic in their classifications - considering that marine mapping is still catching up to advancements in land mapping, there is benefit to be gained from modeling uncertainty in results
-\item current state of the art uses more complex machine learning approaches in the form of gaussian processes than the simpler classification schemes normally used, with solid results. however, due to the nature of GP, further pre-processing of the data had to be done to shrink the data set considerably to allow the algorithms to run in a reasonable amount of time\cite{bender12}. Hence, we propose - \textbf{TODO}
+\item current state of the art uses more complex machine learning approaches in the form of gaussian processes than the simpler classification schemes normally used, with solid results. however, due to the nature of GP, further pre-processing of the data had to be done to shrink the data set considerably to allow the algorithms to run in a reasonable amount of time~\citep{bender12}. Hence, we propose - \textbf{TODO}
 \end{itemize}
 
 \subsection{Justification}
@@ -31,15 +32,8 @@ Justify One's own Research
 \subsection{Research Hypotheses}
 Generate new Research Hypotheses
 
-\begin{thebibliography}
-
-\bibitem{bender12}
-Classification with Probabilistic Targets Asher Bender, Stefan B., Williams and Oscar Pizarro
-
-\bibitem{steinberg11}
-Steinberg, D., Friedman, A., Pizarro, O. and Williams, S.B., 2011, August. A Bayesian nonparametric approach to clustering data from underwater robotic surveys. In International Symposium on Robotics Research, Flagstaff, Arizona, USA (accessible at http://www. isrr-2011. org/ISRR-2011/Program\_files/Papers/Williams-ISRR-2011. pdf).
-
-\end{thebibliography}
+\bibliographystyle{plainnat}
+\bibliography{Bibliography}
 
 \end{document}
 

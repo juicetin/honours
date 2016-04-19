@@ -4,7 +4,6 @@
 \usepackage{tabularx}
 \setlength{\skip\footins}{1.0cm}
 \usepackage[round]{natbib}
-\bibliographystyle{plainnat}
 \usepackage{comment}
 \usepackage{titlesec}
 \usepackage{enumitem}
@@ -22,7 +21,7 @@
         \begin{multicols}{2}
             \section{Introduction}
 
-            Earth's oceans cover 70\% of its surface, but only less than 10\% of the Earth's oceans have been explored to date.\citep{NOAA} There have been increasing efforts over the past few decades to map out these unexplored areas to monitor marine ecosystems to be able to track the state of them over time for management, preseveration, etc. purposes. The process used is called benthic habitat mapping, which is the predicting of what exists at the bottom of a body of water. Most recent studies looking to create benthic habitat maps share some basic key steps - acoustic data is used to estimate properties about the surface of the water, which are then mapped to, using machine learning algorithms, \textit{in situ} data such as still images, videos, or samples of the area in question. It is the relationship which is inferred between the different data sets inferred using machine learning techniques that varies between studies.
+            Earth's oceans cover 70\% of its surface, but only less than 10\% of the Earth's oceans have been explored to date.~\citep{NOAA} There have been increasing efforts over the past few decades to map out these unexplored areas to monitor marine ecosystems to be able to track the state of them over time for management, preseveration, etc. purposes. The process used is called benthic habitat mapping, which is the predicting of what exists at the bottom of a body of water. Most recent studies looking to create benthic habitat maps share some basic key steps - acoustic data is used to estimate properties about the surface of the water, which are then mapped to, using machine learning algorithms, \textit{in situ} data such as still images, videos, or samples of the area in question. It is the relationship which is inferred between the different data sets inferred using machine learning techniques that varies between studies.
 
             \section{Overview}
             The process of benthic habitat mapping involves three key steps which the large majority of all studies in the area go through.\footnote{http://www.ozcoasts.gov.au/geom\_geol/toolkit/mapoverview.jsp}. In this section, we will give a brief overview of each of these steps, along with common procedures used in them across studies in this area.
@@ -39,43 +38,43 @@
             \textbf{TODO} 
             \begin{itemize}
                 \item Talk about SSS, SBES (as older technologies), focus on MBES in particular and improvements it brings
-                \item "multibeam echosounders (MBES) are an increasingly common source of acoustic data for benthic habitat mapping" \citep{calvert15}
+                \item "multibeam echosounders (MBES) are an increasingly common source of acoustic data for benthic habitat mapping" ~\citep{calvert15}
             \end{itemize}
 
             \paragraph{Remote-sensing data}
             Due to the cost of sea expeditions, it is economically infeasible to have marine vehicles (autonomous or otherwise) explore the entire ocean floor to confirm the ecological properties of all of Earth's benthos. However, we do need to collect sufficiently detailed data of large areas at a time, partiulcarly those of which we are mapping, and for this, remote-sensing data is used. These come in the form of acoustic backscatter data, basically meaning that waves are sent out, and the strength/frequency at which they are returned is measured. The technology for collecting backscatter has improved considerably recently, allowing for higher resolution to be collected this way.
 
             \paragraph{Truthing Data}
-            The most common methods to be able to obtain a sufficiently large truthing data set (but still trivially small compared to the area covered by remote-sensing data) are videos or images - though the former still requires post-processing to extract the needed images. The advantage that can be provided here, however, is the redundancy in data points \citep{rattray14}  - but there is extra cost in time required to convert videos into the needed images (pre-proessing before feeding into algorithms for habitat mapping), which is in itself worth of research within the field.\citep{lucieer13}
+            The most common methods to be able to obtain a sufficiently large truthing data set (but still trivially small compared to the area covered by remote-sensing data) are videos or images - though the former still requires post-processing to extract the needed images. The advantage that can be provided here, however, is the redundancy in data points ~\citep{rattray14}  - but there is extra cost in time required to convert videos into the needed images (pre-proessing before feeding into algorithms for habitat mapping), which is in itself worth of research within the field.~\citep{lucieer13}
 
             \paragraph{Other data}
-            Other data which is less common, but also used to map habitats, is patterns in the water movement (such as tidal currents, wave action)\citep{cjbrown11} in the column of water above the area of benthos being mapped - a feature which has proved to provide useful input in arriving at an accurate benthic habitat map.\citep{snelgrove94}
+            Other data which is less common, but also used to map habitats, is patterns in the water movement (such as tidal currents, wave action)~\citep{cjbrown11} in the column of water above the area of benthos being mapped - a feature which has proved to provide useful input in arriving at an accurate benthic habitat map.~\citep{snelgrove94}
 
             \begin{itemize}
                 \item how is current flow data obtained...? 
-                \item flow data is actually claimed to show relationships more accurately than simply looking at acoustic data together with ground truthing data \citep{kostylev12}
-                \item with some using extra data sets as well, such as the flow of water in the columns above the benthic area in question.\citep{cjbrown11}
+                \item flow data is actually claimed to show relationships more accurately than simply looking at acoustic data together with ground truthing data ~\citep{kostylev12}
+                \item with some using extra data sets as well, such as the flow of water in the columns above the benthic area in question.~\citep{cjbrown11}
                 \item light refraction data (?)
             \end{itemize}
 
             \subsection{Habitat Classification}
 
-            Studies have used both supervised and unsupervised methods in clustering the initial data, though in many cases. Often, there may be large amounts of visual data, beyond that which any human or even team can reasonably, manually cluster - and as such, unsupervised algorithms are first used to create these clusters, after which an expert may be brought in to verify/simplify (or otherwise) the resulting clusters.\citep{steinberg11} 
+            Studies have used both supervised and unsupervised methods in clustering the initial data, though in many cases. Often, there may be large amounts of visual data, beyond that which any human or even team can reasonably, manually cluster - and as such, unsupervised algorithms are first used to create these clusters, after which an expert may be brought in to verify/simplify (or otherwise) the resulting clusters.~\citep{steinberg11} 
 
             \paragraph{Supervised methods}
-            maximum likelihood estimation \citep{Micallef12} \\
-            hasan14 - supervised random forest decision trees using two models - first with bathymetry + backscatter mosaic only, and second with angular response derivatives as well (page 4), with extra layers of decreasing importance gradually added to both, with the accuracy of the models assessed using an error matrix, overall actual accuracy, and Kappa coefficient \citep{hasan14}
+            maximum likelihood estimation ~\citep{Micallef12} \\
+            hasan14 - supervised random forest decision trees using two models - first with bathymetry + backscatter mosaic only, and second with angular response derivatives as well (page 4), with extra layers of decreasing importance gradually added to both, with the accuracy of the models assessed using an error matrix, overall actual accuracy, and Kappa coefficient ~\citep{hasan14}
 
             \paragraph{Unsupervised methods}
-            unsupervised methods (k-means clustering \citep{henriques14}) to classify data.
-            henriques14 - custom (?) deterministic method on page 79 - supervised classification, wave model used from (Simoes et al. 2012), multivariate data analysis - similarity profile permutation test, simlarity percentages used to determine a species' contribution to groups, BVstepwise to search for relationships between fauna and environmental variables - used depth, median grain size, \% content of different sediment fractions classified according to Udden/Wentworth scale\citep{henriques14}
+            unsupervised methods (k-means clustering ~\citep{henriques14}) to classify data.
+            henriques14 - custom (?) deterministic method on page 79 - supervised classification, wave model used from (Simoes et al. 2012), multivariate data analysis - similarity profile permutation test, simlarity percentages used to determine a species' contribution to groups, BVstepwise to search for relationships between fauna and environmental variables - used depth, median grain size, \% content of different sediment fractions classified according to Udden/Wentworth scale~\citep{henriques14}
 
             \subsection{Map Creation}
-            The final step is map creation, which a large portion of papers related to benthic habitat mapping focus on - and also where the most variation occurs in terms of the method used. The various approaches used can be categorised into two broad categories. The first is a top down approach whereby the classification of the habitat characterisation data is validated (or otherwise) with the truthing data, and the second is a bottom up approach where the characterisation data is similarly clustered into classes, but not to directly represent a particular habitat - instead, the aim is to find a relationship between the acoustic data clusters and the truthing data clusters which we can model. Using this model, we can then extrapolate the acoustic data which doesn't have corresponding truthing data to create the habitat map.\citep{ahsan11} We will explore this aspect more when looking at how the mapping process has evolved over time and the improvements that it has brought about.
+            The final step is map creation, which a large portion of papers related to benthic habitat mapping focus on - and also where the most variation occurs in terms of the method used. The various approaches used can be categorised into two broad categories. The first is a top down approach whereby the classification of the habitat characterisation data is validated (or otherwise) with the truthing data, and the second is a bottom up approach where the characterisation data is similarly clustered into classes, but not to directly represent a particular habitat - instead, the aim is to find a relationship between the acoustic data clusters and the truthing data clusters which we can model. Using this model, we can then extrapolate the acoustic data which doesn't have corresponding truthing data to create the habitat map.~\citep{ahsan11} We will explore this aspect more when looking at how the mapping process has evolved over time and the improvements that it has brought about.
 
             \section{Evolution of Map Creation Methods}
 
-            More recent studies have used probabilistic methods to develop a mapping between the clustered acoustic data to continuous cluster probabilities, as opposed to discrete cluster labels, thus representing the certainty (or otherwise) of the results obtained. This particular study \citep{bender12}
+            More recent studies have used probabilistic methods to develop a mapping between the clustered acoustic data to continuous cluster probabilities, as opposed to discrete cluster labels, thus representing the certainty (or otherwise) of the results obtained. This particular study uses Gaussian Processes to extend the probabilistic least squares classifier to retain the information regarding certainty of class membership that exists during the classfication process, rather than discarding it in the traditional method.~\citep{bender12}
 
             \begin{itemize}
                 \item the classifications being made naturally involve uncertainty, considering that we are still learning the relationship between different characteristics of benthos with the varying communities of fauna and flora that reside there. Whilst guessing the most likely class for a particular domain has its practical applications, is it not arguably more \textit{natural} to represent the uncertainty in any one of these guesses in our actual result?\footnote{http://www.gaussianprocess.org/gpml/chapters/RW3.pdf}
@@ -98,10 +97,10 @@
             % \subsubsection{Preprocessing and postprocessing}
             % \begin{itemize} 
             %     \item whitening - as with any data to be used for machine learning, it should be whitened to have 0 mean, and a variance of 1 so that all dimensions of data can be treated equally due to their equal variance 
-            %     \item "an important first step in the production of a benthic habitat map is to organise the environmental data into a suitable format for integration with the in situ habitat information" \citep{cjbrown11}
-            %     \item "most of the uncertainty and bias in bathymetric data (except for refraction artefacts) can be dealt with adequately during post-processing" \citep{kostylev12}
-            %     \item "bathymetric models may display systematic bias from errors that vary with periods in the ocean wave spectrum and those whose period is dictated by the long period accelerations of the survey vessel" \citep{hughes03} in \citep{kostylev12}
-            %     \item even when uncertainty is measured in benthic habitat mapping in the rarer case, it tends to be not in the final classification itself, but in other aspects such as spatial and thematic error associated with video reference data, without comparing this uncertainty directly with that which could be obtained by creating a habitat map probabilistically \citep{rattray14}
+            %     \item "an important first step in the production of a benthic habitat map is to organise the environmental data into a suitable format for integration with the in situ habitat information" ~\citep{cjbrown11}
+            %     \item "most of the uncertainty and bias in bathymetric data (except for refraction artefacts) can be dealt with adequately during post-processing" ~\citep{kostylev12}
+            %     \item "bathymetric models may display systematic bias from errors that vary with periods in the ocean wave spectrum and those whose period is dictated by the long period accelerations of the survey vessel" ~\citep{hughes03} in ~\citep{kostylev12}
+            %     \item even when uncertainty is measured in benthic habitat mapping in the rarer case, it tends to be not in the final classification itself, but in other aspects such as spatial and thematic error associated with video reference data, without comparing this uncertainty directly with that which could be obtained by creating a habitat map probabilistically ~\citep{rattray14}
             % \end{itemize}
             % 
             % \paragraph{Comparison of Existing Research}
@@ -109,16 +108,16 @@
             % show similarities and differences in past research
             % 
             % \begin{itemize}
-            %     \item benthic "geology is often seen as a dominant parameter, if not the sole determinant for the creation of habitat maps" \citep{kostylev12}
-            %     \item "lack of studies that consider the relationship between offshore benthos and seabed geology" \citep{kostylev12}
-            %     \item mostly deterministic machine learning algorithms used, but some evidence of earlier probabilistic studies as well, with the use of Gaussian processes \citep{rigby10}
+            %     \item benthic "geology is often seen as a dominant parameter, if not the sole determinant for the creation of habitat maps" ~\citep{kostylev12}
+            %     \item "lack of studies that consider the relationship between offshore benthos and seabed geology" ~\citep{kostylev12}
+            %     \item mostly deterministic machine learning algorithms used, but some evidence of earlier probabilistic studies as well, with the use of Gaussian processes ~\citep{rigby10}
             %     \item the probabilistic classifications provide decision makers with more information - rather than ML giving a definitive answer that can be taken or not, a distribution of probable mapping properties can be obtained
-            %     \item state of the art - (Bender 2012) using Gaussian processes \citep{bender12}
-            %     \item as the aim is to be able to map larger areas to support studies of marine ecosystems and management decisions related to them, cost can and would generally be an important factor - some studies simplify/don't use complex methods whilst trying to maximise results \citep{micallef12}
+            %     \item state of the art - (Bender 2012) using Gaussian processes ~\citep{bender12}
+            %     \item as the aim is to be able to map larger areas to support studies of marine ecosystems and management decisions related to them, cost can and would generally be an important factor - some studies simplify/don't use complex methods whilst trying to maximise results ~\citep{micallef12}
             %         \begin{itemize}
             %             \item \textbf{TODO maybe} assess comparative performance here - claims of cost efficiency, but no mention of said cost or comparison with costs of other more complex, potentially more accurate methods
             %         \end{itemize}
-            %     \item use of EUNIS habitats can result in new types being 'identified' which can be submitted \citep{henriques14}
+            %     \item use of EUNIS habitats can result in new types being 'identified' which can be submitted ~\citep{henriques14}
             % \end{itemize}
             % 
             % \section{Discussion}
@@ -126,11 +125,11 @@
             % \subsection {Obstacles and controversies in Benthic Habitat Mapping}
             % cull things that may not be relevant later
             % \begin{itemize}
-            %     \item How to improve the EUNIS system? Flawed as of 2015 \citep{calvert15}, and others
-            %     \item some consensus that EUNIS does not provide sufficient distinction when assessing the benthos using modern high resolution MBES data \citep{calvert15}
-            %     \item "whether or not discrete communities exist versus continua in individual species' distributions that lead to perceived assemblage structures" \citep{cjbrown11}
-            %     \item "utilisation of environmental data sets: oceanographic data - benthic ecosystems are not only influenced by the physical characteristics of the seafloor, but are also strongly affected by the overlying water column conditions. This 'third dimension' of the benthic ecosystemis important...and it is therefore possible to use patterns in the overlying water column conditions as proxies to predict the likely distribution of biological characteristics.'" \citep{cjbrown11}
-            %     \item "animal-sediment relationships are much more variable than traditionally puported...[with] little evidence that sedimentary grain size alone is the primary determinant of infaunal species distributions" \citep{snelgrove94}
+            %     \item How to improve the EUNIS system? Flawed as of 2015 ~\citep{calvert15}, and others
+            %     \item some consensus that EUNIS does not provide sufficient distinction when assessing the benthos using modern high resolution MBES data ~\citep{calvert15}
+            %     \item "whether or not discrete communities exist versus continua in individual species' distributions that lead to perceived assemblage structures" ~\citep{cjbrown11}
+            %     \item "utilisation of environmental data sets: oceanographic data - benthic ecosystems are not only influenced by the physical characteristics of the seafloor, but are also strongly affected by the overlying water column conditions. This 'third dimension' of the benthic ecosystemis important...and it is therefore possible to use patterns in the overlying water column conditions as proxies to predict the likely distribution of biological characteristics.'" ~\citep{cjbrown11}
+            %     \item "animal-sediment relationships are much more variable than traditionally puported...[with] little evidence that sedimentary grain size alone is the primary determinant of infaunal species distributions" ~\citep{snelgrove94}
             % \end{itemize}
             % 
             % \subsection{Accuracy of ML Techniques and Models Used}
@@ -141,7 +140,7 @@
 
 \newpage
 
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 \bibliography{Bibliography}
 
 \end{document}

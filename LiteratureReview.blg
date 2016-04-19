@@ -1,0 +1,57 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Arch Linux)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: LiteratureReview.aux
+The style file: plainnat.bst
+Illegal, another \bibstyle command---line 29 of file LiteratureReview.aux
+ : \bibstyle
+ :          {plain}
+I'm skipping whatever remains of this command
+Database file #1: Bibliography.bib
+Warning--empty journal in ahsan11
+Warning--empty journal in bender12
+Warning--empty journal in henriques14
+Warning--empty journal in kostylev12
+Warning--empty year in NOAA
+Warning--empty booktitle in steinberg11
+You've used 13 entries,
+            2773 wiz_defined-function locations,
+            654 strings with 7229 characters,
+and the built_in function-call counts, 5977 in all, are:
+= -- 497
+> -- 418
+< -- 5
++ -- 142
+- -- 129
+* -- 484
+:= -- 951
+add.period$ -- 38
+call.type$ -- 13
+change.case$ -- 82
+chr.to.int$ -- 13
+cite$ -- 32
+duplicate$ -- 266
+empty$ -- 450
+format.name$ -- 142
+if$ -- 1216
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 12
+newline$ -- 72
+num.names$ -- 52
+pop$ -- 175
+preamble$ -- 1
+purify$ -- 69
+quote$ -- 0
+skip$ -- 212
+stack$ -- 0
+substring$ -- 128
+swap$ -- 16
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 143
+warning$ -- 6
+while$ -- 48
+width$ -- 0
+write$ -- 162
+(There was 1 error message)

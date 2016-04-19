@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Arch Linux) (preloaded format=pdflatex 2015.12.21)  19 APR 2016 12:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Arch Linux) (preloaded format=pdflatex 2015.12.21)  19 APR 2016 15:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -122,6 +122,13 @@ Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
 \TX@cols=\count99
 \TX@ftn=\toks17
 )
+(/usr/share/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip47
+\bibsep=\skip48
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count100
+)
 (/usr/share/texmf-dist/tex/latex/comment/comment.sty
 \CommentStream=\write3
 
@@ -129,8 +136,8 @@ Excluding comment 'comment')
 (/usr/share/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2011/12/15 v2.10.0 Sectioning titles
 \ttl@box=\box52
-\beforetitleunit=\skip47
-\aftertitleunit=\skip48
+\beforetitleunit=\skip49
+\aftertitleunit=\skip50
 \ttl@plus=\dimen127
 \ttl@minus=\dimen128
 \ttl@toksa=\toks18
@@ -140,11 +147,11 @@ Package: titlesec 2011/12/15 v2.10.0 Sectioning titles
 )
 (/usr/share/texmf-dist/tex/latex/enumitem/enumitem.sty
 Package: enumitem 2011/09/28 v3.5.2 Customized lists
-\labelindent=\skip49
+\labelindent=\skip51
 \enit@outerparindent=\dimen132
 \enit@toks=\toks19
 \enit@inbox=\box53
-\enitdp@description=\count100
+\enitdp@description=\count101
 ) (./LiteratureReview.aux)
 \openout1 = `LiteratureReview.aux'.
 
@@ -207,11 +214,6 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 28.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 28.
-
-Underfull \hbox (badness 10000) in paragraph at lines 28--29
-
- []
-
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 41.
 (/usr/share/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
@@ -219,32 +221,18 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 41.
 
-Underfull \hbox (badness 10000) in paragraph at lines 46--48
-
- []
-
 
 Package multicol Warning: I moved some lines to the next page.
-(multicol)                Footnotes on page 1 might be wrong on input line 49.
+(multicol)                Footnotes on page 1 might be wrong on input line 48.
 
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 67--69
+Underfull \hbox (badness 10000) in paragraph at lines 66--68
 [] |\OT1/cmr/bx/n/12 2.2.0.1 Su-per-vised meth-ods \OT1/cmr/m/n/12 max-i-mum
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 67--69
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 75--76
-
- []
-
-[2] [3]
+[2] [3] (./LiteratureReview.bbl
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ˜ in font cmr12!
@@ -257,30 +245,24 @@ Missing character: There is no ˜ in font cmr12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
-
-Overfull \hbox (51.1378pt too wide) in paragraph at lines 174--176
-[]\OT1/cmr/m/n/12 http://oceanservice.noaa.gov/facts/exploration.html http://oc
-eanservice.noaa.gov/facts/oceanwater.html 
- []
-
-[4] (./LiteratureReview.aux) ) 
+) [4] (./LiteratureReview.aux) ) 
 Here is how much of TeX's memory you used:
- 1592 strings out of 493054
- 22265 string characters out of 6140585
- 95176 words of memory out of 5000000
- 5146 multiletter control sequences out of 15000+600000
+ 1954 strings out of 493054
+ 26730 string characters out of 6140585
+ 100679 words of memory out of 5000000
+ 5501 multiletter control sequences out of 15000+600000
  9155 words of font info for 32 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 24i,8n,32p,1031b,420s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pf
-b></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.
-pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/shar
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on LiteratureReview.pdf (4 pages, 111240 bytes).
+ 24i,8n,32p,1018b,417s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.
+pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/sh
+are/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on LiteratureReview.pdf (4 pages, 117288 bytes).
 PDF statistics:
  53 PDF objects out of 1000 (max. 8388607)
  37 compressed objects within 1 object stream

@@ -1,0 +1,95 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ahsan et~al.(2011)Ahsan, Williams, and Pizarro]{ahsan11}
+Nasir Ahsan, Stefan~B. Williams, and Oscar Pizarro.
+\newblock Robust broad-scale benthic habitat mapping when training data is
+  scarce.
+\newblock 2011.
+
+\bibitem[Bender et~al.(2012)Bender, B., Williams, and Pizarro]{bender12}
+Asher Bender, Stefan B., Williams, and Oscar Pizarro.
+\newblock Classification with probabilistic targets.
+\newblock 2012.
+
+\bibitem[Calvert et~al.(2015)Calvert, Strong, McGonigle, and Quinn]{calvert15}
+J.~Calvert, J.A. Strong, C.~McGonigle, and R.~Quinn.
+\newblock An evaluation of supervised and unsupervised classification
+  techniques for marine benthic habitat mapping using multibeam echosounder
+  data.
+\newblock \emph{ICES Journal of Marine Science: Journal du Conseil},
+  72:\penalty0 1498--1513, 2015.
+
+\bibitem[et~al.(2011)]{cjbrown11}
+CJ.~Brown et~al.
+\newblock Benthic habitat mapping: A review of progress towards improved
+  understanding of the spatial ecology of the seafloor using acoustic
+  techniques.
+\newblock \emph{Estuarine, Coastal and Shelf Science}, 92, 2011.
+
+\bibitem[Hasan et~al.(2014)Hasan, Ierodiaconou, Laurenson, and
+  Schimel]{hasan14}
+Rozaimi~Che Hasan, Daniel Ierodiaconou, Laurie Laurenson, and Alexandre
+  Schimel.
+\newblock Integrating multibeam backscatter angular response, mosaic and
+  bathymetry data for benthic habitat mapping.
+\newblock \emph{PLoS ONE}, 9, 2014.
+
+\bibitem[Henriques et~al.(2014)Henriques, Guerra, Mendes, Gaudencio, and
+  Fonseca]{henriques14}
+Victor Henriques, Miriam~Tuaty Guerra, Beatriz Mendes, Maria~Jose Gaudencio,
+  and Paulo Fonseca.
+\newblock Benthic habitat mapping in a portuguese marine protected area using
+  eunis: An integrated approach.
+\newblock 2014.
+
+\bibitem[Kostylev(2012)]{kostylev12}
+Vladimir Kostylev.
+\newblock Benthic habitat mapping from seabed acoustic surveys: do implicit
+  assumptions hold?
+\newblock 2012.
+
+\bibitem[Lucieera et~al.(2013)Lucieera, Hilla, Barretta, and Nichol]{lucieer13}
+Vanessa Lucieera, Nicole~A. Hilla, Neville~S. Barretta, and Scott Nichol.
+\newblock Do marine substrates ‘look’ and ‘sound’ the same? supervised
+  classification of multibeam acoustic data using autonomous underwater vehicle
+  images.
+\newblock \emph{Estuarine, Coastal and Shelf Science}, 117:\penalty0 94--106,
+  2013.
+
+\bibitem[Micallef et~al.(2012)Micallef, Bas, Huvenne, Blondel, Huhnerbach, and
+  deidun]{Micallef12}
+Aaron Micallef, Timothy P.~Le Bas, Veerle~A.I. Huvenne, Philippe Blondel, Veit
+  Huhnerbach, and Alan deidun.
+\newblock A multi-method approach for benthic habitat mapping of shallow costal
+  areas with high-resolution multibeam data.
+\newblock \emph{Continental Shelf Research}, pages 14--26, 2012.
+
+\bibitem[NOAA()]{NOAA}
+NOAA.
+\newblock Exploration, oceanwater.
+
+\bibitem[Rattray et~al.(2014)Rattray, Ierodiaconou, J.~Monk, and
+  Kennedy]{rattray14}
+A.~Rattray, D.~Ierodiaconou, L.~J. B.~Laurenson J.~Monk, and P.~Kennedy.
+\newblock Quantification of spatial and thematic uncertainty in the application
+  of underwater video for benthic habitat mapping.
+\newblock \emph{Marine Geodesy}, 37:\penalty0 315--336, 2014.
+
+\bibitem[Snelgrove(1994)]{snelgrove94}
+Paul V~R Snelgrove.
+\newblock Animal-sediment relationships revisited: Cause versus effect.
+\newblock \emph{Oceanography and marine biology}, 1994.
+
+\bibitem[Steinberg et~al.(2011)Steinberg, Friedman, Pizarro, Williams, and
+  S.B.]{steinberg11}
+D.~Steinberg, A.~Friedman, O.~Pizarro, Williams, and S.B.
+\newblock A bayesian nonparametric approach to clustering data from underwater
+  robotic surveys.
+\newblock International Symposium on Robotics Research, 2011.
+
+\end{thebibliography}

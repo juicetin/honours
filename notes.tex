@@ -1,0 +1,45 @@
+ \section{Overview}
+ 
+ \subsection{Research Questions}
+ This literature review, after providing a brief summary of the current state of benthic habitat mapping, will aim to address the following key questions:\\
+ \begin{enumerate}
+     \item What have some obstacles and controversies in benthic habitat mapping, and what has been done about them?
+     \item Which ML techniques have been used for Benthic Habitat Mapping?
+     \item How accurate across the board are the techniques being used?
+     \item Are there particular techniques being used that notably outperform others?
+ \end{enumerate}
+ 
+ \subsubsection{Preprocessing and postprocessing}
+ \begin{itemize} 
+     \item whitening - as with any data to be used for machine learning, it should be whitened to have 0 mean, and a variance of 1 so that all dimensions of data can be treated equally due to their equal variance 
+     \item "an important first step in the production of a benthic habitat map is to organise the environmental data into a suitable format for integration with the in situ habitat information" ~\citep*{cjbrown11}
+     \item "most of the uncertainty and bias in bathymetric data (except for refraction artefacts) can be dealt with adequately during post-processing" ~\citep*{kostylev12}
+     \item "bathymetric models may display systematic bias from errors that vary with periods in the ocean wave spectrum and those whose period is dictated by the long period accelerations of the survey vessel" ~\citep*{hughes03} in ~\citep*{kostylev12}
+     \item even when uncertainty is measured in benthic habitat mapping in the rarer case, it tends to be not in the final classification itself, but in other aspects such as spatial and thematic error associated with video reference data, without comparing this uncertainty directly with that which could be obtained by creating a habitat map probabilistically ~\citep*{rattray14}
+ \end{itemize}
+ 
+ \begin{itemize}
+     \item benthic "geology is often seen as a dominant parameter, if not the sole determinant for the creation of habitat maps" ~\citep*{kostylev12}
+     \item "lack of studies that consider the relationship between offshore benthos and seabed geology" ~\citep*{kostylev12}
+     \item mostly deterministic machine learning algorithms used, but some evidence of earlier probabilistic studies as well, with the use of Gaussian processes ~\citep*{rigby10}
+     \item the probabilistic classifications provide decision makers with more information - rather than ML giving a definitive answer that can be taken or not, a distribution of probable mapping properties can be obtained
+     \item state of the art - (Bender 2012) using Gaussian processes ~\citep*{bender12}
+     \item as the aim is to be able to map larger areas to support studies of marine ecosystems and management decisions related to them, cost can and would generally be an important factor - some studies simplify/don't use complex methods whilst trying to maximise results ~\citep*{micallef12}
+         \begin{itemize}
+             \item \textbf{TODO maybe} assess comparative performance here - claims of cost efficiency, but no mention of said cost or comparison with costs of other more complex, potentially more accurate methods
+         \end{itemize}
+     \item use of EUNIS habitats can result in new types being 'identified' which can be submitted ~\citep*{henriques14}
+ \end{itemize}
+ 
+ \section{Discussion}
+ 
+ \subsection {Obstacles and controversies in Benthic Habitat Mapping}
+ cull things that may not be relevant later
+ \begin{itemize}
+     \item How to improve the EUNIS system? Flawed as of 2015 ~\citep*{calvert15}, and others
+     \item some consensus that EUNIS does not provide sufficient distinction when assessing the benthos using modern high resolution MBES data ~\citep*{calvert15}
+     \item "whether or not discrete communities exist versus continua in individual species' distributions that lead to perceived assemblage structures" ~\citep*{cjbrown11}
+     \item "utilisation of environmental data sets: oceanographic data - benthic ecosystems are not only influenced by the physical characteristics of the seafloor, but are also strongly affected by the overlying water column conditions. This 'third dimension' of the benthic ecosystemis important...and it is therefore possible to use patterns in the overlying water column conditions as proxies to predict the likely distribution of biological characteristics.'" ~\citep*{cjbrown11}
+     \item "animal-sediment relationships are much more variable than traditionally puported...[with] little evidence that sedimentary grain size alone is the primary determinant of infaunal species distributions" ~\citep*{snelgrove94}
+ \end{itemize}
+

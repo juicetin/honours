@@ -1,4 +1,4 @@
-\begin{thebibliography}{13}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -16,6 +16,18 @@ Asher Bender, Stefan B., Williams, and Oscar Pizarro.
 \newblock Classification with probabilistic targets.
 \newblock 2012.
 
+\bibitem[Bickel and Levina(2008)]{bickel08}
+Peter~J. Bickel and Elizaveta Levina.
+\newblock Regularized estimation of large covariance matrices.
+\newblock \emph{The Annals of Statistics}, pages 199--227, 2008.
+
+\bibitem[Brown et~al.(2011)Brown, Smith, and Lawton]{cjbrown11}
+Craig Brown, Stephen~J Smith, and Peter Lawton.
+\newblock Benthic habitat mapping: A review of progress towards improved
+  understanding of the spatial ecology of the seafloor using acoustic
+  techniques.
+\newblock \emph{Estuarine, Coastal and Shelf Science}, 92, 2011.
+
 \bibitem[Calvert et~al.(2015)Calvert, Strong, McGonigle, and Quinn]{calvert15}
 J.~Calvert, J.A. Strong, C.~McGonigle, and R.~Quinn.
 \newblock An evaluation of supervised and unsupervised classification
@@ -24,12 +36,12 @@ J.~Calvert, J.A. Strong, C.~McGonigle, and R.~Quinn.
 \newblock \emph{ICES Journal of Marine Science: Journal du Conseil},
   72:\penalty0 1498--1513, 2015.
 
-\bibitem[et~al.(2011)]{cjbrown11}
-CJ.~Brown et~al.
-\newblock Benthic habitat mapping: A review of progress towards improved
-  understanding of the spatial ecology of the seafloor using acoustic
-  techniques.
-\newblock \emph{Estuarine, Coastal and Shelf Science}, 92, 2011.
+\bibitem[Diaz et~al.(2004)Diaz, Solan, and Valente]{diaz04}
+Robert~J. Diaz, Martin Solan, and Raymond~M. Valente.
+\newblock A review of approaches for classifying benthic habitats and
+  evaluating habitat quality.
+\newblock \emph{Journal of Environmental Management}, 73:\penalty0 161--181,
+  2004.
 
 \bibitem[Hasan et~al.(2014)Hasan, Ierodiaconou, Laurenson, and
   Schimel]{hasan14}
@@ -47,11 +59,13 @@ Victor Henriques, Miriam~Tuaty Guerra, Beatriz Mendes, Maria~Jose Gaudencio,
   eunis: An integrated approach.
 \newblock 2014.
 
-\bibitem[Kostylev(2012)]{kostylev12}
-Vladimir Kostylev.
-\newblock Benthic habitat mapping from seabed acoustic surveys: do implicit
-  assumptions hold?
-\newblock 2012.
+\bibitem[Kostylev et~al.(2001)Kostylev, Todd, Fader, Courtney, Cmaeron, and
+  Pickrill]{kostylev01}
+Vladimir~E. Kostylev, Brian~J. Todd, Gordon B.~J. Fader, R.~C. Courtney, Gordon
+  D.~M. Cmaeron, and Richard~A. Pickrill.
+\newblock Benthic habitat mapping on the scotian shelf based on multibeam
+  bathymetry, surficial geology and sea floor photographs.
+\newblock \emph{Marine Ecology Progress Series}, 219:\penalty0 121--137, 2001.
 
 \bibitem[Lucieera et~al.(2013)Lucieera, Hilla, Barretta, and Nichol]{lucieer13}
 Vanessa Lucieera, Nicole~A. Hilla, Neville~S. Barretta, and Scott Nichol.
@@ -61,10 +75,17 @@ Vanessa Lucieera, Nicole~A. Hilla, Neville~S. Barretta, and Scott Nichol.
 \newblock \emph{Estuarine, Coastal and Shelf Science}, 117:\penalty0 94--106,
   2013.
 
+\bibitem[Melkumyan and Ramos(2009)]{melkumyan09}
+Arman Melkumyan and Fabio Ramos.
+\newblock A sparse covariance function for exact gaussian process inference in
+  large datasets.
+\newblock \emph{International Joint Conference on Artificial Intelligence}, 9,
+  2009.
+
 \bibitem[Micallef et~al.(2012)Micallef, Bas, Huvenne, Blondel, Huhnerbach, and
-  deidun]{Micallef12}
+  Deidun]{micallef12}
 Aaron Micallef, Timothy P.~Le Bas, Veerle~A.I. Huvenne, Philippe Blondel, Veit
-  Huhnerbach, and Alan deidun.
+  Huhnerbach, and Alan Deidun.
 \newblock A multi-method approach for benthic habitat mapping of shallow costal
   areas with high-resolution multibeam data.
 \newblock \emph{Continental Shelf Research}, pages 14--26, 2012.
@@ -72,6 +93,16 @@ Aaron Micallef, Timothy P.~Le Bas, Veerle~A.I. Huvenne, Philippe Blondel, Veit
 \bibitem[NOAA()]{NOAA}
 NOAA.
 \newblock Exploration, oceanwater.
+
+\bibitem[of~the United~Nations(2004)]{un04}
+Food \& Agriculture~Organisation of~the United~Nations.
+\newblock \emph{The State of World Fisheries and Aquaculture}.
+\newblock 2004.
+
+\bibitem[Rasmussen and Williams(2006)]{rasmussen06}
+Carl~Edward Rasmussen and Christopher K.~I. Williams.
+\newblock \emph{Gaussian Processes for Machine Learning}.
+\newblock The MIT Press, 2006.
 
 \bibitem[Rattray et~al.(2014)Rattray, Ierodiaconou, J.~Monk, and
   Kennedy]{rattray14}

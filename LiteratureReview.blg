@@ -6,48 +6,49 @@ Database file #1: Bibliography.bib
 Warning--empty journal in ahsan11
 Warning--empty journal in bender12
 Warning--empty journal in henriques14
-Warning--empty journal in kostylev12
 Warning--empty year in NOAA
+Warning--empty publisher in un04
+Warning--empty chapter and pages in rasmussen06
 Warning--empty booktitle in steinberg11
-You've used 13 entries,
+You've used 18 entries,
             2773 wiz_defined-function locations,
-            654 strings with 7229 characters,
-and the built_in function-call counts, 5977 in all, are:
-= -- 497
-> -- 418
-< -- 5
-+ -- 142
-- -- 129
-* -- 484
-:= -- 951
-add.period$ -- 38
-call.type$ -- 13
-change.case$ -- 82
-chr.to.int$ -- 13
-cite$ -- 32
-duplicate$ -- 266
-empty$ -- 450
-format.name$ -- 142
-if$ -- 1216
+            683 strings with 8177 characters,
+and the built_in function-call counts, 8515 in all, are:
+= -- 716
+> -- 588
+< -- 8
++ -- 198
+- -- 180
+* -- 696
+:= -- 1339
+add.period$ -- 53
+call.type$ -- 18
+change.case$ -- 112
+chr.to.int$ -- 18
+cite$ -- 43
+duplicate$ -- 379
+empty$ -- 643
+format.name$ -- 204
+if$ -- 1750
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 12
-newline$ -- 72
-num.names$ -- 52
-pop$ -- 175
+missing$ -- 19
+newline$ -- 97
+num.names$ -- 72
+pop$ -- 241
 preamble$ -- 1
-purify$ -- 69
+purify$ -- 96
 quote$ -- 0
-skip$ -- 212
+skip$ -- 303
 stack$ -- 0
-substring$ -- 128
-swap$ -- 16
-text.length$ -- 1
+substring$ -- 216
+swap$ -- 31
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 143
-warning$ -- 6
-while$ -- 48
+type$ -- 188
+warning$ -- 7
+while$ -- 69
 width$ -- 0
-write$ -- 162
-(There were 6 warnings)
+write$ -- 226
+(There were 7 warnings)

@@ -10,45 +10,45 @@ Warning--empty year in NOAA
 Warning--empty publisher in un04
 Warning--empty chapter and pages in rasmussen06
 Warning--empty booktitle in steinberg11
-You've used 18 entries,
+You've used 22 entries,
             2773 wiz_defined-function locations,
-            683 strings with 8177 characters,
-and the built_in function-call counts, 8515 in all, are:
-= -- 716
-> -- 588
-< -- 8
-+ -- 198
-- -- 180
-* -- 696
-:= -- 1339
-add.period$ -- 53
-call.type$ -- 18
-change.case$ -- 112
-chr.to.int$ -- 18
-cite$ -- 43
-duplicate$ -- 379
-empty$ -- 643
-format.name$ -- 204
-if$ -- 1750
+            705 strings with 9048 characters,
+and the built_in function-call counts, 10524 in all, are:
+= -- 886
+> -- 744
+< -- 10
++ -- 250
+- -- 228
+* -- 864
+:= -- 1660
+add.period$ -- 66
+call.type$ -- 22
+change.case$ -- 140
+chr.to.int$ -- 22
+cite$ -- 51
+duplicate$ -- 463
+empty$ -- 787
+format.name$ -- 260
+if$ -- 2164
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 19
-newline$ -- 97
-num.names$ -- 72
-pop$ -- 241
+missing$ -- 23
+newline$ -- 117
+num.names$ -- 88
+pop$ -- 294
 preamble$ -- 1
-purify$ -- 96
+purify$ -- 120
 quote$ -- 0
-skip$ -- 303
+skip$ -- 371
 stack$ -- 0
-substring$ -- 216
-swap$ -- 31
+substring$ -- 252
+swap$ -- 36
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 188
+type$ -- 232
 warning$ -- 7
-while$ -- 69
+while$ -- 84
 width$ -- 0
-write$ -- 226
+write$ -- 278
 (There were 7 warnings)

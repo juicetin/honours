@@ -1,0 +1,77 @@
+\documentclass[12pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{multicol}               % Columns
+\usepackage{tabularx}               % Extra table functionality
+\setlength{\skip\footins}{1.0cm}    % More space between text and footnotes
+\usepackage[round]{natbib}          % Round brackets when citep*-ing sources
+\usepackage{comment}                % Comments...
+\usepackage{titlesec}
+\usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\columnsep}{0.5cm}       % Separate columns (when used) by 0.5cm
+\setcounter{secnumdepth}{4}         % Give paragraphs 'numbers'
+
+\begin{document}
+\begin{itemize}
+    \item simple linear regression is one quantitative variable predicting another 
+    \item multiple regression is simple linear regression with more independent variables 
+    \item nonlinear regression is still two quantiative variables, but data is curvilinear 
+    \item binary data does not have a normal distribution - a condition needed for most other types of regression 
+    \item predicted variables of the dependent variable can be beyond 0/1 in other types of regressions - logistical regression deals with probabilities 
+    \item   + probabilities have to be between 0 and 1 
+    \item probabilities are often not as linear such as U shapes where probability is very low/high at extreme x-values
+    \item   + e.g. probability (may be, as an example) higher for contracting the flu for oldies/young'uns, but lower for middle aged people
+    \item odds of event X - P(X)/(1-P(X))
+    \item the odds ratio for a variable in logistic regression represents how the odds change with a 1 unit increase in that variable holding all other variables constant
+    \item odds vs probability
+    \item   + underlying probability may be low, but odds could increase in magnitude very quickly
+    \item   + e.g. probabilities of being struck by lightning, and being struck by a meteor
+    \item       * probability of being hit by lightning are *much much* higher than being struck than a meteor
+    \item       * however, being hit by lightning is a very low prob to begin with
+    \item in logistic regresion, we are estimating an unknown p for any given lienar combination of the independent variables
+    \item link together independent variables to essentially the Bernoulli distribution; that link is called the logit
+    \item in logistical regression, we don't know p like we do in Binomial (Bernoulli) distribution problems - goal of logistical regression is to estimate p for a linear combination of the independent variables
+    \item the natural log of the odds ratio, the logit, is that link function
+    \item $ln(odds)$ $==>$ $ln(\frac{p}{(1-p)})$ is the $logit(p)$ OR $ln(p) - ln(1-p) = logit(p)$
+    \item reminder: $log_{e}x = lnx$
+    \item boundaries - if p = 1 or 0, our function is undefined, when p = 0.5, our function = 0 (our function being the logit)
+    \item logit function graphs to a sigmoid function
+    \item 0-1 ran along x-axis but we want probabilities to be on the y-axis - achieve this by taking inverse of the logit function
+    \item $logit^{-1}(\alpha) = \frac{1}{1+e^{-\alpha}} = \frac{e^{\alpha}}{1+e^{\alpha}}$ where $\alpha$ = some number
+    \item   + $\alpha$ is the linar combination of variables and their coefficients - inverse-logit will return the probabilyt of being a "1" or in the "event occurs" group
+    \item inverse logit A.K.A mean function
+    \item   + $\mu_{y|x}$
+    \item note about coefficients
+    \item   + coeffs calculated using maximum likelihood estimation
+    \item estimated regression equation
+        \begin{itemize}
+            \item natural log of odds ratio is equivalent to linear function of the independent variables - antilog of logit function allows ut to find the estimated regression equation, i.e. solve for p, the estimated probabibility
+            \item $logit(p) = ln()= \beta_{0} + \beta_{1}x_{1}$
+            \item isolate/solve $p$! - going to do this using algebra
+            \item $\frac{p}{1-p} = e^{\beta_{0} + \beta_{1}x_{1}}$ // on the right here is Euler's constant raised to the power of a linear combinatino of all the independent variables
+            \item $p = e^{\beta_{0}+\beta_{1}x_{1}}(1-p)$
+            \item $p = e^{\beta_{0}+\beta_{1}x_{1}} - e^{\beta_{0}+\beta_{1}x_{1}}p $
+            \item $p + e^{\beta_{0}+\beta_{1}x_{1}}p = e^{\beta_{0}+\beta_{1}x_{1}}$
+            \item $p(1+e^{\beta_{0}+\beta_{1}x_{1}}) = e^{\beta_{0}+\beta_{1}x_{1}}$
+            \item estimated regression equation! $\hat{p} = \frac{e^{\beta_{0}+\beta_{1}x_{1}}}{1+e^{\beta_{0}+\beta_{1}x_{1}}}$
+        \end{itemize}
+    \item watched up to Brandon Foltz' Statistics 101: Logistic Regression, Odds Ratio for Any Interval
+\end{itemize}
+
+\section{Random Forests}
+\begin{itemize}
+    \item combination of learning models increases classification accuracy (bagging)
+    \item bagging - average noisy and unbiased models to create a new model with low variance
+    \item random forest algorithm works as a large collection of decorrelated decision trees \footnote{Gupta, Ashish. Learning Apache Mahout Classification. Packt Publishing Ltd, 2015.}
+    \item create random subsets of the original full set of values - e.g. out of 100, one particular subset might contain all features of rows 1, 5, 9, 24, 38, 49, 52, 68, 72, 82 and their classifications, others follow
+    \item create decision tree from each subset
+    \item 'forest' - lots of decision trees
+    \item count votes for each class when an unknown class feature set is passed through all the decision trees - take majority for classification, average for regression
+    \item random forests as a supervised learning algorithm came only second to boosted decision trees in a comparison study \footnote{Caruana, Rich, and Alexandru Niculescu-Mizil. "An empirical comparison of supervised learning algorithms." Proceedings of the 23rd international conference on Machine learning. ACM, 2006. APA } (third was bagged decision trees, SVM 4th - essentially, aggregated tree methods were at the top)
+    \item at each node in tree, choose random subset of (m - constant in trees) features - consider only splits on those features
+    \item each individual tree has high variance - but by averaging over an ensemble of trees, we reduce the variance in the final estimator, and hence lowering error
+    \item introduced by Breiman
+\end{itemize}
+
+\end{document}

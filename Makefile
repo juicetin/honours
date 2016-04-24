@@ -1,4 +1,4 @@
-all: LiteratureReview.tex ResearchProposal.tex
+all: LiteratureReview.tex ResearchProposal.tex GeneralMLNotes.tex
 
 LiteratureReview: LiteratureReview.tex
 	@latex LiteratureReview
@@ -11,6 +11,9 @@ ResearchProposal: ResearchProposal.tex
 	@bibtex ResearchProposal
 	@latex ResearchProposal
 	@pdflatex ResearchProposal
+
+GeneralMLNotes: GeneralMLNotes.tex
+	@pdflatex GeneralMLNotes
 
 clean:
 	@rm `ls | egrep "aux|bbl|blg|dvi|log"`

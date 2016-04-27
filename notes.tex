@@ -43,3 +43,46 @@
      \item "animal-sediment relationships are much more variable than traditionally puported...[with] little evidence that sedimentary grain size alone is the primary determinant of infaunal species distributions" ~\citep*{snelgrove94}
  \end{itemize}
 
+
+            \paragraph{k-means Clustering}
+            unsupervised methods (k-means clustering ~\citep*{henriques14}) to classify data. - \textbf{TODO find citation for the following} bad - k-means tends to produce circular clusters, doesn't work well with data points that are not a mixture of Gaussian distributions \footnote{http://www.analyticbridge.com/profiles/blogs/the-8-worst-predictive-modeling-techniques}
+
+            \paragraph{Maximum Likelihood Estimation}
+            item maximum likelihood estimation ~\citep*{micallef12} - \textbf{TODO cite the following} - bad, requires data to fit with prescribed probabilistic distribution. not data-driven  - in many cases, pre-speicified Gaussian distribution is bad fit for data \footnote{http://www.analyticbridge.com/profiles/blogs/the-8-worst-predictive-modeling-techniques} \textbf{TODO move this somewhere else? It's used as part of other things...}
+
+            \paragraph{Other}
+            \textit{Using machine learning} As a progression from basic statistical analysis to machine learning techniques, we can see that numerous studies use the ArcGIS suite of software tools to perform analysis on data typical in benthic habitat mapping studies such as bathymetry data, while others such as ~\citet{micallef12} use it to actually carry out machine learning algorithms such as maximum likelihood classification. 
+
+\section{Research Proposal stuff}
+\section{Other}
+\begin{itemize}
+    \item States clearly the intended contribution
+    \item The evidence gathering and evaluation process is appropriate to the claim
+\end{itemize}
+
+\begin{itemize}
+    \item do cross validation on what data we do have (moderately large dataset)
+    \item show that we are in fact improving on what's been done by comparing to SoA (bender12 paper)
+\end{itemize}        
+
+
+\section{Proposed Research (here onwards will be in a separate report)}
+\subsection{Context}
+Place one's own research into context
+\begin{itemize}
+    \item given that benthic mapping represents only 10\% (cite?) compared to mapped land, how accurate and certain can we be of mappings and predictions made - would it be of consdierably more value to decision makers if we provided them with the probability of which the predictions being made are correct, given the relatively low amount of data compared to land habitat mapping?
+    \item we want to eschew the traditional mapping of bathymetric and backscatter data to discrete habitat labels, but instead, to contiuous cluster probabilities as in (Bender, Williams \& Pizarro 2012) ~\citep{bender12}, using the cluster probabilities from (Steinberg 2011) ~\citep{steinberg11}
+\end{itemize}
+
+\subsection{Gap in Research}
+Show a Gap in Research
+\begin{itemize}
+    \item most if not all studies are deterministic in their classifications - considering that marine mapping is still catching up to advancements in land mapping, there is benefit to be gained from modeling uncertainty in results
+    \item current state of the art uses more complex machine learning approaches in the form of gaussian processes than the simpler classification schemes normally used, with solid results. however, due to the nature of GP, further pre-processing of the data had to be done to shrink the data set considerably to allow the algorithms to run in a reasonable amount of time~\citep{bender12}. Hence, we propose - \textbf{TODO}
+\end{itemize}
+
+\subsection{Justification}
+Justify One's own Research
+
+\subsection{Research Hypotheses}
+Generate new Research Hypotheses

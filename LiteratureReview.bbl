@@ -1,4 +1,4 @@
-\begin{thebibliography}{22}
+\begin{thebibliography}{23}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -50,6 +50,12 @@ Rich Caruana and Alexandru Niculescu-Mizil.
 \newblock In \emph{Proceedings of the 23rd International conference on Machine
   learning}. Association for Computer Machinery, 2006.
 
+\bibitem[Chang et~al.(2011)Chang, Chih-Chung, and Lin]{chang11}
+Chang, Chih-Chung, and Chih-Jen Lin.
+\newblock Libsvm: a library for support vector machines.
+\newblock \emph{ACM Transactions on Intelligent Systems and Technology},
+  2:\penalty0 27, 2011.
+
 \bibitem[Diaz et~al.(2004)Diaz, Solan, and Valente]{diaz04}
 Robert~J. Diaz, Martin Solan, and Raymond~M. Valente.
 \newblock A review of approaches for classifying benthic habitats and
@@ -65,18 +71,10 @@ Rozaimi~Che Hasan, Daniel Ierodiaconou, Laurie Laurenson, and Alexandre
   bathymetry data for benthic habitat mapping.
 \newblock \emph{PLoS ONE}, 9, 2014.
 
-\bibitem[Henriques et~al.(2014)Henriques, Guerra, Mendes, Gaudencio, and
-  Fonseca]{henriques14}
-Victor Henriques, Miriam~Tuaty Guerra, Beatriz Mendes, Maria~Jose Gaudencio,
-  and Paulo Fonseca.
-\newblock Benthic habitat mapping in a portuguese marine protected area using
-  eunis: An integrated approach.
-\newblock 2014.
-
-\bibitem[Kostylev et~al.(2001)Kostylev, Todd, Fader, Courtney, Cmaeron, and
+\bibitem[Kostylev et~al.(2001)Kostylev, Todd, Fader, Courtney, Cameron, and
   Pickrill]{kostylev01}
 Vladimir~E. Kostylev, Brian~J. Todd, Gordon B.~J. Fader, R.~C. Courtney, Gordon
-  D.~M. Cmaeron, and Richard~A. Pickrill.
+  D.~M. Cameron, and Richard~A. Pickrill.
 \newblock Benthic habitat mapping on the scotian shelf based on multibeam
   bathymetry, surficial geology and sea floor photographs.
 \newblock \emph{Marine Ecology Progress Series}, 219:\penalty0 121--137, 2001.
@@ -104,6 +102,11 @@ Aaron Micallef, Timothy P.~Le Bas, Veerle~A.I. Huvenne, Philippe Blondel, Veit
   areas with high-resolution multibeam data.
 \newblock \emph{Continental Shelf Research}, pages 14--26, 2012.
 
+\bibitem[Murphy(2012)]{murphy12}
+Kevin~P. Murphy.
+\newblock \emph{Machine Learning: A Probabilistic Perspective}.
+\newblock The MIT Press, 2012.
+
 \bibitem[Ng and Jordan(2002)]{ng04}
 Andrew~Y. Ng and Michael~I. Jordan.
 \newblock On discriminative vs.generative classifiers: A comparison of logistic
@@ -111,14 +114,16 @@ Andrew~Y. Ng and Michael~I. Jordan.
 \newblock \emph{Advances in neural information processing systems},
   14:\penalty0 841, 2002.
 
-\bibitem[NOAA()]{NOAA}
-NOAA.
-\newblock Exploration, oceanwater.
-
 \bibitem[of~the United~Nations(2004)]{un04}
 Food \& Agriculture~Organisation of~the United~Nations.
 \newblock \emph{The State of World Fisheries and Aquaculture}.
 \newblock 2004.
+
+\bibitem[Quinonero-Candela and Rasmussen(2005)]{candela05}
+Joaquin Quinonero-Candela and Carl~Edward Rasmussen.
+\newblock A unifying view of sparse approximate gaussian process regression.
+\newblock \emph{The Journal of Machine Learning Research}, 6:\penalty0
+  1939--1959, 2005.
 
 \bibitem[Rasmussen and Williams(2006)]{rasmussen06}
 Carl~Edward Rasmussen and Christopher K.~I. Williams.

@@ -74,4 +74,28 @@
     \item introduced by Breiman
 \end{itemize}
 
+\section{Multivariate Gaussian}
+\begin{itemize}
+    \item univariate Gaussian - $X\\~N|\mu,\sigma^{2}$
+    \item means X has density $f(x) = <..insert f here...>$
+    \item degenerate univariate Gaussian - $\sigma^{2}$ can be 0, i.e. $X == \mu$
+    \item multivariate Gaussian - A random variable $X \in R^{n}$ is multivariate Gaussian (or normal or multivariate normal) if any linear combination of its components is univariate Gaussian i.e. $a^{T}X = \Sigma a_{i}X_{i}$ is Gaussian for every $a \in R^{n}$
+    \item defn: $X~N(\mu, C)$ (C is a pos semidef matrix) means X is Gaussian with $EX_{i}=\mu_{i}$ and $covariance(X_{i},X_{j}) = C_{ij}$
+    \item $\mu and C$ uniquely determine the distribution $N(\mu, C)$
+    \item positive semidef matrix - all eigenvalues are >= 0
+\end{itemize}
+
+\section{Gaussian Processes}
+\begin{itemize}
+    \item most often used in geostatistics - modeling spatial things - geography, meteorology, etc.
+    \item things evolving over time, where its going, e.g. an airplane
+    \item finance, physics, diffusion processes, all the things!
+    \item Gaussian Processes - for any set $S$, a Gaussian process (GP) on $S$ is a set of random variables ($Z_{t} : t\in S$)
+    \item for any N, and for any $t_{1}...t_{n}\in S$, ($Z_{t_{1}},...,Z_{t_{n}}$) is multivariate Gaussian
+    \item finite dimentional distributions - distribution of all the t in Z vectors
+    \item Example: $S = {1,...,d}$      $(Z_{t}) = (Z_{1},...,Z_{d}) \in R^{d}$ - satisfies definition, trivial
+    \item random lines: $S=R$, $Z_{t} = tW, W~N(0,1)$
+    \item 
+\end{itemize}
+
 \end{document}

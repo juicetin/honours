@@ -1,42 +1,65 @@
 \documentclass[12pt]{article}
-\usepackage[margin=0.7in]{geometry}
+\usepackage[margin=1.07in]{geometry}
 \usepackage{multicol}
 \usepackage{tabularx}
 \usepackage{comment}
+\usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
 \usepackage{titlesec}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage[hyperfootnotes=false]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    linkcolor=red,
+    urlcolor=blue,
+    citebordercolor=red,
+    filebordercolor=red,
+    linkbordercolor=blue
+}
 \usepackage[round]{natbib}
 \usepackage{enumitem}
 \setlist{nosep}
 \setcounter{secnumdepth}{4}
 
+\title{Machine Learning in Benthic Habitat Mapping - Outline of Research Approach\\ Research Methods - INFO5993 Assignment 2}
+\author{Justin Ting, 430203826}
+\date{April 2016}
+
 \begin{document}
+\maketitle
 
+\section {Introduction}
+This study will be about benthic habitat mapping, which is the "spatial representation of physically distinct areas of seafloor that are associated with particular groups of plants and animals"~\citep{harris12}. Its significance lies in the fact that there is an increasing need by regulatory bodies such as governments, etc. to better manage bodies of water which are being directly affected by human activity to preserve their state and prevent further damage, etc. Many studies have already collected a range of different data source and tried varying techniques at creating habitat maps using such data. To date, there have not yet been attempts to combine the predictive power of Gaussian proceses~\citep{bender12} fully with the increasing amount of bathymetric data that modern technology can collect. The purpose of this study will hence be to capitalise all the data we have access to to create better benthic maps to allow decision making bodies to make more informed decisions.
+
+\section{Aims and Research Questions}
+Our aim is to create a habitat mapping scheme that can provide more accurate habitat maps than current state of the art methods by attempting to solve some of the obstacles that are present in them. For our proposed research, we are specifically looking at exploring the following questions:
 \begin{itemize}
-    \item do cross validation on what data we do have (moderately large dataset)
-    \item show that we are in fact improving on what's been done by comparing to SoA (bender12 paper)
-\end{itemize}        
-
-
-\section{Proposed Research (here onwards will be in a separate report)}
-\subsection{Context}
-Place one's own research into context
-\begin{itemize}
-\item given that benthic mapping represents only 10\% (cite?) compared to mapped land, how accurate and certain can we be of mappings and predictions made - would it be of consdierably more value to decision makers if we provided them with the probability of which the predictions being made are correct, given the relatively low amount of data compared to land habitat mapping?
-\item we want to eschew the traditional mapping of bathymetric and backscatter data to discrete habitat labels, but instead, to contiuous cluster probabilities as in (Bender, Williams \& Pizarro 2012) ~\citep{bender12}, using the cluster probabilities from (Steinberg 2011) ~\citep{steinberg11}
+    \item How can we improve the quality of benthic habitat mapping?
+    \item How can we put the existing data we have to better use (i.e. not needing to go on expeditions to obtain new data)?
+    \item How can we use Gaussian Processes (henceforth GP) and the available existing data to improve accuracy of the mapping process?
 \end{itemize}
+The former two questions essentially cumulate to form the third, which will be the focus question for our research. 
 
-\subsection{Gap in Research}
-Show a Gap in Research
-\begin{itemize}
-\item most if not all studies are deterministic in their classifications - considering that marine mapping is still catching up to advancements in land mapping, there is benefit to be gained from modeling uncertainty in results
-\item current state of the art uses more complex machine learning approaches in the form of gaussian processes than the simpler classification schemes normally used, with solid results. however, due to the nature of GP, further pre-processing of the data had to be done to shrink the data set considerably to allow the algorithms to run in a reasonable amount of time~\citep{bender12}. Hence, we propose - \textbf{TODO}
-\end{itemize}
+\section{Proposed Methodology}
+\subsection{Data Collection}
+Bathymetric and truthing data from at least Scott Reef and O'Hara Bluffs will be used to verify the performance of the algorithms being tested. Data for both these locations have been used in previous studies(~\citet{bender12}, ~\citet{ahsan11}).
 
-\subsection{Justification}
-Justify One's own Research
+Datasets from different marine contexts are needed as the distribution and variance of properties in different areas can vary considerably, causing some algorithms to work better in certain (physical) conditions. This can be seen in ~\citep{ahsan11}, where there were differences in the accuracy metric depending on the location of the benthic habitat in question - O'Hara, Chevron, and Scott Reef.
 
-\subsection{Research Hypotheses}
-Generate new Research Hypotheses
+\subsection{Pre-processing} To address the question, we will begin by exploring possible methods to apply GPs to large datasets. The obstacle faced with the use of GPs is in applying the matrix inversion to the raw covariance matrix which has a worst case complexity of $O(n^{3})$ where $n$ is the input size - this is a major bottleneck as it does not scale, preventing use with larger datasets.
+
+One method of overcoming this that has been explored in literature is to 'transform' the full matrix into a sparse one at the inversion step - ~\citep{melkumyan09} and ~\citep{furrer06} detail a method that involves a 'cut-off' point within the covariance matrix such that rather than the covariance values tapering off and approaching (but never reaching) zero, after a certain point it is instead actually set to zero. Once this step is done, there are known ways to invert such matrices in much less than $O(n^{3})$ time, with a range of libraries in differnet languages implementing such methods. Other ways of doing this will be explored as well as necessary. To supercede the current state of the art in benthic habitat mapping however, it would be prudent to implement the future work suggested ~\citep{candela05} to obtain the best approximation of the large GPs, which involves combining the Partially Independent Training Conditional approximation with "the most powerful selection method for the inducing inputs." 
+
+\subsection{Measuring Performance of GPs on large dataset}
+Given that ~\citep{bender12} is one of the more recent studies employing the use of GPs in benthic habitat mapping, the first metric to compare would be whether including a much larger subset of the original data, if not all of it, improves upon the performance of the work which we are aiming to build on.
+
+Intrinsic accuracy of the method with the stated pre-processing steps will be tested via cross-validation and checked that it exceeds (or not) the probabilistic target least squares classifier (PTLSC) in accuracy.
+
+Performance will also be measured relative to a number of other methods that were found to be highly performant in the \textit{literature review}. These include, in particular, \textbf{random forests}, and \textbf{boosted decision trees} as well (though the latter method has yet to see much adoption when creating benthic habitat maps).
+
+\subsection{Limitations}
+The two distinct marine locations for which real data is obtainable is likely not representative enough to get a full picture of how well the method proposed will perform in different contexts. During the duration of the study, some effort will be put into obtaining more datasets from other authors of similar studies. Failing that, as a backup/last resort, we will consider generating synthetic data based on information available in past research papers that detail the properties to diversify the data which we use to assess our method.
 
 \bibliographystyle{plainnat}
 \bibliography{Bibliography}

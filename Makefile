@@ -1,4 +1,4 @@
-all: LiteratureReview.tex ResearchProposal.tex GeneralMLNotes.tex
+all: LiteratureReview.tex ResearchProposal.tex GeneralMLNotes.tex MiniPaper.tex
 
 LiteratureReview: LiteratureReview.tex
 	@latex LiteratureReview
@@ -11,6 +11,12 @@ ResearchProposal: ResearchProposal.tex
 	@bibtex ResearchProposal
 	@latex ResearchProposal
 	@pdflatex ResearchProposal
+
+MiniPaper: MiniPaper.tex
+	@latex MiniPaper
+	@bibtex MiniPaper
+	@latex MiniPaper
+	@pdflatex MiniPaper
 
 GeneralMLNotes: GeneralMLNotes.tex
 	@pdflatex GeneralMLNotes

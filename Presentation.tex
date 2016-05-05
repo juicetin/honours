@@ -1,0 +1,67 @@
+\documentclass{beamer}
+\usepackage[round]{natbib}
+\setbeamertemplate{background canvas}[vertical shading][bottom=white,top=structure.fg!35]
+\setbeamertemplate{sidebar canvas left}[horizontal shading][left=white!40!black,right=black]
+\beamertemplatenavigationsymbolsempty
+
+\begin{document}
+
+\begin{frame}
+    \frametitle{Machine Learning in Benthic Habitat Mapping}
+    \textbf{Justin Ting} | Honours Student
+
+    \textbf{Simon O'Callaghan} | NICTA Researcher
+
+    NICTA
+
+    SIT
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item Less than ~10\% of the world's oceans are mapped compared to 99\% of Earth's topology mapped (low resolution)\footnote{http://www.wired.com/2009/06/nasa-satellite-maps-99-of-earths-topography/}
+    \end{itemize}
+\end{frame}
+\note{herp derp}
+
+\begin{frame}
+    \frametitle{Problem Statement}
+    \begin{itemize}
+        \item Marine habitat mapping cuts across marine biology, geology, hydrography, oceanography, geophysics~\citep{cjbrown11}, along with habitat mapping
+        \item Much research in benthic habitat mapping generates deterministic maps using as-is machine learning techniques/implementations
+        \item We need to be able to monitor marine habitats on a large scale to assess human impact over time to be able to make informed management decisions
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Solution}
+    \begin{itemize}
+        \item We will use Gaussian Processes to obtain distributions of likely habitat maps
+        \item Probabilistic approach allows us to state certainty about a particular mapped area
+        \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Results}
+    \begin{itemize}
+        \item stuff
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Discussion and Analysis}
+    \begin{itemize}
+        \item stuff
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Bibiolgraphy}
+    \bibliographystyle{plainnat}
+    \bibliography{Bibliography}
+\end{frame}
+
+\end{document}

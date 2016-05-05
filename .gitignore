@@ -10,3 +10,6 @@
 *.bcf
 *.xml
 *.bcf
+*.nav
+*.snm
+*.toc

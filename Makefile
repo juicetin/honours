@@ -1,4 +1,4 @@
-all: LiteratureReview.tex ResearchProposal.tex GeneralMLNotes.tex MiniPaper.tex
+all: LiteratureReview.tex ResearchProposal.tex GeneralMLNotes.tex MiniPaper.tex Presentation.tex
 
 LiteratureReview: LiteratureReview.tex
 	@latex LiteratureReview
@@ -21,5 +21,11 @@ MiniPaper: MiniPaper.tex
 GeneralMLNotes: GeneralMLNotes.tex
 	@pdflatex GeneralMLNotes
 
+Presentation: Presentation.tex
+	@latex Presentation
+	@bibtex Presentation
+	@latex Presentation
+	@pdflatex Presentation
+
 clean:
-	@rm `ls | egrep "aux|bbl|blg|dvi|log"`
+	@rm -f `ls | egrep "aux|bbl|blg|dvi|log|bcf|out|xml"`

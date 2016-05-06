@@ -1,5 +1,9 @@
 \documentclass{beamer}
+\usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
 \usepackage[round]{natbib}
+\usepackage{pgfpages}
+\setbeameroption{show notes}
+\setbeameroption{show notes on second screen=right}
 \setbeamertemplate{background canvas}[vertical shading][bottom=white,top=structure.fg!35]
 \setbeamertemplate{sidebar canvas left}[horizontal shading][left=white!40!black,right=black]
 \beamertemplatenavigationsymbolsempty
@@ -22,34 +26,81 @@
     \frametitle{Introduction}
     \begin{itemize}
         \item Less than ~10\% of the world's oceans are mapped compared to 99\% of Earth's topology mapped (low resolution)\footnote{http://www.wired.com/2009/06/nasa-satellite-maps-99-of-earths-topography/}
+        \item To map more of the world's oceans at a high resolution, we employ benthic habitat mapping techniques
+        \item Marine habitat mapping cuts across marine biology, geology, hydrography, oceanography, geophysics~\citep{cjbrown11}, along with habitat mapping
     \end{itemize}
 \end{frame}
-\note{herp derp}
+\note{
+    \begin{itemize}
+        \item 0.5 minutes
+        \item What is benthic habitat mapping? 
+        \item Benthic - ecological region at the lowest level of a body of water
+        \item benthos - things related to the benthic layer
+        \item Habitat mapping - based on a small amount of high resolution data, and a considerably larger amount of lower resolution data, a relationship is created to correlate the data in overlapping regions, which is then projected to the regions without the high resolution data to create a 'habitat map'
+        \item The high resolution data is generally actual sediment samples or organism samples at the benthos
+        \item Low resolution data is generally some sort of acoustic data representing basic properties of the seafloor
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Problem Statement}
     \begin{itemize}
-        \item Marine habitat mapping cuts across marine biology, geology, hydrography, oceanography, geophysics~\citep{cjbrown11}, along with habitat mapping
         \item Much research in benthic habitat mapping generates deterministic maps using as-is machine learning techniques/implementations
         \item We need to be able to monitor marine habitats on a large scale to assess human impact over time to be able to make informed management decisions
     \end{itemize}
 \end{frame}
+\note{1 minute}
 
 \begin{frame}
-    \frametitle{Solution}
+    \frametitle{Solution - Overview}
     \begin{itemize}
         \item We will use Gaussian Processes to obtain distributions of likely habitat maps
         \item Probabilistic approach allows us to state certainty about a particular mapped area
         \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
     \end{itemize}
 \end{frame}
+\note {2.5 minutes}
+
+\begin{frame}
+    \frametitle{Solution - Gaussian Processes}
+    \textbf{TODO} - a few slides providing an overview of Gaussian Processes here (may not include in the 10 minute presentation if time doesn't allow - will time once slides have been written out)
+\end{frame}
 
 \begin{frame}
     \frametitle{Results}
-    \begin{itemize}
-        \item stuff
-    \end{itemize}
+    We would like to compare the results obtainable from use of Gaussian Processes in generating habitat maps to those of more naive methods. Note that measurements are taken by averaging over 10-fold cross validations.
+
+    This first set of results is using 24 separate habitat classes as the labels.
+
+    \begin{tabular}{l | l | l}
+        Algorithm & F1 score & Accuracy \\
+        KNN (5) & 0.04823 &  0.14192 \\
+        Logistic Regression & 0.00900 & 0.17119 \\
+        Random Forest & 0.04960 &  0.15240 \\
+        SVM & 0.00890 & 0.17119 \\
+    \end{tabular}
+
 \end{frame}
+
+\begin{frame}
+    \frametitle{Results}
+    This second set of results is using a higher level mapping of the habitats created in collaboration with an expert - bringing the number of classes down to 5. The accuracy increases notably when the aggregation of visually matching habitat classes is performed.
+
+    \begin{tabular}{l | l | l}
+        Algorithm & F1 score & Accuracy \\
+        KNN (5) & 0.33278 & 0.62459 \\
+        Logistic Regression & 0.20285 & 0.682705 \\
+        Random Forest & 0.20283 & 0.68258 \\
+        SVM & 0.20284 & 0.68270 \\
+    \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+    These final two set of results are using G
+\end{frame}
+
+\note{2 minutes for all results}
 
 \begin{frame}
     \frametitle{Discussion and Analysis}
@@ -63,5 +114,7 @@
     \bibliographystyle{plainnat}
     \bibliography{Bibliography}
 \end{frame}
+
+\note{2 minutes}
 
 \end{document}

@@ -49,22 +49,36 @@
         \item We need to be able to monitor marine habitats on a large scale to assess human impact over time to be able to make informed management decisions
     \end{itemize}
 \end{frame}
-\note{1 minute}
+\note{
+    \begin{itemize}
+        \item 1 minute
+        \item Use of 'vanilla' algorithms such as random forests in ~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Solution - Overview}
     \begin{itemize}
-        \item We will use Gaussian Processes to obtain distributions of likely habitat maps
+            
         \item Probabilistic approach allows us to state certainty about a particular mapped area
         \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
     \end{itemize}
 \end{frame}
-\note {2.5 minutes}
+\note {
+    \begin{itemize}
+        \item 1 minute
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Solution - Gaussian Processes}
-    \textbf{TODO} - a few slides providing an overview of Gaussian Processes here (may not include in the 10 minute presentation if time doesn't allow - will time once slides have been written out)
+    \textbf{TODO} - (very) brief overview of what GPs are here, without going into the maths
 \end{frame}
+\note {
+    \begin{itemize}
+        \item 1.5 minutes
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Results}
@@ -81,6 +95,11 @@
     \end{tabular}
 
 \end{frame}
+\note{
+    \begin{itemize}
+        \item ~15 seconds just highlighting results here
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Results}
@@ -95,6 +114,11 @@
     \end{tabular}
 
 \end{frame}
+\note{
+    \begin{itemize}
+        \item ~15 seconds just highlighting results here
+    \end{itemize}
+}
 
 \begin{frame}
     These final two set of results are using Gaussian processes with the granular and aggregated habitat classes, respectively.
@@ -116,21 +140,40 @@
     \end{tabular}
 \end{frame}
 
-\note{2 minutes for all results}
+\note{
+    \begin{itemize}
+        \item 1.5 minutes  (~2 minute for results in total)
+        \item NOTE still all zeroes as I will see if I can put in any *actual* results rather than completely faking it as we were told
+        \item notably higher accuracies than with the previous methods for the granular and aggregated habitat classes respectively
+        \item \textbf{TODO} add fake data for *other* datasets?
+        \item \textbf{TODO} add times taken to run tests - important in terms of time/memory/etc tradeoffs
+    \end{itemize}
+}
 
 \begin{frame}
     \frametitle{Discussion and Analysis}
     \begin{itemize}
-        \item stuff
+        \item \textbf{TODO}
     \end{itemize}
 \end{frame}
 
+\note{
+    \begin{itemize}
+        \item 2 minutes
+        \item Compare (fake) results with ~\citet{bender12} and explain the improvement (or otherwise) on particular datasets
+        \item highlight (potentially) better results with one dataset, but not in another (e.g. o'hara bluffs having more variation than scott reef)
+    \end{itemize}
+}
+
+\begingroup
+\small
+% \tiny
 \begin{frame}
     \frametitle{Bibiolgraphy}
     \bibliographystyle{plainnat}
     \bibliography{Bibliography}
 \end{frame}
+\endgroup
 
-\note{2 minutes}
 
 \end{document}

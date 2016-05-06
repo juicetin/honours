@@ -22,6 +22,7 @@
 
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Introduction}
     \begin{itemize}
@@ -42,6 +43,7 @@
     \end{itemize}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PROBLEM STATEMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Problem Statement}
     \begin{itemize}
@@ -56,22 +58,35 @@
     \end{itemize}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Solution - Overview}
     \begin{itemize}
-            
         \item Probabilistic approach allows us to state certainty about a particular mapped area
-        \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
+        \item We will use Gaussian processes to make predictions, which provides a distribution of probable habitats for a given area
+        \item Two 'sets' of habitat classes were used - the original 24 labels, plus 5 aggregated labels
     \end{itemize}
 \end{frame}
+\begingroup
+\tiny
 \note {
     \begin{itemize}
         \item 1 minute
+        \item Complexities of marine habitats are still largely 'foreign' to us, and when used to make important decisions, absolute maps may not be appropriate or present \textit{enough} information - using a probabilistic approach allows us to state the certainty that a particular area is a certain habitat type and the species that live there
+        \item a more coarse mapping of the habitats created in collaboration with an expert
+        \item e.g. with labels 1-24, 1, 3, 5, 7 are condensed to one habitat, as they may be very similar visually, e.g. all sand with slight variations
+        \item this brought the number of classes down to 5. The accuracy increases notably when the aggregation of visually matching habitat classes is performed.
     \end{itemize}
 }
+\endgroup
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION - GPs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Solution - Gaussian Processes}
+    \begin{itemize}
+        \item Compared to more conventional supervised classification algorithms which require modeling around the chosen features, Gaussian processes instead look at the joint distribution across all features
+        \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
+    \end{itemize}
     \textbf{TODO} - (very) brief overview of what GPs are here, without going into the maths
 \end{frame}
 \note {
@@ -80,11 +95,14 @@
     \end{itemize}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Results}
-    We would like to compare the results obtainable from use of Gaussian Processes in generating habitat maps to those of more naive methods. Note that measurements are taken by averaging over 10-fold cross validations.
 
-    This first set of results is using 24 separate habitat classes as the labels.
+    \begin{itemize}
+        \item Using deterministic ML algorithms
+        \item This first set of results is using 24 separate habitat classes as the labels.
+    \end{itemize}
 
     \begin{tabular}{l | l | l}
         Algorithm & F1 score & Accuracy \\
@@ -97,13 +115,20 @@
 \end{frame}
 \note{
     \begin{itemize}
-        \item ~15 seconds just highlighting results here
+        \item 15 seconds just highlighting results here
+        \item We would like to compare the results obtainable from use of Gaussian Processes in generating habitat maps to those of more naive methods. Note that measurements are taken by averaging over 10-fold cross validations.
+        \item The accuracies don't break 20\%, and the f-scores, which are the average of the precision and recall, are considerably worse
     \end{itemize}
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Results}
-    This second set of results is using a higher level mapping of the habitats created in collaboration with an expert - bringing the number of classes down to 5. The accuracy increases notably when the aggregation of visually matching habitat classes is performed.
+    
+    \begin{itemize}
+        \item Using aggregated classes
+    \end{itemize}
 
     \begin{tabular}{l | l | l}
         Algorithm & F1 score & Accuracy \\
@@ -116,10 +141,13 @@
 \end{frame}
 \note{
     \begin{itemize}
-        \item ~15 seconds just highlighting results here
+        \item 15 seconds just highlighting results here
+        \item Results have improved considerably here - by a factor of 4-7 times for f-score, and 2-3 times for accuracy
     \end{itemize}
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     These final two set of results are using Gaussian processes with the granular and aggregated habitat classes, respectively.
 
@@ -150,21 +178,44 @@
     \end{itemize}
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DISCUSSION/ANALYSIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Discussion and Analysis}
     \begin{itemize}
-        \item \textbf{TODO}
+        \item Granular vs. aggregated classes
     \end{itemize}
 \end{frame}
 
+\begingroup
+\tiny
 \note{
     \begin{itemize}
         \item 2 minutes
+        \item The aggregated groups give considerably better results as there no longer needs to be a distinction between what are in some cases exceedingly similar classes of, for exapmle, sand
+    \end{itemize}
+}
+\endgroup
+
+\begin{frame}
+    \frametitle{Discussion and Analysis}
+    \begin{itemize}
+        \item TODO
+    \end{itemize}
+\end{frame}
+
+\begingroup
+\tiny
+\note{
+    \begin{itemize}
         \item Compare (fake) results with ~\citet{bender12} and explain the improvement (or otherwise) on particular datasets
         \item highlight (potentially) better results with one dataset, but not in another (e.g. o'hara bluffs having more variation than scott reef)
     \end{itemize}
 }
+\endgroup
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BIBLIO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begingroup
 \small
 % \tiny

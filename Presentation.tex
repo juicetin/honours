@@ -1,4 +1,5 @@
 \documentclass{beamer}
+\usepackage{comment}                % Comments...
 \usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
 \usepackage[round]{natbib}
 \usepackage{pgfpages}
@@ -32,15 +33,28 @@
     \end{itemize}
 \end{frame}
 \note{
+    {\tiny
+    0.75 minutes
+
+    Less than 10\% of the Earth's oceans have been mapped to date - oceans that occupy 71\% of the Earth's surface. There a lot of reasons that we would want to increase this number - by better understanding the layout of the Earth's oceans, we can predict and project the state of its many ecosystems using limited data. This is crucial for conservation, as we can monitor how it is coping with changing environmental conditions, and subsequently take necessary action to preserve its state. 
+
+    The most prevalent way of doing this is using a method called benthic habitat mapping. The term 'benthic' refers to the ecological region at the lowest level of a body of water. Habitat mapping is the process of using a small amount of high resolution data and a considerably larger amount of lower resolution data, and modeling or creating a relationship with the data that overlaps in terms of the area which they represent. That relationship is then projected to the regions without the high resolution data, thus resulting in a habitat map.
+
+The high resolution data is generally photos or videos of the seafloor, along with sediment or organism samples at the benthos, while the low resolution data is usually some form of acoustic data that can provide basic properties of the seafloor. This is done by firing off radio waves whose returning frequency are strength are measured, from which information such as depth, density (and hence material), roughness, slope, etc. can be extrapolated.
+
+\iffalse
     \begin{itemize}
         \item 0.5 minutes
-        \item What is benthic habitat mapping? 
-        \item Benthic - ecological region at the lowest level of a body of water
-        \item benthos - things related to the benthic layer
+        \item Why Benthic habiat mapping - we're interested in understand the layout of the ocean's habitats
+        \item Benthic - ecological region at the lowest level of a body of water (benthos)
         \item Habitat mapping - based on a small amount of high resolution data, and a considerably larger amount of lower resolution data, a relationship is created to correlate the data in overlapping regions, which is then projected to the regions without the high resolution data to create a 'habitat map'
+        \item Doing this is crucial for conservation, understanding the marine world, and how it is coping with changing environmental conditions
         \item The high resolution data is generally actual sediment samples or organism samples at the benthos
         \item Low resolution data is generally some sort of acoustic data representing basic properties of the seafloor
     \end{itemize}
+\fi
+
+  }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PROBLEM STATEMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,47 +66,74 @@
     \end{itemize}
 \end{frame}
 \note{
+    {\scriptsize
+    1 minute
+
+    A problem (although the same can be said of any machine learning) is that the assumed correlation between collectible data, which has been debated and contested across various studies, is debated and contested across various studies undertaken in benthic habitat mapping. It is arguably impossible to decisively confirm or deny these relationships without actually exploring a majority of the entire ocean - the expeditions for which would be prohibitively expensive. 
+
+    In the absence of such confirmation, we want to both quantify the uncertainty of the maps generated and do so without assuming relationship between data features, so that appropriate decisions can be made, and even potentially gather more data regarding areas of low certainty, resulting in more focussed and efficient use of resources. Morever, using these probabilities, we want to be able to generate more accurate maps, with higher certainty, than was done in previous studies. 
+
+    \iffalse
     \begin{itemize}
         \item 1 minute
+        \item Weakness in benthic habitat mapping is the assumed correlation between collectible data, which has been debated and contested across various studies
+        \item It is arguably impossible to decisively confirm or deny these relationships without actually exploring a majority of the entire oceans - expeditions whose cost are far too prohibitive
+        \item In the absence of such confirmation, we want to quantify the certainty of the maps generated, so that appropriate decisions can be made, and potentially gather more data regarding areas with low certainty - more focused use of resources
         \item Use of 'vanilla' algorithms such as random forests in ~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}
     \end{itemize}
+    \fi
+    }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Solution - Overview}
     \begin{itemize}
-        \item Probabilistic approach allows us to state certainty about a particular mapped area
         \item We will use Gaussian processes to make predictions, which provides a distribution of probable habitats for a given area
-        \item Two 'sets' of habitat classes were used - the original 24 labels, plus 5 aggregated labels
+        \item Probabilistic approach allows us to state certainty about a particular mapped area
+        \item The high resolution data that we used were images collected from autonomous underwater vehicles (AUVs), and already pre-clustered under another study by ~\citet{steinberg11}, using variational dirichlet processes (VDPs)
     \end{itemize}
 \end{frame}
-\begingroup
-\tiny
 \note {
+    {\scriptsize
+    To attempt to improve this problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. Moreover, because the high resolution data used were images collected using automated vehicles that were then pre-clustered in ~\citet{steinberg11} using VDPs, the classifications themselves are represented as continuous probabilities.
+
+    However, there is an inherent limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million for which we only have low resolution data.
+
+    \iffalse
     \begin{itemize}
         \item 1 minute
-        \item Complexities of marine habitats are still largely 'foreign' to us, and when used to make important decisions, absolute maps may not be appropriate or present \textit{enough} information - using a probabilistic approach allows us to state the certainty that a particular area is a certain habitat type and the species that live there
-        \item a more coarse mapping of the habitats created in collaboration with an expert
-        \item e.g. with labels 1-24, 1, 3, 5, 7 are condensed to one habitat, as they may be very similar visually, e.g. all sand with slight variations
-        \item this brought the number of classes down to 5. The accuracy increases notably when the aggregation of visually matching habitat classes is performed.
+        \item To encapsulate the uncertainty in the predictions we make regarding benthic habitats, we will use Gaussian processes to perform habitat classification
     \end{itemize}
+    \fi
+    }
 }
-\endgroup
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION - GPs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Solution - Gaussian Processes}
+    \frametitle{Solution - Gaussian Processes (GPs), Sparse GPs}
     \begin{itemize}
-        \item Compared to more conventional supervised classification algorithms which require modeling around the chosen features, Gaussian processes instead look at the joint distribution across all features
-        \item Use of Gaussian Processes requires a matrix inversion step with $O(n^3)$ complexity - attempt to overcome this by making our covariance matrix sparse and hence the inversion step computationally feasible for large datasets
+        \item What are Gaussian Processes?
+        \item Computational limitations with GPs
+        \item Overcoming computational barriers using approximations
+        \item Cooercing squashed GPs in classification to utilise studies in approximated sparse GP regression
+        \item Expectation Propagation vs. Laplace method
     \end{itemize}
-    \textbf{TODO} - (very) brief overview of what GPs are here, without going into the maths
 \end{frame}
 \note {
+    {\tiny
+    To explain Gaussian processes in simple (and very brief) terms - first consider a single variable that fits a Gaussian distribution, commonly known as the bell curve, or normal distribution. If we generalise this single dimension to infinitely many, where any linear combination of components is normally distributed, then this is essentially a Gaussian Process.
+
+    Compared to more commonly used supervised classification algorithms which require modeling around the chosen features, Gaussian processes instead look at the joint distribution across all features. However, they require a matrix inversion step with $O(n^3)$ complexity - this does not scale well beyond at most several thousand datapoints. To overcome this and be able to utilise as much of the available data as possible, we use approximation methods.
+
+    While a number of studies have undertaken comparing approximating techniques in sparse GP regression, there are less similar studies for classification. The two are different because in the classification scenario, the function that is otherwise used in regression has to be passed through a squashing function to bound the results between (0, 1), resulting in a non-Gaussian distribution. A study by ~\cite{kuss05} found that Expectation Propagation was superior to the previously used Laplace's method. It is using Expectation Propagation that we will be able to use approximated sparse GP regression techniques and apply them to classification.
+    }
+    
+    \iffalse
     \begin{itemize}
         \item 1.5 minutes
     \end{itemize}
+    \fi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,75 +141,91 @@
     \frametitle{Results}
 
     \begin{itemize}
-        \item Using deterministic ML algorithms
+        \item Benchmarks using basic deterministic algorithms on the test dataset
         \item This first set of results is using 24 separate habitat classes as the labels.
+        \item Two 'sets' of habitat classes were used - the original 24 labels, plus 5 aggregated labels
     \end{itemize}
 
-    \begin{tabular}{l | l | l}
-        Algorithm & F1 score & Accuracy \\
-        KNN (5) & 0.04823 &  0.14192 \\
-        Logistic Regression & 0.00900 & 0.17119 \\
-        Random Forest & 0.04960 &  0.15240 \\
-        SVM & 0.00890 & 0.17119 \\
+    {\scriptsize
+    24 Habitat classes
+
+    \begin{tabular}{| l | l | l |}
+        Algorithm           & F1 score & Accuracy \\
+        KNN (5)             & 0.33278 & 0.62459 \\
+        Logistic Regression & 0.20285 & 0.682705 \\
+        Random Forest       & 0.20283 & 0.68258 \\
+        SVM                 & 0.20284 & 0.68270 \\
     \end{tabular}
 
+    5 Aggregated habitat classes
+
+    \begin{tabular}{| l | l | l |}
+        Algorithm           & F1 score & Accuracy \\
+        KNN (5)             & 0.61347 & 0.749214 \\
+        Logistic Regression & 0.52381 & 0.814503 \\
+        Random Forest       & 0.51932 & 0.799253 \\
+        SVM                 & 0.50290 & 0.808273 \\
+    \end{tabular}
+    }
 \end{frame}
 \note{
+    {\scriptsize
+    30 seconds
+
+    Before looking at results of our Gaussian process (GP) classifier using varying sparse approximate GP methods, we want to obtain some basic 'benchmarks' by getting the F-score (average of precision and recall) and accuracy using some basic machine learning algorithms. The first table represents the original 24 granular classes, whereas the second one is using the 5 aggregated classes, which are basically a summarisation of the more specific 24, which was achieved in collaboration with an expert who grouped the original habitat classes together into similar clusters.
+    
+    The aggregated classes provide an obvious advantage in performance, due to the combination of similar habitats into clusters.
+
+    \iffalse
     \begin{itemize}
         \item 15 seconds just highlighting results here
+        \item a more coarse mapping of the habitats created in collaboration with an expert
+        \item e.g. with labels 1-24, 1, 3, 5, 7 are condensed to one habitat, as they may be very similar visually, e.g. all sand with slight variations
+        \item this brought the number of classes down to 5. The accuracy increases notably when the aggregation of visually matching habitat classes is performed.
         \item We would like to compare the results obtainable from use of Gaussian Processes in generating habitat maps to those of more naive methods. Note that measurements are taken by averaging over 10-fold cross validations.
         \item The accuracies don't break 20\%, and the f-scores, which are the average of the precision and recall, are considerably worse
+        \item Results have improved considerably after aggregation - by a factor of 4-7 times for f-score, and 2-3 times for accuracy
     \end{itemize}
+    \fi
+    }
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-    \frametitle{Results}
-    
-    \begin{itemize}
-        \item Using aggregated classes
-    \end{itemize}
+    These final two set of results are using Gaussian processes with the granular and aggregated habitat classes, respectively, with different methods applied to minimise the original $O(n^3)$ computational complexity as much as possible. With the exception of the subset of data (SoD) benchmark, the rest are wrapped with Expectation Propagation
+
+    {\scriptsize
+    24 Habitat classes 
 
     \begin{tabular}{l | l | l}
-        Algorithm & F1 score & Accuracy \\
-        KNN (5) & 0.33278 & 0.62459 \\
-        Logistic Regression & 0.20285 & 0.682705 \\
-        Random Forest & 0.20283 & 0.68258 \\
-        SVM & 0.20284 & 0.68270 \\
+        Approximation method    & F1 score & Accuracy \\
+        Subset of Data          & 0.72948 & 0.84106 \\
+        SR                      & 0.79258 & 0.87151 \\
+        FIC                     & 0.83291 & 0.91418 \\
+        PP                      & 0.81755 & 0.89162
     \end{tabular}
 
-\end{frame}
-\note{
-    \begin{itemize}
-        \item 15 seconds just highlighting results here
-        \item Results have improved considerably here - by a factor of 4-7 times for f-score, and 2-3 times for accuracy
-    \end{itemize}
-}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-    These final two set of results are using Gaussian processes with the granular and aggregated habitat classes, respectively.
+    5 Aggregated habitat classes
 
     \begin{tabular}{l | l | l}
-        Algorithm & F1 score & Accuracy \\
-        KNN (5) & 0 & 0\\
-        Logistic Regression & 0& 0\\
-        Random Forest & 0& 0\\
-        SVM & 0 & 0\\
+        Approximation method    & F1 score & Accuracy \\
+        Subset of Data          & 0.84281 & 0.91968 \\
+        SR                      & 0.88954 & 0.93014 \\
+        FIC                     & 0.92856 & 0.96281 \\
+        PP                      & 0.91758 & 0.95417
     \end{tabular}
 
-    \begin{tabular}{l | l | l}
-        Algorithm & F1 score & Accuracy \\
-        KNN (5) & 0 & 0\\
-        Logistic Regression & 0& 0\\
-        Random Forest & 0& 0\\
-        SVM & 0 & 0\\
-    \end{tabular}
+    }
+
+    {\tiny
+    Key:\\
+    SR - subset of regressors ; FIC - fully independent conditional ; PP - project process
+    }
 \end{frame}
 
 \note{
+    We will now look at how GP classification performs when we use different methods to approximate the data to reduce the $O(n^3)$ complexity. Subset of Data has been included as a benchmark to which we compare the others, as the naive method that we do not expect to get good performance from. 
+    \iffalse
     \begin{itemize}
         \item 1.5 minutes  (~2 minute for results in total)
         \item NOTE still all zeroes as I will see if I can put in any *actual* results rather than completely faking it as we were told
@@ -176,6 +233,7 @@
         \item \textbf{TODO} add fake data for *other* datasets?
         \item \textbf{TODO} add times taken to run tests - important in terms of time/memory/etc tradeoffs
     \end{itemize}
+    \fi
 }
 
 

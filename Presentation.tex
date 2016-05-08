@@ -1,5 +1,9 @@
 \documentclass{beamer}
+\usepackage[export]{adjustbox}
 \usepackage{comment}                % Comments...
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\graphicspath{ {/home/justinting/programming/jt-honours/images/} }
 \usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
 \usepackage[round]{natbib}
 \usepackage{pgfpages}
@@ -26,21 +30,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Introduction}
-    \begin{itemize}
-        \item Less than ~10\% of the world's oceans are mapped compared to 99\% of Earth's topology mapped (low resolution)\footnote{http://www.wired.com/2009/06/nasa-satellite-maps-99-of-earths-topography/}
-        \item To map more of the world's oceans at a high resolution, we employ benthic habitat mapping techniques
-        \item Marine habitat mapping cuts across marine biology, geology, hydrography, oceanography, geophysics~\citep{cjbrown11}, along with habitat mapping
-    \end{itemize}
+    % \begin{wrapfigure}{1}{0.3\textwidth}
+    \centering
+    \includegraphics[scale=0.2,center]{oceans-mapped.jpg}\footnote{{\tiny Copley, J. (2016). » Mapping the deep, and the real story behind the “95\% unexplored” oceans. [online] Moocs.southampton.ac.uk.}}
+    % \end{wrapfigure}
 \end{frame}
 \note{
-    {\tiny
+    NOTE: These are the presenter notes that won't be seen by the audience during the presentation. Special software written for LaTeX-beamer slides will be used during the presentation to achieve this.
+
     0.75 minutes
 
     Less than 10\% of the Earth's oceans have been mapped to date - oceans that occupy 71\% of the Earth's surface. There a lot of reasons that we would want to increase this number - by better understanding the layout of the Earth's oceans, we can predict and project the state of its many ecosystems using limited data. This is crucial for conservation, as we can monitor how it is coping with changing environmental conditions, and subsequently take necessary action to preserve its state. 
-
-    The most prevalent way of doing this is using a method called benthic habitat mapping. The term 'benthic' refers to the ecological region at the lowest level of a body of water. Habitat mapping is the process of using a small amount of high resolution data and a considerably larger amount of lower resolution data, and modeling or creating a relationship with the data that overlaps in terms of the area which they represent. That relationship is then projected to the regions without the high resolution data, thus resulting in a habitat map.
-
-The high resolution data is generally photos or videos of the seafloor, along with sediment or organism samples at the benthos, while the low resolution data is usually some form of acoustic data that can provide basic properties of the seafloor. This is done by firing off radio waves whose returning frequency are strength are measured, from which information such as depth, density (and hence material), roughness, slope, etc. can be extrapolated.
 
 \iffalse
     \begin{itemize}
@@ -53,13 +53,28 @@ The high resolution data is generally photos or videos of the seafloor, along wi
         \item Low resolution data is generally some sort of acoustic data representing basic properties of the seafloor
     \end{itemize}
 \fi
+}
 
-  }
+\begin{frame}
+    \frametitle{Introduction (cont.)}
+    \begin{itemize}
+        \item To map more of the world's oceans at a high resolution, we employ benthic habitat mapping techniques
+        \item Combine sparse high resolution data with large(r) volumes of low resolution data
+        \item Marine habitat mapping cuts across marine biology, geology, hydrography, oceanography, geophysics~\citep{cjbrown11}, along with machine learning
+    \end{itemize}
+\end{frame}
+\note{
+
+    The most prevalent way of doing this is using a method called benthic habitat mapping. The term 'benthic' refers to the ecological region at the lowest level of a body of water. Habitat mapping is the process of using a small amount of high resolution data and a considerably larger amount of lower resolution data, and modeling or creating a relationship with the data that overlaps in terms of the area which they represent. That relationship is then projected to the regions without the high resolution data, thus resulting in a habitat map.
+
+The high resolution data is generally photos or videos of the seafloor, along with sediment or organism samples at the benthos, while the low resolution data is usually some form of acoustic data that can provide basic properties of the seafloor. This is done by firing off radio waves whose returning frequency are strength are measured, from which information such as depth, density (and hence material), roughness, slope, etc. can be extrapolated.
+
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PROBLEM STATEMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Problem Statement}
+    \includegraphics[scale=0.3,center]{some_marine_stuff.jpg}
     \begin{itemize}
         \item Much research in benthic habitat mapping generates deterministic maps using as-is machine learning techniques/implementations
         \item We need to be able to monitor marine habitats on a large scale to assess human impact over time to be able to make informed management decisions
@@ -88,14 +103,16 @@ The high resolution data is generally photos or videos of the seafloor, along wi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
     \frametitle{Solution - Overview}
+    \includegraphics[scale=0.15,center]{scott_bathy.jpg}
     \begin{itemize}
-        \item We will use Gaussian processes to make predictions, which provides a distribution of probable habitats for a given area
+        \item We will use Gaussian processes to make predictions on all the low resolution data, which provides a distribution of probable habitats for a given area
+        \item 7 million bathymetry data points without matching high resolution data
         \item Probabilistic approach allows us to state certainty about a particular mapped area
-        \item The high resolution data that we used were images collected from autonomous underwater vehicles (AUVs), and already pre-clustered under another study by ~\citet{steinberg11}, using variational dirichlet processes (VDPs)
+        \item High resolution images were clustered into habitat classes using Variational Dirichlet Processes, an unsupervised method
     \end{itemize}
 \end{frame}
 \note {
-    {\scriptsize
+    {
     To attempt to improve this problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. Moreover, because the high resolution data used were images collected using automated vehicles that were then pre-clustered in ~\citet{steinberg11} using VDPs, the classifications themselves are represented as continuous probabilities.
 
     However, there is an inherent limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million for which we only have low resolution data.
@@ -107,6 +124,27 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     \end{itemize}
     \fi
     }
+}
+
+\begin{frame}
+    \frametitle{Solution - Overview}
+    \includegraphics[scale=0.4,center]{clusters.jpg}
+
+    ~\citet{bender12}
+    \begin{itemize}
+        \item The high resolution data that we used were images collected from autonomous underwater vehicles (AUVs), and already pre-clustered under another study by ~\citet{steinberg11}, using variational dirichlet processes (VDPs)
+    \end{itemize}
+    \note{
+        The clusters here are an example of the unsupervised clustering of the high resolution images, using the same method that was used to cluster our data.
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Solution - Overview}
+    \includegraphics[scale=0.6,center]{scott_location.jpg}
+\end{frame}
+\note{
+    The data was all collected from Scott Reef, a lagoon off the coast of Western Australia
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLUTION - GPs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,7 +188,7 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     24 Habitat classes
 
     \begin{tabular}{| l | l | l |}
-        Algorithm           & F1 score & Accuracy \\
+        Algorithm           & F1 score & Accuracy \\\hline
         KNN (5)             & 0.33278 & 0.62459 \\
         Logistic Regression & 0.20285 & 0.682705 \\
         Random Forest       & 0.20283 & 0.68258 \\
@@ -160,7 +198,7 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     5 Aggregated habitat classes
 
     \begin{tabular}{| l | l | l |}
-        Algorithm           & F1 score & Accuracy \\
+        Algorithm           & F1 score & Accuracy \\\hline
         KNN (5)             & 0.61347 & 0.749214 \\
         Logistic Regression & 0.50381 & 0.814503 \\
         Random Forest       & 0.50932 & 0.819253 \\
@@ -198,7 +236,7 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     24 Habitat classes 
 
     \begin{tabular}{l | l | l}
-        Approximation method    & F1 score & Accuracy \\
+        Approximation method    & F1 score & Accuracy \\\hline
         Subset of Data          & 0.72948 & 0.84106 \\
         SR                      & 0.79258 & 0.87151 \\
         PP                      & 0.81755 & 0.89162 \\
@@ -208,7 +246,7 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     5 Aggregated habitat classes
 
     \begin{tabular}{l | l | l}
-        Approximation method    & F1 score & Accuracy \\
+        Approximation method    & F1 score & Accuracy \\\hline
         Subset of Data          & 0.84281 & 0.91968 \\
         SR                      & 0.88954 & 0.93014 \\
         PP                      & 0.91758 & 0.95417 \\

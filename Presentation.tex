@@ -162,9 +162,9 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     \begin{tabular}{| l | l | l |}
         Algorithm           & F1 score & Accuracy \\
         KNN (5)             & 0.61347 & 0.749214 \\
-        Logistic Regression & 0.52381 & 0.814503 \\
-        Random Forest       & 0.51932 & 0.799253 \\
-        SVM                 & 0.50290 & 0.808273 \\
+        Logistic Regression & 0.50381 & 0.814503 \\
+        Random Forest       & 0.50932 & 0.819253 \\
+        SVM                 & 0.50290 & 0.818273 \\
     \end{tabular}
     }
 \end{frame}
@@ -201,8 +201,8 @@ The high resolution data is generally photos or videos of the seafloor, along wi
         Approximation method    & F1 score & Accuracy \\
         Subset of Data          & 0.72948 & 0.84106 \\
         SR                      & 0.79258 & 0.87151 \\
-        FIC                     & 0.83291 & 0.91418 \\
-        PP                      & 0.81755 & 0.89162
+        PP                      & 0.81755 & 0.89162 \\
+        FIC                     & 0.83291 & 0.91418
     \end{tabular}
 
     5 Aggregated habitat classes
@@ -211,20 +211,22 @@ The high resolution data is generally photos or videos of the seafloor, along wi
         Approximation method    & F1 score & Accuracy \\
         Subset of Data          & 0.84281 & 0.91968 \\
         SR                      & 0.88954 & 0.93014 \\
-        FIC                     & 0.92856 & 0.96281 \\
-        PP                      & 0.91758 & 0.95417
+        PP                      & 0.91758 & 0.95417 \\
+        FIC                     & 0.92856 & 0.96281 
     \end{tabular}
 
     }
 
     {\tiny
     Key:\\
-    SR - subset of regressors ; FIC - fully independent conditional ; PP - project process
+    SR - subset of regressors ; FIC - fully independent conditional ; PP - projected process
     }
 \end{frame}
 
 \note{
     We will now look at how GP classification performs when we use different methods to approximate the data to reduce the $O(n^3)$ complexity. Subset of Data has been included as a benchmark to which we compare the others, as the naive method that we do not expect to get good performance from. 
+
+    The three methods used are subset of regressors, fully independent conditional, and projected process, a subset of the methods that can be found from ~\citet{candela05}'s 'A Unifying View of Sparse Gaussian Process Regression'.
     \iffalse
     \begin{itemize}
         \item 1.5 minutes  (~2 minute for results in total)
@@ -242,47 +244,41 @@ The high resolution data is generally photos or videos of the seafloor, along wi
     \frametitle{Discussion and Analysis}
     \begin{itemize}
         \item Granular vs. aggregated classes
+        \item Performance vs. other GP classification studies
+            \begin{itemize}
+                \item ~\citet{bender12} achieves higher accuracy only using subset of data - why?
+            \end{itemize}
+        \item Testing on more (inherently different) datasets
     \end{itemize}
 \end{frame}
 
-\begingroup
-\tiny
 \note{
+    {\tiny
+    2 minutes
+
+    We have used approximated sparse Gaussian Processes to classify benthic habitats into habitat classes, and tested a number of ways in which to perform the approximation. All of them were found to perform considerably better than the more popular and widely used methods of SVMs, Random Forests, Logistic Regression, and kNN. Of the approximation techniques, fully independent conditionals performed the best.
+
+    The first thing to take note of is the performance of the algorithms when classifying the aggregated classes, compared to the more granular ones. Although the reason is fairly obvious, is it still appropriate to point out that this is due to the variational dirichlet processes generating habitat classes which are very similar - and once consolidated by an expert, better represented the segregation a marine expert would consider appropriate.
+
+    Another interesting point is that in ~\cite{bender12}, only subset of data is used in their probabilistic least target least squares classification, similarly using approximated Gaussian Processes, and yet achieved over 98\% accuracy. Given the distribution of data and habitat boundaries in the dataset of the two studies, Scott Reef and O'Hara Bluff respectively, the former has less distinct boundaries, with different habitats overlapping with the next quite often, whereas O'Hara Bluff has a wider variety of unique/distinct habitats from their adjacent ones, and with clearer habitat boundaries.
+
+    Moreover, <insert here> has found that different techniques have worked better on certain datasets. Thus, to get a more comprehensive performance review of the techniques explored in this paper, a range of datasets from entirely different habitats need to be analysed in order to get the full picture.
+
+    \iffalse
     \begin{itemize}
         \item 2 minutes
-        \item The aggregated groups give considerably better results as there no longer needs to be a distinction between what are in some cases exceedingly similar classes of, for exapmle, sand
+        \item The aggregated groups give considerably better results as there no longer needs to be a distinction between what are in some cases similar classes of, for example, sand 
     \end{itemize}
+    \fi
+    }
 }
-\endgroup
-
-\begin{frame}
-    \frametitle{Discussion and Analysis}
-    \begin{itemize}
-        \item TODO
-    \end{itemize}
-\end{frame}
-
-\begingroup
-\tiny
-\note{
-    \begin{itemize}
-        \item Compare (fake) results with ~\citet{bender12} and explain the improvement (or otherwise) on particular datasets
-        \item highlight (potentially) better results with one dataset, but not in another (e.g. o'hara bluffs having more variation than scott reef)
-    \end{itemize}
-}
-\endgroup
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BIBLIO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begingroup
-\small
-% \tiny
 \begin{frame}
     \frametitle{Bibiolgraphy}
     \bibliographystyle{plainnat}
     \bibliography{Bibliography}
 \end{frame}
-\endgroup
 
 
 \end{document}

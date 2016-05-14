@@ -33,23 +33,29 @@
 
 \begin{multicols}{2}
 
-\section{Abstract}
-\textit{(0.5 column = 0.25 page)}
+    \section{Abstract}
+    \textit{(0.5 column = 0.25 page)}
 
-Earth's oceans cover 70\% of its surface, but only less than 10\% of the Earth's oceans have been explored to date\footnote{Oceanservice.noaa.gov. (2016). How much of the ocean have we explored?. [online] Available at: http://oceanservice.noaa.gov/facts/exploration.html}. There have been increasing efforts over the past few decades to map out these unexplored areas to monitor marine ecosystems to be able to track the state of them over time for management, preseveration, etc. purposes. The process used is called benthic habitat mapping, which is the predicting of what exists at the bottom of a body of water. Most recent studies looking to create benthic habitat maps share some basic key steps - acoustic data is used to estimate properties about the surface of the water, which are then mapped to, using machine learning algorithms, \textit{in situ} data such as still images, videos, or samples of the area in question. It is the relationship which is inferred between the different data sets inferred using machine learning techniques that varies between studies.
+    Earth's oceans cover 70\% of its surface, but only less than 10\% of the Earth's oceans have been explored to date\footnote{Oceanservice.noaa.gov. (2016). How much of the ocean have we explored?. [online] Available at: http://oceanservice.noaa.gov/facts/exploration.html}. There have been increasing efforts over the past few decades to map out these unexplored areas to monitor marine ecosystems to be able to track the state of them over time for management, preseveration, etc. purposes. The process used is called benthic habitat mapping, which is the predicting of what exists at the bottom of a body of water. Most recent studies looking to create benthic habitat maps share some basic key steps - acoustic data is used to estimate properties about the surface of the water, which are then mapped to, using machine learning algorithms, \textit{in situ} data such as still images, videos, or samples of the area in question. It is the relationship which is inferred between the different data sets inferred using machine learning techniques that varies between studies.
 
-\section{Introduction}
-\textit{(1 page)}
+    \section{Introduction}
+    \textit{(1 page)}
 
-\section{Problem Statement}
-\textit{(1 columns = 0.5 page)}
+    \section{Problem Statement}
+    \textit{(1 columns = 0.5 page)}
 
-Much of the research done in benthic habitat mapping generates deterministic maps using untuned (as-is) machine learning techniques and implementations. This is potentialy an issue (although the same can be said of most problems using such machine learning methods) because the resultant maps make broad conclusions and assumptions across the different features used to create them, such as the direct relationship between the topography of an area of benthos and what resides there (\textbf{CITE}), among others which are contested between different sudies. It is arguably impossible to decisively confirm or deny these relationships without actually exploring a majority of the entire ocean - the expeditions for which would be prohibitively expensive.
+    Much of the research done in benthic habitat mapping generates deterministic maps using untuned (as-is) machine learning techniques and implementations. This is potentially an issue (although the same can be said of most problems using such machine learning methods) because the resultant maps make broad conclusions and assumptions across the different features used to create them, such as the direct relationship between the topography of an area of benthos and what resides there (\textbf{CITE}), among others which are contested between different sudies. It is arguably impossible to decisively confirm or deny these relationships without actually exploring a majority of the entire ocean - the expeditions for which would be prohibitively expensive.
 
-In the absence of such confirmation, we want to both quantify the uncertainty of the maps generated and be able to do so without explicitly assuming relationships between data features. Using a method that achieves this and that can state the certainty of its predictions, it would allow augmentation of experts' decision making to be better informed, and allowing management bodies to more efficiently use their resources in a more focussed manner. Moreover, deterministic methods have generally produced mixed results, while the more state of the art techniques have been limited in the data they could use due to computational constraints, pointing towards a need to be able to bring more complex techniques together with all available data to create more accurate maps than have been previously possible. This would allow us to better monitor, assess marine habitats, and be able to assess human impact which will allow decisions to be made on steps to take in terms of preservation, etc.
+    In the absence of such confirmation, we want to both quantify the uncertainty of the maps generated and be able to do so without explicitly assuming relationships between data features. Using a method that achieves this and that can state the certainty of its predictions, it would allow augmentation of experts' decision making to be better informed, and allowing management bodies to more efficiently use their resources in a more focussed manner. Moreover, deterministic methods have generally produced mixed results, while the more state of the art techniques have been limited in the data they could use due to computational constraints, pointing towards a need to be able to bring more complex techniques together with all available data to create more accurate maps than have been previously possible. This would allow us to better monitor, assess marine habitats, and be able to assess human impact which will allow decisions to be made on steps to take in terms of preservation, etc.
 
-\section{Algorithm/Solution}
-\textit{(1 page)}
+    \section{Algorithm/Solution}
+    \textit{(1 page)}
+
+    \begin{enumerate}
+        \item What are Gaussian Processes
+        \item What is Gaussian Process Regression
+        \item What is Gaussian Process Classification
+    \end{enumerate}
 
 To attempt to improve this problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. Moreover, because the high resolution data used were images collected using automated vehicles that were then pre-clustered in ~\citet{steinberg11} using Variational Dirichlet Processes, the classifications themselves are also represented as continuous probabilities.
 

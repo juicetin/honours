@@ -125,6 +125,14 @@
 
     \subsection{Sparse Gaussian Proccess Approximation} However, there is an inherit limitation in the naive use of Gaussian proceses in that its computational complexity is $O(n^3)$ due to the covariance matrix inversion step - meaning that even our relatively 'small' training dataset of 16,000 data points is already computationally intractable ($O(4,000,000,000,000)$) without taking steps to reduce this computational requirement.
 
+    \subsubsection{Subset of Regressors}
+    
+    \subsubsection{Projected Process Approximation} 
+
+    \subsubsection{Fully Independent Training Conditional (FITC) Apprxoximation}
+
+    asdf
+
 %     However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
 % 
 % To explain Gaussian processes in simple terms - first consider a single variable that fits a Gaussian distribution, commonly known as the bell curve, or normal distribution. If we generalise this single dimension to infinitely many, where any linear combination of components is normally distributed, then this is what we call a Gaussian Process.

@@ -88,26 +88,6 @@
 
     \includegraphics[scale=0.45,left]{gaussian.jpg}
 
-	% \begin{tikzpicture}[
-	% 		every pin edge/.style={<-},
-	% 	every pin/.style={fill=yellow!50,rectangle,rounded corners=3pt,font=\small}]
-	% \begin{axis}[every axis plot post/.append style={
-	% 		mark=none,domain=-3:3,samples=50,smooth},
-	% 	clip=false,
-	% 	axis y line=none,
-	% 	axis x line*=bottom,
-	% 	ymin=0,
-	% 	xtick=\empty,
-	% 	]
-	% 	% \addplot {\gauss{0}{0.5}};
-	% 	\addplot {\gauss{0}{1}};
-	% 	% \node[pin=70:{$\hat{\theta}_1$}] at (axis cs:0.57,0.5) {};
-	% 	\node[pin=70:{$\hat{\theta}_2$}] at (axis cs:1,0.25) {};
-	% 	\node[pin=270:{$\theta=E(\hat{\theta}_1)=E(\hat{\theta}_2)$}] at (axis cs:0,0) {};
-	% 	\draw[dashed] (axis description cs:0.5,0) -- (axis description cs:0.5,0.92);
-	% \end{axis}
-	% \end{tikzpicture} 
-
     This diagram represents a single variable with a Gaussian distribution. If, for a particular domain, there existed some infinitely large number of variables, where not only does every single one fit a Gaussian distribution, but any \textit{linear} combination of all variables also fit a Gaussian distribution We can see that this is useful by first considering that in some arbitrarily large feature space, we only have a limited number of datapoints (as opposed to some infinite number presenting all data possible in a domain, which would remove the need for machine learning in any case, as we would then be able to deduce the function which described the entire dataset) - for which the 'impossible' full dataset is represented by some function $f(x)$. If we then try to infer properties of the Gaussian Process by querying only on the data points that we have, the resulting properties would be the same as if we queried the true function itself, using only the same finite set of points. In summary, this means that Gaussian Processes can be used to represent data without needing to force a particular family of functions, e.g. linear functions, to be able to make predictions. ~\citep{rasmussen06}.
 
     \paragraph{Kernel Function} In machine learning, kernels essentially define the similarity between datapoints - in other words, the function that governs the elements of the covariance matrix, which is an $n \textrm{x} n$ matrix representing the 'similarity' between every point with every other point, where the element $k_{ij}$ at the coordinate $(i,j)$ of the matrix represents how 'similar' those two points are as stated by the kernel. The kernel that we will be using is the squared exponential $$ k_{(x, x')} = \sigma^2 exp\left(-\frac{(x-x')^2}{2l^2}\right) + \sigma^2_{noise}I$$ where $l$, the lengthscale, describes the \textit{smoothness} of the function, and can be tuned as desired.
@@ -138,7 +118,9 @@
     \includegraphics[scale=0.45,left]{gp-inference.jpg}
 
     \paragraph{Gaussian Process Classification} 
-    To perform Gaussian Process classification, we consider the 'one vs all' (OvA) approach where we build $n$ ($n$ being the number of distinct classes) binary classifiers, where the probabilities across all the $n$ classes are combined to allow decisions to be made regarding the decided label for a particular datapoint. However, each of the individual classifiers with only binary $(0, 1)$ labels do not have Gaussian distribution, requiring some form of approximation to integrate over non-Gaussian values to obtain the estimated Gaussians. To do this, we employ the method of expectation propagation as providing the most accurate posteriors compared to other alternatives ~\citep{nickisch08}.
+    To perform Gaussian Process classification, we consider the 'one vs all' (OvA) approach where we build $n$ ($n$ being the number of distinct classes) binary classifiers, where the probabilities across all the $n$ classes are combined to allow decisions to be made regarding the decided label for a particular datapoint. However, each of the individual classifiers with only binary $(0, 1)$ labels do not have Gaussian distribution, requiring some form of approximation to integrate over non-Gaussian values to obtain the estimated Gaussians. To do this, we employ the method of expectation propagation as providing the most accurate posteriors compared to other alternatives ~\citep{nickisch08}. 
+
+    
     
 %     However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
 % 

@@ -2,6 +2,7 @@
 \usepackage[margin=0.7in]{geometry}
 \usepackage{multicol}               % Columns
 \usepackage{tabularx}               % Extra table functionality
+\usepackage{amssymb}
 \usepackage{amsmath}
 \setlength{\skip\footins}{1.0cm}    % More space between text and footnotes
 \usepackage{color}
@@ -95,7 +96,7 @@
     \subsection{Gaussian Process Regression} From the above description, we can see that GPs do not inherently support discrete labels, due to their non-Gaussian distribution - we need to first perform regression, and coerce the result of this into a form that can be used to classify inputs. To perform GP regression, consider the datapoints:
     $$ \textrm{set } a = x_1, ... , x_l, \textrm{set } b = x_{l+1}, ... , x_n $$
     $$ \textrm{and similarly for } y: y_1, ... , y_l, y_{l+1}, ... , y_n $$
-    where the former group represent data for which we do not have the corresponding ($y$) values, the latter group represents the finite amount of data and corresponding values we \textit{do} have. We then state that all these datapoints exist in some Gaussian Process $$ (Z_x) = GP(\mu, K) $$ on a set $S$ of all possible data. To perform inference on \lq unknown \rq data points using known ones, we want to get the posterior predictive distribution on $y_1, ... , y_l$ given $y_{l+1}, ... , y_n$. Note that the $y$ values are a function of points in our GP $Z$ such that $$y_i = \widetilde{Z}_x + \epsilon_i$$ where $\widetilde{Z}$ is the \lq trivial \rq case of our GP in the finite space for which we have data, and $$\epsilon = (\epsilon_i, ... , \epsilon_n) \ \textrm{for all} \ x = (x_i, ... , x_n)$$ and $\epsilon \sim N(0, \sigma^2I)$ i.e. the errors have Gaussian distribution with mean 0, and diagonal covariance matrix $\sigma^2I$. We can now define that $$\widetilde{\mu}_{a} = \widetilde{\mu}_{1} ,..., \widetilde{\mu}_{l} \textrm{ and } \widetilde{\mu}_{b} = \widetilde{\mu}_{l+1} ,..., \widetilde{\mu}_{n}$$ 
+    where the former group represent data for which we do not have the corresponding ($y$) values, the latter group represents the finite amount of data and corresponding values we \textit{do} have. We then state that all these datapoints exist in some Gaussian Process $$ (Z_x) = GP(\mu, K) $$ on a set $S$ of all possible data. To perform inference on \lq unknown \rq data points using known ones, we want to get the posterior predictive distribution on $y_1, ... , y_l$ given $y_{l+1}, ... , y_n$. Note that the $y$ values are a function of points in our GP $Z$ such that $$y_i = \widetilde{Z}_x + \epsilon_i$$ where $\widetilde{Z}$ is the \lq trivial \rq case of our GP in the finite space for which we have data, and $$\epsilon = (\epsilon_i, ... , \epsilon_n) \ \textrm{for all} \ x = (x_i, ... , x_n)$$ and $\epsilon \sim \mathcal{N}(0, \sigma^2I)$ i.e. the errors have Gaussian distribution with mean 0, and diagonal covariance matrix $\sigma^2I$. We can now define that $$\widetilde{\mu}_{a} = \widetilde{\mu}_{1} ,..., \widetilde{\mu}_{l} \textrm{ and } \widetilde{\mu}_{b} = \widetilde{\mu}_{l+1} ,..., \widetilde{\mu}_{n}$$ 
     $$ K = k_{ij} \textrm{, where } k_{ij} = k(x_i, x_j) $$
     $k$ being our kernel from our Gaussian Process $Z$. 
 
@@ -107,7 +108,7 @@
     \end{bmatrix}
     $$
 
-    Now, we can solve for $$(Y_a | Y_b = y_b) \sim N(m, D)$$
+    Now, we can solve for $$(Y_a | Y_b = y_b) \sim \mathcal{N}(m, D)$$
     where $y_b$ is the aforementioned known set $y_b = (y_{l+1}, ... , y_{n})$, and $Y_a$ are our unknowns, by using the derived values of $m$ and $D$:
 
     $$ m = \mu_a + K_{ab} (K_{bb} + \sigma^2I)^{-1} (y_b - \mu_b) $$
@@ -123,15 +124,58 @@
     
     \includegraphics[scale=0.45,left]{logit.jpg}
 
-    \subsection{Sparse Gaussian Proccess Approximation} However, there is an inherit limitation in the naive use of Gaussian proceses in that its computational complexity is $O(n^3)$ due to the covariance matrix inversion step - meaning that even our relatively 'small' training dataset of 16,000 data points is already computationally intractable ($O(4,000,000,000,000)$) without taking steps to reduce this computational requirement.
+    \subsection{Sparse Gaussian Proccess Approximation} However, there is an inherit limitation in the naive use of Gaussian proceses in that its computational complexity is $O(n^3)$ due to the covariance matrix inversion step - meaning that even our relatively 'small' training dataset of 16,000 data points is already computationally intractable ($O(4,000,000,000,000)$) without taking steps to reduce this computational requirement. To overcome this problem, we will assess several methods of sparse GP approximation in the context of benthic habitat mapping, to determine which yield the best results when doing inference on marine environments. Note that we are not considering Subset of Data (SoD), which as the name suggests, only takes a portion of the data - such methods are ultimately limited in their utility, as information is lost, even if some of that information is redundant. We will analyse the performance of the Subset of Regressors (SoR), Projected Process (PP) Approximation, and Fully Independent Training Conditional (FITC) approximation methods. The following overviews of these methods are extracted from ~\citet{candela05} and ~\citet{rasmussen06}, albeit shortened and truncated in parts for brevity - the reader may wish to refer to these texts for the full mathematical derivations if they wish.
+
+    The following methods share some important properties that we will first highlight here - the shared, key step in being able to 'bypass' the naive $O(n^3)$ complexity in the covariance inversion is done by 'inducing' (i.e artificially introducing) some $m$ number of latent variables, $u$, where $m < n$, such that the complexity is reduced to $O(mn^2)$ in the follow methods, or $O(m^3)$ in the trivial Subset of Data case. 
+
+    The purpose of such inducing inputs, as illustrated in the diagram below, is to restrict our $f, f_*$ (our known values and unknown values that we want to calculate the posterior probability for) to only be able to communicate through the latent variables $u$, rather than the full data set $x$ (of size $n > m$).
+
+    {\scriptsize Illustrative example of inducing inputs}\\
+    \includegraphics[scale=0.5]{inducing_inputs.jpg}
 
     \subsubsection{Subset of Regressors}
-    
+
+    In SoR, we define the value for some unknown $f_*$ with known $x$ (the feature vector), as $$f_* = K_{*,u}w_u$$ $$\textrm{and posterior over the weights } p(w_u) = \mathcal{N}(0, K^-1_{u,u})$$ with every weight corresponding to each inducing input. Any $K_{i, j}$ in general represents the covariance matrix between any pair of points i, j, and in this case, between our feature vector with unknown function outputs $x_*$, and latent variables $u$. It is evident from this that there is a deterministic relationship between any $f_*$ and $u$.
+
+    The approximate distributions for the training and test are thus:
+    $$q_{SoR}(f|u) = \mathcal{N}(K_{f,u},K^1_{u,u}u, 0)$$
+    $$q_{SoR}(f_*|u) = \mathcal{N}(K_{*,u}K^-1_{u,u}u, 0)$$
+
+    The GP prior over our known $f$ and unknown $f$ is thus:
+    $$q_{SoR}(f, f_*) = \mathcal{N}(0, \left[
+    \begin{matrix}
+        Q_{f,f} & Q_{f,*} \\
+        Q_{*,f} & Q_{*,*}
+    \end{matrix}\right])
+    $$
+    where $$Q_{a,b} \triangleq K_{a,u}K^-1_{u,u}K_{u,b} $$
+
+    From the deterministic relationship, it also becomes evident that the model is limited by $m$, such that the the above prior only allows at most $m$ linearly independent functions to be drawn, as a result of its degenerate nature. This can be deduced from the fact that only a finite number of non-zero eigenvalues can be drawn from the covariance function from the above prior.
+
     \subsubsection{Projected Process Approximation} 
 
-    \subsubsection{Fully Independent Training Conditional (FITC) Apprxoximation}
+    One approach that can be taken to avoid the degenerate model of Subset of Regressors, but similarly using more (specifically, all) data points than the $m$ (where $m < n$) that Subset of Data uses, is to use Projected Processes. The name is derived from the fact that the $m$ latent data points used are projected to the original $n$ dimensions.
 
-    asdf
+    Using the posterior:
+    $$ q(f_m | y) \propto exp\left( -\frac{1}{2}f^T_m(K^-1_{m,m} + \frac{1}{\sigma^2_n}PP^T)f_m + \frac{1}{\sigma^2_n}y^TP^Tf_m  \right)$$
+    $$ \textrm{where } P = K^-1{m,m}K{m,n} $$
+    i.e. the inverse of the covariance matrix of $m, m$ and the covariance matrix of $m, n$, we can derive our prior, which is
+    $$ q(y|f_m) = \mathcal{N}(y|P^Tf_m,\sigma^2_nI) $$
+    $$ \textrm{with } p(f_m) = \mathcal{N}(0, K_{m,m})$$
+
+    \subsubsection{Fully Independent Training Conditional (FITC) Apprxoximation}
+    The FITC method defines two independent priors for the training (known function values) and test (unknown function values) set, i.e.:
+    $$ q_{FITC}(f | u) = \Sigma p(f_i | u) = \mathcal{N}(K_{f,u}K^{-1}_{u,u}u, diag[K_{f,f} - Q_{f,f}]) $$
+    $$ q_{FITC}(f_* | u) = p(f_* | u) $$
+    with the most notable difference from the above methods, SoR, in particular, being that no fixed relationship is defined between $f$ and $u$. 
+    The implied prior is hence:
+    $$ q_{FITC}(f, f_*) = N\left( 0, 
+    \begin{matrix}  
+        Q_{f, f} - diag[Q_{f,f} - K_{f,f}] & Q_f,* \\
+        Q_{*,f} & K_{*,*}
+    \end{matrix}
+        \right)$$
+    \includegraphics[scale=0.3]{fitc.jpg}
 
 %     However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
 % 
@@ -141,10 +185,11 @@
 % 
 % While a number of studies have undertaken comparing techniques in sparse GP regression, there are fewer for classification, as the stochastic nature of labels inherently steers away from being Gaussian itself. The two differ in implementation whereby in classification, the function that is otherwise used in regression has to pass its predictions through a squashing function to bound the results between (0,1), resulting in a non-Gaussian distribution. A study by ~\citet{kuss05} found that Expectation Propagation was superior to the previously used Laplace's method for projecting classes back to an approximated Gaussian distribution. It is using Expectation Propagation that we will be able to use approximated sparse GP regression techniques and apply them to classification.
 
-\newpage
+    \newpage
+
 \section{Results}
 \textit{(1 page)}
-To compare the performance of our Gaussian Process (GP) classifier using varying sparse approximate GP methods, we want to obtain benchmarks by getting the F-scores and accuracies using deterministic machine learning algorithms. The first table represents the original 24 granular classes, whereas the second one is using the 5 aggregated classes, which are a summarisation of the more specific 24. This was done in collaboration with an expert who grouped the original unsupervised clusterings of habitat classes into similar groups, where the aggregated classes provide an obvious advantage in performance.
+To compare the performance of our Gaussian Process (GP) classifier using varying sparse approximate GP methods, we first obtain benchmarks by getting the F-scores and accuracies using deterministic machine learning algorithms. The first table represents the original 24 granular classes, whereas the second one is using the 5 aggregated classes, which are a summarisation of the more specific 24. This was done in collaboration with an expert who grouped the original unsupervised clusterings of habitat classes into similar groups, where the aggregated classes provide an obvious advantage in performance.
     
 24 Habitat classes
 
@@ -178,7 +223,7 @@ These next two set of results are using Gaussian processes with the granular and
     Subset of Data          & 0.72948 & 0.84106 \\
     SR                      & 0.79258 & 0.87151 \\
     PP                      & 0.81755 & 0.89162 \\
-    FIC                     & 0.83291 & 0.91418 \\
+    FITC                     & 0.83291 & 0.91418 \\
     \hline
 \end{tabular}
 
@@ -190,12 +235,12 @@ These next two set of results are using Gaussian processes with the granular and
     Subset of Data          & 0.84281 & 0.91968 \\
     SR                      & 0.88954 & 0.93014 \\
     PP                      & 0.91758 & 0.95417 \\
-    FIC                     & 0.92856 & 0.96281 \\
+    FITC                     & 0.92856 & 0.96281 \\
     \hline
 \end{tabular}
 
 Key:\\
-SR - subset of regressors ; FIC - fully independent conditional ; PP - projected process
+SR - subset of regressors ; FITC - fully independent conditional ; PP - projected process
 
 \section{Analysis, Discussion}
 Approximated sparse Gaussian Processes were used to classify benthic habitats into habitat classes, and a number of ways in which to perform the approximation were tested. All of them were found to perform considerably better than the more popular and widely used methods of SVMs, Random Forests, Logistic Regression, and kNN. Of the approximation techniques, fully independent conditionaals (FITC) performed the best.
@@ -213,6 +258,9 @@ Moreover, (\textbf{TODO insert here}) has found that different techniques have w
 \textit{(0.5 column = 0.25 page)}
 
 Moreover, because the high resolution data used were images collected using automated vehicles that were then pre-clustered in ~\citet{steinberg11} using Variational Dirichlet Processes, the classifications themselves are also represented as continuous probabilities.
+
+\section{Appendix}
+Numerous concepts were introduced, and at times, mentioned throughout this paper with assumed knowledge of the reader, quite likely incorrectly so if the audience has not previously studied machine learning in detail before, particularly on the Bayesian side of things, and Gaussian processes in particular. With this in mind, some resources are listed below should readers be interested and wish to further understand some of the concepts covered in this study.
 
 \section{References}
 

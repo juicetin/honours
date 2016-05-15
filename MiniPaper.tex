@@ -6,7 +6,7 @@
 \setlength{\skip\footins}{1.0cm}    % More space between text and footnotes
 \usepackage{color}
 \usepackage{graphicx}
-\graphicspath{ {/home/jtin2945/programming/jt-honours/images/} }
+\graphicspath{ {/home/justinting/programming/jt-honours/images/} }
 \usepackage[export]{adjustbox}
 \usepackage{xcolor}
 \usepackage[hyperfootnotes=false]{hyperref}
@@ -120,8 +120,8 @@
     \paragraph{Gaussian Process Classification} 
     To perform Gaussian Process classification, we consider the 'one vs all' (OvA) approach where we build $n$ ($n$ being the number of distinct classes) binary classifiers, where the probabilities across all the $n$ classes are combined to allow decisions to be made regarding the decided label for a particular datapoint. However, each of the individual classifiers with only binary $(0, 1)$ labels do not have Gaussian distribution, requiring some form of approximation to integrate over non-Gaussian values to obtain the estimated Gaussians. To do this, we employ the method of expectation propagation as providing the most accurate posteriors compared to other alternatives ~\citep{nickisch08}. 
 
-    
-    
+
+
 %     However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
 % 
 % To explain Gaussian processes in simple terms - first consider a single variable that fits a Gaussian distribution, commonly known as the bell curve, or normal distribution. If we generalise this single dimension to infinitely many, where any linear combination of components is normally distributed, then this is what we call a Gaussian Process.

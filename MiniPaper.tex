@@ -1,9 +1,13 @@
-\documentclass[10pt]{article}
+\documentclass[10pt,sts]{article}
 \usepackage[margin=0.7in]{geometry}
 \usepackage{multicol}               % Columns
 \usepackage{tabularx}               % Extra table functionality
+\usepackage{amsmath}
 \setlength{\skip\footins}{1.0cm}    % More space between text and footnotes
 \usepackage{color}
+\usepackage{graphicx}
+\graphicspath{ {/home/jtin2945/programming/jt-honours/images/} }
+\usepackage[export]{adjustbox}
 \usepackage{xcolor}
 \usepackage[hyperfootnotes=false]{hyperref}
 \hypersetup{
@@ -75,49 +79,74 @@
     \newpage
 
     \section{Algorithm/Solution}
-    \textit{(1 page)}
 
-    To attempt to solve the above problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. We will first briefly look at Gaussian processes (GPs), followed by GP regression, and then how this leads to GP classification. With these basics covered, methods of approximating the sparse Gaussian processes will then be described.
+    To attempt to solve the above problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. We will first briefly look at Gaussian processes (GPs), followed by GP regression, and then how this leads to GP classification. With these basics covered, methods of approximating the sparse Gaussian processes will then be described. 
 
     \paragraph{Gaussian Processes}
 
     We should first consider a Gaussian distribution - this is what is more commonly known as the 'bell curve'. 
 
-	\begin{tikzpicture}[
-			every pin edge/.style={<-},
-		every pin/.style={fill=yellow!50,rectangle,rounded corners=3pt,font=\small}]
-	\begin{axis}[every axis plot post/.append style={
-			mark=none,domain=-3:3,samples=50,smooth},
-		clip=false,
-		axis y line=none,
-		axis x line*=bottom,
-		ymin=0,
-		xtick=\empty,
-		]
-		% \addplot {\gauss{0}{0.5}};
-		\addplot {\gauss{0}{1}};
-		% \node[pin=70:{$\hat{\theta}_1$}] at (axis cs:0.57,0.5) {};
-		\node[pin=70:{$\hat{\theta}_2$}] at (axis cs:1,0.25) {};
-		\node[pin=270:{$\theta=E(\hat{\theta}_1)=E(\hat{\theta}_2)$}] at (axis cs:0,0) {};
-		\draw[dashed] (axis description cs:0.5,0) -- (axis description cs:0.5,0.92);
-	\end{axis}
-	\end{tikzpicture} 
+    \includegraphics[scale=0.45,left]{gaussian.jpg}
+
+	% \begin{tikzpicture}[
+	% 		every pin edge/.style={<-},
+	% 	every pin/.style={fill=yellow!50,rectangle,rounded corners=3pt,font=\small}]
+	% \begin{axis}[every axis plot post/.append style={
+	% 		mark=none,domain=-3:3,samples=50,smooth},
+	% 	clip=false,
+	% 	axis y line=none,
+	% 	axis x line*=bottom,
+	% 	ymin=0,
+	% 	xtick=\empty,
+	% 	]
+	% 	% \addplot {\gauss{0}{0.5}};
+	% 	\addplot {\gauss{0}{1}};
+	% 	% \node[pin=70:{$\hat{\theta}_1$}] at (axis cs:0.57,0.5) {};
+	% 	\node[pin=70:{$\hat{\theta}_2$}] at (axis cs:1,0.25) {};
+	% 	\node[pin=270:{$\theta=E(\hat{\theta}_1)=E(\hat{\theta}_2)$}] at (axis cs:0,0) {};
+	% 	\draw[dashed] (axis description cs:0.5,0) -- (axis description cs:0.5,0.92);
+	% \end{axis}
+	% \end{tikzpicture} 
 
     This diagram represents a single variable with a Gaussian distribution. If, for a particular domain, there existed some infinitely large number of variables, where not only does every single one fit a Gaussian distribution, but any \textit{linear} combination of all variables also fit a Gaussian distribution We can see that this is useful by first considering that in some arbitrarily large feature space, we only have a limited number of datapoints (as opposed to some infinite number presenting all data possible in a domain, which would remove the need for machine learning in any case, as we would then be able to deduce the function which described the entire dataset) - for which the 'impossible' full dataset is represented by some function $f(x)$. If we then try to infer properties of the Gaussian Process by querying only on the data points that we have, the resulting properties would be the same as if we queried the true function itself, using only the same finite set of points. In summary, this means that Gaussian Processes can be used to represent data without needing to force a particular family of functions, e.g. linear functions, to be able to make predictions. ~\citep{rasmussen06}.
 
-    \paragraph{Kernel Function}
+    \paragraph{Kernel Function} In machine learning, kernels essentially define the similarity between datapoints - in other words, the function that governs the elements of the covariance matrix, which is an $n \textrm{x} n$ matrix representing the 'similarity' between every point with every other point, where the element $k_{ij}$ at the coordinate $(i,j)$ of the matrix represents how 'similar' those two points are as stated by the kernel. The kernel that we will be using is the squared exponential $$ k_{(x, x')} = \sigma^2 exp\left(-\frac{(x-x')^2}{2l^2}\right) + \sigma^2_{noise}I$$ where $l$, the lengthscale, describes the \textit{smoothness} of the function, and can be tuned as desired.
 
-    \paragraph{Gaussian Process Regression}
+    \paragraph{Gaussian Process Regression} From the above description, we can see that GPs do not inherently support discrete labels, due to their non-Gaussian distribution - we need to first perform regression, and coerce the result of this into a form that can be used to classify inputs. To perform GP regression, consider the datapoints:
+    $$ \textrm{set } a = x_1, ... , x_l, \textrm{set } b = x_{l+1}, ... , x_n $$
+    $$ \textrm{and similarly for } y: y_1, ... , y_l, y_{l+1}, ... , y_n $$
+    where the former group represent data for which we do not have the corresponding ($y$) values, the latter group represents the finite amount of data and corresponding values we \textit{do} have. We then state that all these datapoints exist in some Gaussian Process $$ (Z_x) = GP(\mu, K) $$ on a set $S$ of all possible data. To perform inference on 'unknown' data points using known ones, we want to get the posterior predictive distribution on $y_1, ... , y_l$ given $y_{l+1}, ... , y_n$. Note that the $y$ values are a function of points in our GP $Z$ such that $$y_i = \widetilde{Z}_x + \epsilon_i$$ where $\widetilde{Z}$ is the 'trivial' case of our GP in the finite space for which we have data, and $$\epsilon = (\epsilon_i, ... , \epsilon_n) \ \textrm{for all} \ x = (x_i, ... , x_n)$$ and $\epsilon \sim N(0, \sigma^2I)$ i.e. the errors have Gaussian distribution with mean 0, and diagonal covariance matrix $\sigma^2I$. We can now define that $$\widetilde{\mu}_{a} = \widetilde{\mu}_{1} ,..., \widetilde{\mu}_{l} \textrm{ and } \widetilde{\mu}_{b} = \widetilde{\mu}_{l+1} ,..., \widetilde{\mu}_{n}$$ 
+    $$ K = k_{ij} \textrm{, where } k_{ij} = k(x_i, x_j) $$
+    $k$ being our kernel from our Gaussian Process $Z$. 
 
-    From the above description, we can see that GPs do not inherently support discrete labels, due to their non-Gaussian distribution - we need to first perform regression, and coerce the result of this into a form that can be used to classify inputs. 
+    We then get the covariance matrix for our known dataset and the unknown for which we want to determine the posterior predictive distribution:
+    $$ K = 
+    \begin{bmatrix}
+        K_{aa} & K_{ab} \\
+        K_{ba} & K_{bb} 
+    \end{bmatrix}
+    $$
 
-However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
+    \pagebreak
+    Now, we can solve for $$(Y_a | Y_b = y_b) \sim N(m, D)$$
+    where $y_b$ is the aforementioned known set $y_b = (y_{l+1}, ... , y_{n})$, and $Y_a$ are our unknowns, by using the derived values of $m$ and $D$:
 
-To explain Gaussian processes in simple terms - first consider a single variable that fits a Gaussian distribution, commonly known as the bell curve, or normal distribution. If we generalise this single dimension to infinitely many, where any linear combination of components is normally distributed, then this is what we call a Gaussian Process.
+    $$ m = \mu_a + K_{ab} (K_{bb} + \sigma^2I)^{-1} (y_b - \mu_b) $$
+    $$ D = (K_{aa} + \sigma^2I) - K_{ab} (K_{bb}+\sigma^2I)^{-1} K_{ba} $$
 
-Compared to more commonly used supervised classification algorithms which require modeling around the chosen features, Gaussian processes instead look at the joint distribution across all features. However, they require a matrix inversion step with $O(n^3)$ complexity - this does not scale well beyond at most several thousand datapoints. To overcome this and be able to utilise as much of the available data as possible, we use approximation methods.
+    The result of this posterior predictive distribution is that we can now obtain a \textit{distribution} of functions and the correctness likelihood of each, which can be visualised as below:
+    \includegraphics[scale=0.45,left]{gp-inference.jpg}
 
-While a number of studies have undertaken comparing techniques in sparse GP regression, there are fewer for classification, as the stochastic nature of labels inherently steers away from being Gaussian itself. The two differ in implementation whereby in classification, the function that is otherwise used in regression has to pass its predictions through a squashing function to bound the results between (0,1), resulting in a non-Gaussian distribution. A study by ~\citet{kuss05} found that Expectation Propagation was superior to the previously used Laplace's method for projecting classes back to an approximated Gaussian distribution. It is using Expectation Propagation that we will be able to use approximated sparse GP regression techniques and apply them to classification.
+    \paragraph{Gaussian Process Classification} 
+    To perform Gaussian Process classification, we consider the 'one vs all' (OvA) approach where we build $n$ ($n$ being the number of distinct classes) binary classifiers, where the probabilities across all the $n$ classes are combined to allow decisions to be made regarding the decided label for a particular datapoint. However, each of the individual classifiers with only binary $(0, 1)$ labels do not have Gaussian distribution, requiring some form of approximation to integrate over non-Gaussian values to obtain the estimated Gaussians. To do this, we employ the method of expectation propagation as providing the most accurate posteriors compared to other alternatives ~\citep{nickisch08}.
+    
+%     However, there is an inherit limitation in the use of Gaussian processes in that its computational complexity is $O(n^3)$ - meaning that for our relatively 'small' training dataset of 16,000, naive use of GPs are already computationally infeasible - let alone our unclassified dataset of 7 million (for which we wish to create a habitat map for) that only posesses corresponding low resolution (acoustic) data.
+% 
+% To explain Gaussian processes in simple terms - first consider a single variable that fits a Gaussian distribution, commonly known as the bell curve, or normal distribution. If we generalise this single dimension to infinitely many, where any linear combination of components is normally distributed, then this is what we call a Gaussian Process.
+% 
+% Compared to more commonly used supervised classification algorithms which require modeling around the chosen features, Gaussian processes instead look at the joint distribution across all features. However, they require a matrix inversion step with $O(n^3)$ complexity - this does not scale well beyond at most several thousand datapoints. To overcome this and be able to utilise as much of the available data as possible, we use approximation methods.
+% 
+% While a number of studies have undertaken comparing techniques in sparse GP regression, there are fewer for classification, as the stochastic nature of labels inherently steers away from being Gaussian itself. The two differ in implementation whereby in classification, the function that is otherwise used in regression has to pass its predictions through a squashing function to bound the results between (0,1), resulting in a non-Gaussian distribution. A study by ~\citet{kuss05} found that Expectation Propagation was superior to the previously used Laplace's method for projecting classes back to an approximated Gaussian distribution. It is using Expectation Propagation that we will be able to use approximated sparse GP regression techniques and apply them to classification.
 
 \vfill
 \columnbreak

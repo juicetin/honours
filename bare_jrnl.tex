@@ -1,0 +1,468 @@
+\documentclass[journal]{IEEEtran}
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage[numbers]{natbib}
+\usepackage{tabularx}               % Extra table functionality
+\usepackage{amssymb}
+\usepackage{amsmath}
+\bibliographystyle{IEEEtranN}
+\graphicspath{ {/home/justinting/programming/jt-honours/images/} }
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\begin{document}
+\title{Large Scale Gaussian Processes in Benthic Habitat Mapping \\ Research Methods - INFO5993 Assignment 3}
+
+\author{Justin~Ting}
+
+\maketitle
+
+\begin{abstract}
+    Earth's oceans cover 70\% of its surface, but only less than 10\% of the Earth's oceans have been explored to date\footnote{Oceanservice.noaa.gov. (2016). How much of the ocean have we explored?. [online] Available at: http://oceanservice.noaa.gov/facts/exploration.html}. There have been increasing efforts over the past few decades to map out these unexplored areas to monitor marine ecosystems to be able to track the state of them over time for management, preseveration, etc. purposes. The process used is called benthic habitat mapping, which is the predicting of what exists at the bottom of a body of water. Most recent studies looking to create benthic habitat maps share some basic key steps - acoustic data is used to estimate properties about the surface of the water, which are then mapped to, using machine learning algorithms, \textit{in situ} data such as still images, videos, or samples of the area in question. Whereas the majority of studies have used deterministic methods for habitat classification (such as Random Forests, etc.), and those that have used Gaussian processes to probabilistically create maps have truncated the data to account for limitations in the naive implementation of such methods. We will evaluate different methods of approximation of sparse Gaussian Processes in benthic habitat mapping and aim to generate probabilistic maps with higher certainty and correctness than previously done.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+% \begin{IEEEkeywords}
+% IEEEtran, journal, \LaTeX, paper, template.
+% \end{IEEEkeywords}
+
+
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+\section{Introduction}
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps.
+% 
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+% 
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+% 
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+% 
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+% \IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
+% for IEEE journal papers produced under \LaTeX\ using
+% IEEEtran.cls version 1.8a and later.
+% You must have at least 2 lines in the paragraph with the drop letter
+% (should never be an issue)
+% I wish you the best of success.
+% 
+% \hfill mds
+%  
+% \hfill September 17, 2014
+
+    \subsection{Overview}
+    
+    Given that as of 2008, 41\% of the world's oceans had been heavily affected by multiple sources of human disturbances, with only the two poles relatively undisturbed ~\citep{halpern08}, there is an increasing need to be able to periodically, evaluate the state of our oceans with high confidence to allow appropriate courses of action to be planned and taken to mitigate negative human impact. One of the more prevalent methods used to do this is benthic habitat mapping, in which maps of the ecosystems are inferred based on a combination of low volumes of high resolution data, and high volumes of low resolution data. 
+    
+    \subsection{Data Collection}
+    Low resolution data is often collected in the form of acoustic backscatter, whereby soundwaves are fired from a marine vessel, and the time taken to return as well as the strength of the returned signal are measured. On a basic level, this allows at least the distance of the surveyed point as well as the substance's composition to be determined - for example, gravel, 1.2km deep. More modern acoustic backscatter collection methods that collect more detailed information allow information such as roughness of surfaces, slopes, and direction of slopes to be collected as well. 
+    
+    High resolution data, on the other hand, is usually collected in the form of images (or videos later post-processed to extract images) using Autonomous Underwater Vehicles (AUVs), or direct sediment samples at the benthos. As technology has progressed, the ease with which the needed data for benthic habitat mapping has improved, allowing an increase in both the amount of data collected as well as its quality. 
+    
+    In our study, the University of Sydney's AUV, Sirius, was used to collect the images from Scott Reef, North West off the coast of West Australia. The acoustic backscatter data which was collected for the majority of the entire Scott Reef was collected with the help of Eric Schmidt's Falkor.
+
+    \subsection{Benthic Habitat Mapping}
+
+    In benthic habitat mapping, it is common procedure to first cluster the high resolution data into habitat classes based on visual cues, and to then take the low resolution data that spatially corresponds to the clustered high-resolution data, and build a model that describes the relationship between the two. This relationship is then used to extrapolate high resolution information from all the low-resolution data which does not have this corresponding information otherwise. The result is a habitat class label for the majority of the low resolution acoustic data for which high resolution images do not exist. 
+
+    \subsection{Related Works}
+
+    \subsubsection{Deterministic Methods}
+
+    Deterministic methods have been used in creating habitat maps to varying degrees of success. Simpler methods such as analysis of covariance (ANCOVA) were able to establish that while sediment type contributed heavily to a higher taxonomic group count, there was little relationship between sediment type and depth - but this method assumes only linear relationships between environmental variables, which is unlikely to be the case, pointing towards a need for use of more advanced techniques. ~\citet{belanger12} found that using salinity, productivity, and temperature to predict habitat classes only made correct predictions by a margin of 23-84\% more than pure chance, which is in line with ~\citet{caruana06}'s empirical comparison of machine learning classification algorithms that found that on average, logistic regression performed poorly. On the other hand, the study found that Random Forests were one of the highest performing algorithms on average, and as such are used in numerous studies with habitat classification accuracies up to 70\% (~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}).
+    
+    \subsubsection{Probabilistic Methods}
+
+    Gaussian Processes are used in ~\citet{bender12}'s work, where not only the resulting habitat maps state their certainty in the predicted habitat classes, but the classes themselves, a result of ~\citet{steinberg11}'s unsupervised variational dirichlet process classifier (clustering), were continuous cluster probabilities, as opposed to discrete labels. While both the discrete labels as a result of the VDP and the probabilistic lables were used, the latter resulted in lower (mean squared) error, as well as higher certainty in the predictions it made. The applications of such probabilistic methods go beyond classification after the fact as well - by tuning them to accurately represent certainty in labels at a particular point in time, AUVs and other data-collecting vehicles can decide real-time where there is least certainty, and sample those locations accordingly ~\citep{rigby10}.
+
+    \section{Problem Statement}
+
+    Much of the research done in benthic habitat mapping generates deterministic maps using untuned machine learning techniques and implementations. This is potentially an issue  because the resultant maps indirectly (or otherwise) make broad conclusions and assumptions about the different features used to create them, such as the direct relationship between the topography of an area of benthos, and what may reside there. ~\citet{kostylev12} points out that our widespread assumptions of the meaning of properties of surficial sediments, and the resulting \lq habitat \rq classes we infer are actually relevant to seabed ecology are taken for granted, with no conclusive proof that they are true. It is arguably impossible to decisively confirm or deny these relationships without actually exploring a majority of the entire ocean - the expeditions for which would be prohibitively expensive. We need to be able to create high quality habitat maps, but at the same time not state these predictions as merely fact, as high level decisions made on how to preserve a manage ocean bodies can have large implications - very negative ones, if the basis on which actions are taken are not correct.
+
+    As such, we want to both quantify the uncertainty of the maps generated and be able to do so without explicitly assuming relationships between the various data features. Using a method that achieves this and that can state the certainty of its predictions, it would allow augmentation of experts' decision making to be better informed, and allowing management bodies to more efficiently use their resources in a more focussed manner. Previously used deterministic methods have produced mixed results, while the more state of the art techniques have been limited in the data they could use due to computational constraints, pointing towards a need to be able to bring more complex techniques together with all available data to create more accurate maps than have been previously possible. This would allow us to better monitor, assess marine habitats, and be able to assess human impact which will allow decisions to be made on steps to take in terms of preservation, etc.
+
+    \section{Algorithm/Solution}
+
+    To attempt to solve the above problem, we use Gaussian processes for the classification process - and as a result, obtain a distribution of probable habitats for a given area rather than a deterministic result for a given space, and can thus state our certainty of a particular classification for an area of the benthos. We will first briefly look at Gaussian processes (GPs), followed by GP regression, and then how this leads to GP classification. With these basics covered, methods of approximating the sparse Gaussian processes will then be described. 
+
+    \subsection{Gaussian Processes}
+
+    We should first consider a Gaussian distribution - this is what is more commonly known as the \lq bell curve \rq. 
+
+    \includegraphics[scale=0.37,left]{gaussian.jpg}
+
+    This diagram represents a single variable with a Gaussian distribution. If, for a particular domain, there existed some infinitely large number of variables, where not only does every single one fit a Gaussian distribution, but any \textit{linear} combination of all variables also fit a Gaussian distribution We can see that this is useful by first considering that in some arbitrarily large feature space, we only have a limited number of datapoints (as opposed to some infinite number presenting all data possible in a domain, which would remove the need for machine learning in any case, as we would then be able to deduce the function which described the entire dataset) - for which the \lq impossible \rq full dataset is represented by some function $f(x)$. If we then try to infer properties of the Gaussian Process by querying only on the data points that we have, the resulting properties would be the same as if we queried the true function itself, using only the same finite set of points. In summary, this means that Gaussian Processes can be used to represent data without needing to force a particular family of functions, e.g. linear functions, to be able to make predictions. ~\citep{rasmussen06}.
+
+    \subsection{Kernel Function} In machine learning, kernels essentially define the similarity between datapoints - in other words, the function that governs the elements of the covariance matrix, which is an $n \textrm{x} n$ matrix representing the \lq similarity \rq between every point with every other point, where the element $k_{ij}$ at the coordinate $(i,j)$ of the matrix represents how \lq similar \rq those two points are as stated by the kernel. The kernel that we will be using is the squared exponential $$ k_{(x, x')} = \sigma^2 exp\left(-\frac{(x-x')^2}{2l^2}\right) + \sigma^2_{noise}I$$ where $l$, the lengthscale, describes the \textit{smoothness} of the function, and can be tuned as desired.
+
+    \subsection{Gaussian Process Regression} From the above description, we can see that GPs do not inherently support discrete labels, due to their non-Gaussian distribution - we need to first perform regression, and coerce the result of this into a form that can be used to classify inputs. To perform GP regression, consider the datapoints:
+    $$ \textrm{set } a = x_1, ... , x_l, \textrm{set } b = x_{l+1}, ... , x_n $$
+    $$ \textrm{and similarly for } y: y_1, ... , y_l, y_{l+1}, ... , y_n $$
+    where the former group represent data for which we do not have the corresponding ($y$) values, the latter group represents the finite amount of data and corresponding values we \textit{do} have. We then state that all these datapoints exist in some Gaussian Process $$ (Z_x) = GP(\mu, K) $$ on a set $S$ of all possible data. To perform inference on \lq unknown \rq data points using known ones, we want to get the posterior predictive distribution on $y_1, ... , y_l$ given $y_{l+1}, ... , y_n$. Note that the $y$ values are a function of points in our GP $Z$ such that $$y_i = \widetilde{Z}_x + \epsilon_i$$ where $\widetilde{Z}$ is the \lq trivial \rq case of our GP in the finite space for which we have data, and $$\epsilon = (\epsilon_i, ... , \epsilon_n) \ \textrm{for all} \ x = (x_i, ... , x_n)$$ and $\epsilon \sim \mathcal{N}(0, \sigma^2I)$ i.e. the errors have Gaussian distribution with mean 0, and diagonal covariance matrix $\sigma^2I$. We can now define that $$\widetilde{\mu}_{a} = \widetilde{\mu}_{1} ,..., \widetilde{\mu}_{l} \textrm{ and } \widetilde{\mu}_{b} = \widetilde{\mu}_{l+1} ,..., \widetilde{\mu}_{n}$$ 
+    $$ K = k_{ij} \textrm{, where } k_{ij} = k(x_i, x_j) $$
+    $k$ being our kernel from our Gaussian Process $Z$. 
+
+    We then get the covariance matrix for our known dataset and the unknown for which we want to determine the posterior predictive distribution:
+    $$ K = 
+    \begin{bmatrix}
+        K_{aa} & K_{ab} \\
+        K_{ba} & K_{bb} 
+    \end{bmatrix}
+    $$
+
+    Now, we can solve for $$(Y_a | Y_b = y_b) \sim \mathcal{N}(m, D)$$
+    where $y_b$ is the aforementioned known set $y_b = (y_{l+1}, ... , y_{n})$, and $Y_a$ are our unknowns, by using the derived values of $m$ and $D$:
+
+    $$ m = \mu_a + K_{ab} (K_{bb} + \sigma^2I)^{-1} (y_b - \mu_b) $$
+    $$ D = (K_{aa} + \sigma^2I) - K_{ab} (K_{bb}+\sigma^2I)^{-1} K_{ba} $$
+
+    The result of this posterior predictive distribution is that we can now obtain a \textit{distribution} of functions and the correctness likelihood of each, which can be visualised as below:
+    \includegraphics[scale=0.37,left]{gp-inference.jpg}
+
+    \subsection{Gaussian Process Classification} 
+    To perform Gaussian Process classification, we consider the \lq one vs all \rq (OvA) approach where we build $n$ ($n$ being the number of distinct classes) binary classifiers, where the probabilities across all the $n$ classes are combined to allow decisions to be made regarding the decided label for a particular datapoint. However, each of the individual classifiers with only binary $(0, 1)$ labels do not have Gaussian distribution, requiring some form of approximation to integrate over non-Gaussian values to obtain the estimated Gaussians. To do this, we employ the method of expectation propagation as providing the most accurate posteriors compared to other alternatives ~\citep{nickisch08}. 
+
+    To allow GP classification, we need to first map the binary \lq labels\rq ($(0, 1)$'s) onto a continuous sigmoid function so that class membership probability can be represented as a value between $0$ and $1$. This is done using the logit function $$sig_{logit}(t) = \frac{1}{1+e^{-t}}$$
+
+    % \begin{figwindow}[1,r,\includegraphics[left,scale=0.5]{logit.jpg},{Logit Function}]
+    % \end{figwindow}
+
+    \includegraphics[left,scale=0.38]{logit.jpg}
+
+    Then, we can predict $y$ for some test point $x_*$ by the predictive posterior $$P(f_* | x_*, y, X, \theta) \sim \mathcal{N}(f_* | u_*, \sigma^2_*)$$
+    with parameters $(\alpha, W^{\frac{1}{2}})$, whilst also being governed by the following:
+
+    $$\mu = k^T_*K^-1m = k^T_*/alpha \textrm{ ,     } \alpha = K^-1m $$
+    $$ \sigma^2_* = k_{*,*} - k^T_*(K{^-1}-K^{-1}VK^{-1})k_* = k_{*,*} - k^T_*(K+W^{-1})^{-1}k_*$$
+    where $ V^-1 = K^-1 + W$, with $W$ representing the precision of the effective likelihood, which is obtained through a division of the approximate Gaussian posterior with the Gaussian prior:
+    $$ Q(y|f) \propto \frac{\mathcal{N}(f|m, V)}{\mathcal{N}(f|0,K)} \propto \mathcal{N}(f | (KW)^{-1} m + m, W^{-1})$$
+    
+    \subsection{Sparse Gaussian Proccess Approximation} However, there is an inherit limitation in the naive use of Gaussian proceses in that its computational complexity is $O(n^3)$ due to the covariance matrix inversion step - meaning that even our relatively 'small' training dataset of 16,000 data points is already computationally intractable ($O(4,000,000,000,000)$) without taking steps to reduce this computational requirement. To overcome this problem, we will assess several methods of sparse GP approximation in the context of benthic habitat mapping, to determine which yield the best results when doing inference on marine environments. Note that we are not considering Subset of Data (SoD), which as the name suggests, only takes a portion of the data - such methods are ultimately limited in their utility, as information is lost, even if some of that information is redundant. We will analyse the performance of the Subset of Regressors (SoR), Projected Process (PP) Approximation, and Fully Independent Training Conditional (FITC) approximation methods. The following overviews of these methods are extracted from ~\citet{candela05} and ~\citet{rasmussen06}, albeit shortened and truncated in parts for brevity - the reader may wish to refer to these texts for the full mathematical derivations if they wish.
+
+    The following methods share some important properties that we will first highlight here - the shared, key step in being able to 'bypass' the naive $O(n^3)$ complexity in the covariance inversion is done by 'inducing' (i.e artificially introducing) some $m$ number of latent variables, $u$, where $m < n$, such that the complexity is reduced to $O(mn^2)$ in the follow methods, or $O(m^3)$ in the trivial Subset of Data case. 
+
+    The purpose of such inducing inputs, as illustrated in the diagram below, is to restrict our $f, f_*$ (our known values and unknown values that we want to calculate the posterior probability for) to only be able to communicate through the latent variables $u$, rather than the full data set $x$ (of size $n > m$).
+
+    {\scriptsize Illustrative example of inducing inputs}\\
+    \includegraphics[scale=0.5]{inducing_inputs.jpg}
+
+    \subsubsection{Subset of Regressors}
+
+    In SoR, we define the value for some unknown $f_*$ with known $x$ (the feature vector), as $$f_* = K_{*,u}w_u$$ $$\textrm{and posterior over the weights } p(w_u) = \mathcal{N}(0, K^-1_{u,u})$$ with every weight corresponding to each inducing input. Any $K_{i, j}$ in general represents the covariance matrix between any pair of points i, j, and in this case, between our feature vector with unknown function outputs $x_*$, and latent variables $u$. It is evident from this that there is a deterministic relationship between any $f_*$ and $u$.
+
+    The approximate distributions for the training and test are thus:
+    $$q_{SoR}(f|u) = \mathcal{N}(K_{f,u},K^1_{u,u}u, 0)$$
+    $$q_{SoR}(f_*|u) = \mathcal{N}(K_{*,u}K^-1_{u,u}u, 0)$$
+
+    The GP prior over our known $f$ and unknown $f$ is thus:
+    $$q_{SoR}(f, f_*) = \mathcal{N}(0, \left[
+    \begin{matrix}
+        Q_{f,f} & Q_{f,*} \\
+        Q_{*,f} & Q_{*,*}
+    \end{matrix}\right])
+    $$
+    where $$Q_{a,b} \triangleq K_{a,u}K^-1_{u,u}K_{u,b} $$
+
+    From the deterministic relationship, it also becomes evident that the model is limited by $m$, such that the the above prior only allows at most $m$ linearly independent functions to be drawn, as a result of its degenerate nature. This can be deduced from the fact that only a finite number of non-zero eigenvalues can be drawn from the covariance function from the above prior.
+
+    \subsubsection{Projected Process Approximation} 
+
+    One approach that can be taken to avoid the degenerate model of Subset of Regressors, but similarly using more (specifically, all) data points than the $m$ (where $m < n$) that Subset of Data uses, is to use Projected Processes. The name is derived from the fact that the $m$ latent data points used are projected to the original $n$ dimensions.
+
+    Using the posterior:
+    $$ q(f_m | y) \propto exp\left( -\frac{1}{2}f^T_m(K^{-1}_{(m,m)} + \frac{1}{\sigma^2_n}PP^T)f_m + \frac{1}{\sigma^2_n}y^TP^Tf_m  \right)$$
+    $$ \textrm{where } P = K^{-1}{(m,m)}K{(m,n)} $$
+    i.e. the inverse of the covariance matrix of $m, m$ and the covariance matrix of $m, n$, we can derive our prior, which is
+    $$ q(y|f_m) = \mathcal{N}(y|P^Tf_m,\sigma^2_nI) $$
+    $$ \textrm{with } p(f_m) = \mathcal{N}(0, K_{(m,m)})$$
+
+    \subsubsection{Fully Independent Training Conditional (FITC) Apprxoximation}
+    The FITC method defines two independent priors for the training (known function values) and test (unknown function values) set, i.e.:
+    $$ q_{FITC}(f | u) = \Sigma p(f_i | u) = \mathcal{N}(K_{f,u}K^{-1}_{u,u}u, diag[K_{f,f} - Q_{f,f}]) $$
+    $$ q_{FITC}(f_* | u) = p(f_* | u) $$
+    with the most notable difference from the above methods, SoR, in particular, being that no fixed relationship is defined between $f$ and $u$. 
+    The implied prior is hence:
+    $$ q_{FITC}(f, f_*) = N\left( 0, 
+    \begin{matrix}  
+        Q_{f, f} - diag[Q_{f,f} - K_{f,f}] & Q_f,* \\
+        Q_{*,f} & K_{*,*}
+    \end{matrix}
+        \right)$$
+
+        The diagram below is a reprsentation of the FITC method with $n$ data points, represnted by $m = 3$ latent variables.
+
+    \includegraphics[scale=0.4]{fitc.jpg}
+
+\section{Results}
+
+To compare the performance of our Gaussian Process (GP) classifier using varying sparse approximate GP methods, we first obtain benchmarks by getting the F-scores and accuracies using deterministic machine learning algorithms. The first table represents the original 24 granular classes, whereas the second one is using the 5 aggregated classes, which are a summarisation of the more specific 24. This was done in collaboration with an expert who grouped the original unsupervised clusterings of habitat classes into similar groups, where the aggregated classes provide an obvious advantage in performance. Note that the results using GPs were obtained by taking the most probable habitat labels - future improvements on the study will provide further insight into the generated habitat distributions.
+    
+24 Habitat classes
+
+\begin{tabular}{| l | l | l |}
+    \hline
+    Algorithm           & F1 score & Accuracy \\\hline
+    KNN (5)             & 0.33278 & 0.62459 \\
+    Logistic Regression & 0.20285 & 0.682705 \\
+    Random Forest       & 0.20283 & 0.68258 \\
+    SVM                 & 0.20284 & 0.68270 \\\hline
+\end{tabular}
+
+5 Aggregated habitat classes
+
+\begin{tabular}{| l | l | l |}
+    \hline
+    Algorithm           & F1 score & Accuracy \\\hline
+    KNN (5)             & 0.61347 & 0.749214 \\
+    Logistic Regression & 0.50381 & 0.814503 \\
+    Random Forest       & 0.50932 & 0.819253 \\
+    SVM                 & 0.50290 & 0.818273 \\\hline
+\end{tabular}
+
+These next two set of results are using Gaussian processes with the granular and aggregated habitat classes, respectively, with different methods applied to minimise the original $O(n^3)$ computational complexity as much as possible. With the exception of the subset of data (SoD) benchmark, the rest are wrapped with Expectation Propagation
+
+24 Habitat classes 
+
+\begin{tabular}{| l | l | l |}
+    \hline
+    Approximation method    & F1 score & Accuracy \\\hline
+    Subset of Data          & 0.72948 & 0.84106 \\
+    SR                      & 0.79258 & 0.87151 \\
+    PP                      & 0.81755 & 0.89162 \\
+    FITC                     & 0.83291 & 0.91418 \\
+    \hline
+\end{tabular}
+
+5 Aggregated habitat classes
+
+\begin{tabular}{|l | l | l|}
+    \hline
+    Approximation method    & F1 score & Accuracy \\\hline
+    Subset of Data          & 0.84281 & 0.91968 \\
+    SR                      & 0.88954 & 0.93014 \\
+    PP                      & 0.91758 & 0.95417 \\
+    FITC                     & 0.92856 & 0.96281 \\
+    \hline
+\end{tabular}
+
+Key:\\
+SR - subset of regressors ; FITC - fully independent conditional ; PP - projected process
+
+\section{Analysis and Discussion}
+
+As a result of the aggregation of the classes in collaboration with an expert, whereby the unsupervised clusters were further 'grouped' according to visual and ecological similarity, significantly better results were achieved. Of course, the context in which such methods are being employed need to be taken into account before classifying on more granular, or coarser habitat classes. If more general decisions regarding management of entire regions, or tracking of high-level changes is what is needed, then the aggregated classes may be sufficient. However, if the matter in question are, e.g., specific species, particularly those that only exist in very specific habitats, then it may be the more granular classes that are needed. Of course, the unsupervised cluster labels also need to be verified by experts to ensure that they do in fact represent similar, yet unique/distinct habitats. While this also requires human effort, it is significantly easier than hand-labelling potentially hundred of thousands of images, given the advanced AUV technology that researchers are able to access.
+
+All forms of approximation of sparse Gaussian Processes in classifying benthic habitats have exceeded the performance of the more traditional deterministic methods - excluding the Subset of Regressors approximation method, this is in part due to being able to infer a distribution of functions given some amount of data, and even defining the variance and error that is expected. Such parameters are not inherently a part of the model of simpler methods such as Logistic Regression or Random Forests, and this has been reflected in the results obtained. However, Expectation Propagation is an iterative, computationally expensive process that resulted in all the GP methods taking considerably longer on average to fit and predict than their deterministic counter parts, which should not be ignored. This is understandbly the case, as predicting new values takes $O(m^2)$ time, while in methods such as logistic regression, it is $O(w)$ in the number of features for new values. In situations where speed is of higher importance, 
+
+Interestingly, however, ~\citet{bender12} used the Subset of Data method in their probabilistic targets least squares classification that also uses Gaussian Processes, and yet achieved over 98\% accuracy. There a number of factors that would explain this contradicting difference in performance between the methods used. The first, and more important one that invites extensions to this study, is that the location studied was different. Whereas this study surveyed Scott Reef off the coast of W.A., the aforementioned study collected data from O'Hara Bluff near Tasmania, where the diversity of habitats were greater, and with clearer boundaries between them, as opposed to many of the sub-habitats overlapping each other, making classification at the boundaries more difficult. In addition, as a consequence of the SoD method, there were considerbly fewer datapoints to validate (test/train), leading them to use the LOO (leave one out) method. This is arguably less rigorous than the method used here, 10-fold cross validation, although one cannot be faulted for using LOO when faced with scarce data.
+
+\section{Conclusion and Future Work}
+
+In this study, we used a number of methods to approximate sparse Gaussian Processes to perform classification on benthic habitats using high resolution (image) data, and lower resolution (acoustic backscatter) data. We found that on all counts, performance in terms of predictions generated exceeded that of deterministic machine learning algorithms, both parametric and non-parametric, by a considerable margin. The cost of this, however, was a considerable increase in needed to perform model fitting and calculations, as considerably more computation is needed. In addition, the models themselves are more complex, making their implementation more difficult than more commonly used techniques.
+
+As the high resolution data used were images collected using automated vehicles that were then pre-clustered in ~\citet{steinberg11} using Variational Dirichlet Processes (VDP), the classifications themselves are also represented as continuous probabilities. To improve on the methods explored in this paper, the continuous cluster labels generated from the VDP could be directly used in the approximated sparse GPs, although the model would increase in complexity due to there being multiple targets, each assigned a different probability for the same feature vector $x$. 
+
+Additionally, as ~\citet{ahsan11} found that different techniques have worked better on some datasets than others due to their intrinsic properties, the methods descibed in this paper should be applied to wider variety of benthic datasets to assess their performance regarding benthic habitat classification more generally. This could be extended to a more comprehensive study testing multiple methods of approximating Gaussians in the classification case, different methods of approximating sparse Gaussians, tuning the covariance functions used on a per-habitat basis to maximise results using domain knowledge, as well as other factors to build a more comprehensive 'guide' on using Gaussian Processes in benthic habitat mapping, and more generally, use of GPs in machine learning.
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+%\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ahsan et~al.(2011)Ahsan, Williams, and Pizarro]{ahsan11}
+Nasir Ahsan, Stefan~B. Williams, and Oscar Pizarro.
+\newblock Robust broad-scale benthic habitat mapping when training data is
+  scarce.
+\newblock 2011.
+
+\bibitem[Belanger et~al.(2012)Belanger, Jablonski, Roy, Berke, Krug, and
+  Valentine]{belanger12}
+Christina~L. Belanger, David Jablonski, Kaustuv Roy, Sarah~K. Berke, Andrew~Z.
+  Krug, and James~W. Valentine.
+\newblock Global environment predictors of benthic marine biogeographic
+  structure.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 109, 2012.
+
+\bibitem[Bender et~al.(2012)Bender, B., Williams, and Pizarro]{bender12}
+Asher Bender, Stefan B., Williams, and Oscar Pizarro.
+\newblock Classification with probabilistic targets.
+\newblock 2012.
+
+\bibitem[Caruana and Niculescu-Mizil(2006)]{caruana06}
+Rich Caruana and Alexandru Niculescu-Mizil.
+\newblock An empirical comparison of supervised learning algorithms.
+\newblock In \emph{Proceedings of the 23rd International conference on Machine
+  learning}. Association for Computer Machinery, 2006.
+
+\bibitem[Halpern et~al.(2008)Halpern, Walbridge, Selkoe, Kappel, Micheli,
+  D'Agrosa, Bruno, Casey, Ebert, Fox, Fujita, Heinemann, Lenihan, Madin, Perry,
+  Selig, Spalding, Steneck, and Watson]{halpern08}
+Benjamin~S. Halpern, Shaun Walbridge, Kimberley~A. Selkoe, Carrie~V. Kappel,
+  Fiorenza Micheli, Caterina D'Agrosa, John~F. Bruno, Kenneth~S. Casey, Colin
+  Ebert, Helen~E. Fox, Rod Fujita, Dennis Heinemann, Hunter~S. Lenihan,
+  Elizabeth M.~P. Madin, Matthew~T. Perry, Elizabeth~R. Selig, Mark Spalding,
+  Robert Steneck, and Reg Watson.
+\newblock A global map of human impact on marine ecosystems.
+\newblock \emph{Science}, 319:\penalty0 948--952, 2008.
+
+\bibitem[Hannes~Nickisch(2008)]{nickisch08}
+Carl Edward~Rasmussen Hannes~Nickisch.
+\newblock Approximations for binary process classification.
+\newblock \emph{Journal of Machine Learning Research}, 9:\penalty0 2035--2078,
+  2008.
+
+\bibitem[Hasan et~al.(2014)Hasan, Ierodiaconou, Laurenson, and
+  Schimel]{hasan14}
+Rozaimi~Che Hasan, Daniel Ierodiaconou, Laurie Laurenson, and Alexandre
+  Schimel.
+\newblock Integrating multibeam backscatter angular response, mosaic and
+  bathymetry data for benthic habitat mapping.
+\newblock \emph{PLoS ONE}, 9, 2014.
+
+\bibitem[Kostylev(2012)]{kostylev12}
+Vladimir Kostylev.
+\newblock Benthic habitat mapping from seabed acoustic surveys: do implicit
+  assumptions hold?
+\newblock 2012.
+
+\bibitem[Lucieera et~al.(2013)Lucieera, Hilla, Barretta, and Nichol]{lucieer13}
+Vanessa Lucieera, Nicole~A. Hilla, Neville~S. Barretta, and Scott Nichol.
+\newblock Do marine substrates ‘look’ and ‘sound’ the same? supervised
+  classification of multibeam acoustic data using autonomous underwater vehicle
+  images.
+\newblock \emph{Estuarine, Coastal and Shelf Science}, 117:\penalty0 94--106,
+  2013.
+
+\bibitem[Quinonero-Candela and Rasmussen(2005)]{candela05}
+Joaquin Quinonero-Candela and Carl~Edward Rasmussen.
+\newblock A unifying view of sparse approximate gaussian process regression.
+\newblock \emph{The Journal of Machine Learning Research}, 6:\penalty0
+  1939--1959, 2005.
+
+\bibitem[Rasmussen and Williams(2006)]{rasmussen06}
+Carl~Edward Rasmussen and Christopher K.~I. Williams.
+\newblock \emph{Gaussian Processes for Machine Learning}.
+\newblock The MIT Press, 2006.
+
+\bibitem[Rigby et~al.(2010)Rigby, Pizarro, and Williams]{rigby10}
+Paul Rigby, Oscar Pizarro, and Stefan~B. Williams.
+\newblock Toward adaptive benthic habitat mapping using gaussian process
+  classification.
+\newblock \emph{Journal of Field Robotics}, 27:\penalty0 741--758, 2010.
+
+\bibitem[Seiler et~al.(2012)Seiler, Friedman, Steinberg, Barrett, Williams, and
+  Holbrook]{seiler12}
+Jan Seiler, Ariell Friedman, Daniel Steinberg, Neville Barrett, Alan Williams,
+  and Neil~J. Holbrook.
+\newblock Image-based continental shelf habitat mapping using novel automated
+  data extraction techniques.
+\newblock \emph{Continental Shelf Research}, 45:\penalty0 87--97, 2012.
+
+\bibitem[Steinberg et~al.(2011)Steinberg, Friedman, Pizarro, Williams, and
+  S.B.]{steinberg11}
+D.~Steinberg, A.~Friedman, O.~Pizarro, Williams, and S.B.
+\newblock A bayesian nonparametric approach to clustering data from underwater
+  robotic surveys.
+\newblock International Symposium on Robotics Research, 2011.
+
+\end{thebibliography}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+%\vfill
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+% that's all folks
+\end{document}
+
+

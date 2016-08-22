@@ -1,0 +1,62 @@
+\documentclass[10pt,sts]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{multicol}               % Columns
+\usepackage{tabularx}               % Extra table functionality
+\usepackage{amssymb}
+\usepackage{amsmath}
+\setlength{\skip\footins}{1.0cm}    % More space between text and footnotes
+\usepackage{color}
+\usepackage{picinpar}
+\usepackage{graphicx}
+\graphicspath{ {/home/justinting/programming/jt-honours/images/} }
+\usepackage{wrapfig}
+\usepackage[export]{adjustbox}
+\usepackage{xcolor}
+\usepackage[hyperfootnotes=false]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    linkcolor=red,
+    urlcolor=blue,
+    citebordercolor=red,
+    filebordercolor=red,
+    linkbordercolor=blue
+}
+\usepackage[round]{natbib}          % Round brackets when citep*-ing sources
+\usepackage{comment}                % Comments...
+\usepackage{titlesec}
+% \USEpackage{pgfplots} % Don't have this atm
+\usepackage[parfill]{parskip}       % Newline instead of indentation per paragraph
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\columnsep}{0.7cm}       % Separate columns (when used) by 0.5cm
+% \setcounter{secnumdepth}{4}         % Give paragraphs 'numbers'
+\newcommand\gauss[2]{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}
+
+\title{Large Scale Gaussian Processes in Benthic Habitat Mapping}
+\author{Justin Ting, 430203826}
+\date{October 2016}
+
+\begin{document}
+\maketitle
+
+    \section{Abstract}
+
+    \section{Introduction}
+
+    \subsection{Overview}
+
+    \section{Literature Review}
+
+    \section{Data}
+
+    \section{Experiments}
+
+    \section{Conclusion}
+    Dummy citation: ~\citep{halpern08}
+
+\bibliographystyle{plainnat}
+
+\bibliography{Bibliography}
+
+\end{document}

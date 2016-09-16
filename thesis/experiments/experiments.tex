@@ -1,6 +1,20 @@
+\makeatletter
+\renewcommand{\fnum@figure}{Figure \thefigure}
+\makeatother
+
 \chapter{Experiments} \label{chap:experiments}
 
 To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor.
 
 \section{Downsampling the Data}
-As the purpose of proposing Dirichlet Multinomial Regression was to be able to model the distribution of habitat label occurrences over an area, we downsampled the 2015 data which was at a siginficantly higher resolution than previous years. Two methods of downsampling were tested. The first involved simply taking the space in which the data was collected and placing grids of fixed size over them, binning all points falling within each grid into a single datapoint. As each of these data points contained multiple points from the original dataset, each with their own counts for each of the possible labels, the downsampled points simply took the sum of all the label counts in each fixed grid.
+As the purpose of using Dirichlet Multinomial Regression was to be able to model the distribution of habitat label occurrences over an area, we downsampled the combined 2011+2015 dataset which was at a siginficantly higher resolution than the 2009 dataset. Two methods of downsampling in particular were tested. The first coarser approach involved simply taking the space in which the data was collected and placing grids of fixed size over them as in \cref{fig:gridsplit}, binning all points falling within each grid into a single datapoint. As each of these data points contained multiple points from the original dataset, each with their own counts for each of the possible labels, the downsampled points simply took the sum of all the label counts in each fixed grid. The second summed label counts in the same way, but clusters were instead formed by first calculating the full dendrogram on the 16502 entries in the training data, and forming groups such that none had more than 5 of the original points within them, and the sub-clusters (at each level of the dendrogram) were no more than a 21 metres away from one another. As can be seen in \cref{fig:dendrogram}, the gradual merging into the single supercluster was quite consistent, indicating the original datapoints were mostly evenly distributed.
+
+\begin{figure}
+    \caption{Fixed-sized grids placed over training data}
+    \label{fig:gridsplit}
+\end{figure}
+
+\begin{figure}
+    \caption{Dendrogram of training data}
+    \label{fig:dendrogram}
+\end{figure}

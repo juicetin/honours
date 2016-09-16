@@ -1,3 +1,4 @@
+\select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
@@ -5,6 +6,8 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Fixed-sized grids placed over training data}}{11}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Dendrogram of training data}}{11}{figure.4.2}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

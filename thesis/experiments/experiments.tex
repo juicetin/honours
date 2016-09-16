@@ -1,0 +1,6 @@
+\chapter{Experiments} \label{chap:experiments}
+
+To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor.
+
+\section{Downsampling the Data}
+As the purpose of proposing Dirichlet Multinomial Regression was to be able to model the distribution of habitat label occurrences over an area, we downsampled the 2015 data which was at a siginficantly higher resolution than previous years. Two methods of downsampling were tested. The first involved simply taking the space in which the data was collected and placing grids of fixed size over them, binning all points falling within each grid into a single datapoint. As each of these data points contained multiple points from the original dataset, each with their own counts for each of the possible labels, the downsampled points simply took the sum of all the label counts in each fixed grid.

@@ -40,9 +40,7 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 
-\makeatletter
-\renewcommand{\fnum@figure}{Figure \thefigure}
-\makeatother
+\graphicspath{{images/}}
 
 \rcDecimalSignOutput{.} % rccol
 
@@ -123,9 +121,9 @@
 
 \input{introduction/introduction.tex}
 \input{litreview/litreview.tex}
-\input{evaluation/evaluation.tex}
 \input{experiments/experiments.tex}
 \input{results/results.tex}
+\input{evaluation/evaluation.tex}
 \input{conclusion/conclusion.tex}
 
 

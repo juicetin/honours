@@ -93,6 +93,22 @@ Another step that was considered during experiments was the aggregation of habit
     \end{minipage}
 \end{figure}
 
+\begin{figure}[H]
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{hist_simple_labels.pdf}
+        \caption{Distribution of simplified labels in original dataset}
+        \label{fig:singlelabeldistr}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{hist_simple_multi_labels.pdf}
+        \caption{Distribution of simplified labels in multi-label outputs}
+        \label{fig:multilabeldistr}
+    \end{minipage}
+\end{figure}
+
+\todo{talk about getting an 'even' number of training points per class vs stratified - the former gives better results}
+
 \section{Illustrative Example}
 
 The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. \todo{generate toy example with a mixed label A,B region and separate regions of just A, just B}

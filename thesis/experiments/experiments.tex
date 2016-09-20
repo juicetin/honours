@@ -80,13 +80,13 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\todo{generate these images} \ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
 
 \begin{figure}[H]
-    \begin{minipage}{.48\linewidth}
+    \begin{minipage}{.49\linewidth}
         \includegraphics[width=\linewidth]{hist_full_labels.pdf}
         \caption{Distribution of labels in original dataset}
         \label{fig:singlelabeldistr}
     \end{minipage}
     \hfill
-    \begin{minipage}{.48\linewidth}
+    \begin{minipage}{.49\linewidth}
         \includegraphics[width=\linewidth]{hist_full_multi_labels.pdf}
         \caption{Distribution of labels in multi-label outputs}
         \label{fig:multilabeldistr}

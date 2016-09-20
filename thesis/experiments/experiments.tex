@@ -17,8 +17,11 @@ To identify whether the Dirichlet Multinomial Regression method proposed can pro
 Dirichlet multinomial regression, as the name suggestions, combines dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationship in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. \todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
 
 \subsection{Multinomial Distribution}
+\todo {equations, description}
 
 \subsection{Dirichlet Distribution}
+\todo{descriptions}
+
 $$\theta \sim Dir(\alpha) \text{ , dirichlet distributed random variable}$$ 
 $$p(\theta)= \frac{1}{\beta(\alpha)} \Pi_{i=1}^n \theta_i^{\alpha_i - 1} I(\theta \in S) \text{ density function, I is indicator function}$$ 
 $$ \theta = (\theta_1, ..., \theta_n), \alpha = (\alpha_1,...,\alpha_n), \alpha_i > 0 \text{ theta - n-dimensional vectors, alpha - parameters for distribution}$$
@@ -26,6 +29,9 @@ $$ S = \{x \in R^n : x_i \geq 0, \sum x_i = 1\} \text{ S is probability simplex,
 $$\frac{1}{\beta(\alpha)} = \frac{\Gamma(\alpha_0)}{\Gamma(\alpha_i) ... \Gamma(\alpha_n)}, \alpha_0 = \sum_{i=1}^n \alpha_i \text{ generalised beta function}$$
 
 \subsection{Dirichlet Multinomial Regression}
+
+\todo{descriptions}
+
 $$DM(C|\alpha) = \frac{M!}{\Pi_k C_k!} \frac{\Gamma(\sum_k \alpha_k)}{\Gamma(\sum_k c_k + \alpha_k)} \Pi_{k=1}^k \frac{\Gamma(C_k + \alpha_k)}{\Gamma(\alpha_k)}$$
 $$ M = \sum_k c_k $$
 
@@ -60,7 +66,7 @@ The second summed label counts in the same way, but clusters were instead formed
 For a fair comparison between Gaussian process classification and dirichlet multinomial regression, the downsampled data was used to train the GPs as well - although this seems like an unnecessary handicap to the GP, it is more appropriate considering that one of the aims here is to demonstrate what sort of information can be gained from a DM vs. a GP, given the same \textit{raw} data.
 
 \begin{figure}[H]
-    \caption{Fixed-sized grids placed over training data}
+    \caption{\todo{create} Fixed-sized grids placed over training data}
     \label{fig:gridsplit}
 \end{figure} 
 \begin{figure}[H]
@@ -71,17 +77,23 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 \end{figure}
 
 \subsection{Simplifying labels}
-Another step that was taken during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
+Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\todo{generate these images} \ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
 
 \begin{figure}[H]
-    \caption{Distribution of labels in original dataset}
-    \label{fig:singlelabeldistr}
+    \begin{minipage}{.48\linewidth}
+        \includegraphics[width=\linewidth]{hist_full_labels.pdf}
+        \caption{Distribution of labels in original dataset}
+        \label{fig:singlelabeldistr}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.48\linewidth}
+        \includegraphics[width=\linewidth]{hist_full_multi_labels.pdf}
+        \caption{Distribution of labels in multi-label outputs}
+        \label{fig:multilabeldistr}
+    \end{minipage}
 \end{figure}
 
-\begin{figure}[H]
-    \caption{Distribution of labels in multi-label outputs}
-    \label{fig:multilabeldistr}
-\end{figure}
+\section{Illustrative Example}
 
 The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. \todo{generate toy example with a mixed label A,B region and separate regions of just A, just B}
 

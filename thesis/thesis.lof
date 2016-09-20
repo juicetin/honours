@@ -5,10 +5,10 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Fixed-sized grids placed over training data}}{14}{figure.3.1}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Dendrogram of training data}}{14}{figure.3.2}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Distribution of labels in original dataset}}{15}{figure.3.3}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Distribution of labels in multi-label outputs}}{15}{figure.3.4}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces {\color {red} create} Fixed-sized grids placed over training data}}{16}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Dendrogram of training data}}{16}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Distribution of labels in original dataset}}{17}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Distribution of labels in multi-label outputs}}{17}{figure.3.4}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

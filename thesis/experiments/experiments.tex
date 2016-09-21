@@ -79,6 +79,8 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 \subsection{Simplifying labels}
 Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\todo{generate these images} \ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
 
+label\_map={1:0,2:0,3:1,4:3,5:1,6:3,7:3,8:3,9:3,10:1,11:3,12:3,13:2,14:2,15:2,16:1,17:1,18:0,19:1,20:0,21:0,22:1,23:0,24:0}
+
 \begin{figure}[H]
     \begin{minipage}{.49\linewidth}
         \includegraphics[width=\linewidth]{hist_full_labels.pdf}
@@ -107,7 +109,17 @@ Another step that was considered during experiments was the aggregation of habit
     \end{minipage}
 \end{figure}
 
-\todo{talk about getting an 'even' number of training points per class vs stratified - the former gives better results}
+\subsection{Coordinates as features}
+\todo{not taking coordiantes in features - include image of broken random forest predictions, perhaps?}
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{full_predictions_randomforest.pdf}
+    \caption{Full predictive map using Random Forests including coordinates as features}
+    \label{fig:rf_w_coords_preds}
+\end{figure}
+
+\subsection{Subsampling for Gaussian Process experiments}
+
+Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random sets of 1000 with each class sampled equally, and the best set chosen after 200 runs of random subsampling.
 
 \section{Illustrative Example}
 

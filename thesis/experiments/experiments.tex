@@ -6,20 +6,23 @@
 
 To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor. The main machine learning algorithms' performance which we tested were Gaussian Process Classification, and Dirichlet Multinomial Regression.
 
-\section{Gaussian Processes}
+\section{Mathematical Background}
+\todo{(this needs/should be in its own chapter)}
+
+\subsection{Gaussian Processes}
 
 \todo {GP equations, description}
 
 \todo {GP approximation methods}
 
-\section{Dirichlet Multinomial Regression}
+\subsection{Dirichlet Multinomial Regression}
 
 Dirichlet multinomial regression, as the name suggestions, combines dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationship in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. \todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
 
-\subsection{Multinomial Distribution}
+\subsubsection{Multinomial Distribution}
 \todo {equations, description}
 
-\subsection{Dirichlet Distribution}
+\subsubsection{Dirichlet Distribution}
 \todo{descriptions}
 
 $$\theta \sim Dir(\alpha) \text{ , dirichlet distributed random variable}$$ 
@@ -28,7 +31,7 @@ $$ \theta = (\theta_1, ..., \theta_n), \alpha = (\alpha_1,...,\alpha_n), \alpha_
 $$ S = \{x \in R^n : x_i \geq 0, \sum x_i = 1\} \text{ S is probability simplex, the set of pmfs on numbers 1 through n}$$ 
 $$\frac{1}{\beta(\alpha)} = \frac{\Gamma(\alpha_0)}{\Gamma(\alpha_i) ... \Gamma(\alpha_n)}, \alpha_0 = \sum_{i=1}^n \alpha_i \text{ generalised beta function}$$
 
-\subsection{Dirichlet Multinomial Regression}
+\subsubsection{Dirichlet Multinomial Regression}
 
 \todo{descriptions}
 
@@ -79,7 +82,19 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 \subsection{Simplifying labels}
 Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\todo{generate these images} \ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
 
-label\_map={1:0,2:0,3:1,4:3,5:1,6:3,7:3,8:3,9:3,10:1,11:3,12:3,13:2,14:2,15:2,16:1,17:1,18:0,19:1,20:0,21:0,22:1,23:0,24:0}
+\todo{label mappings - give the `English' labels for the simplified classes}
+
+\begin{tabular}{|c| c|}
+    \hline
+    simplified & original \\\hline
+    0 & 1, 2, 18, 20, 21, 23, 24 \\
+    1 & 3, 5, 10, 16, 17, 19, 22\\
+    2 & 13, 14, 15 \\
+    3 & 4, 6, 7, 8, 9, 11, 12 \\
+    \hline
+\end{tabular}
+
+\todo{put some images here from both original and simplified classes}
 
 \begin{figure}[H]
     \begin{minipage}{.49\linewidth}
@@ -111,11 +126,22 @@ label\_map={1:0,2:0,3:1,4:3,5:1,6:3,7:3,8:3,9:3,10:1,11:3,12:3,13:2,14:2,15:2,16
 
 \subsection{Coordinates as features}
 \todo{not taking coordiantes in features - include image of broken random forest predictions, perhaps?}
+Due to the abundant bathymetry data that was available in the form of depth, rugosity and aspect at each available data point, there was reason not to include the coordinates themselves in the feature space. Whilst it does make sense that in a natural environment, areas that were spatially near to one another would also have similar properties, this should not be relied upon, and other intrinsic properties should be the basis upon which predictions are made. Forming predictions on the full query dataset using a random forest supports this notion quite strongly - whilst 10-fold cross validation using the coordinates as features had a notably higher F-score of 0.61 compared to 0.40 without, the unnaturally straight split between the left and right segments over a 12km region suggests that the predictive map is flawed. \todo{(argument here alone is weak. for simplified labels using coords is still much better by a similar margin, do some reading to back this up properly)}
+
 \begin{figure}[H]
-    \includegraphics[width=\linewidth]{full_predictions_randomforest.pdf}
-    \caption{Full predictive map using Random Forests including coordinates as features}
-    \label{fig:rf_w_coords_preds}
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{full_predictions_randomforest.pdf}
+        \caption{Full predictive map using Random Forests including coordinates as features}
+        \label{fig:rf_w_coords_preds}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{full_predictions_randomforest_nocoords.pdf}
+        \caption{Full predictive map using Random Forests excluding coordinates as features}
+        \label{fig:rf_wo_coords_preds}
+    \end{minipage}
 \end{figure}
+
 
 \subsection{Subsampling for Gaussian Process experiments}
 
@@ -123,6 +149,10 @@ Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using 
 
 \section{Illustrative Example}
 
-The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. \todo{generate toy example with a mixed label A,B region and separate regions of just A, just B}
+The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. 
+
+\todo{generate toy example with a mixed label A,B region and separate regions of just A, just B}
 
 From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is more confident in the fact that that area does in fact have a mix of labels. 
+
+

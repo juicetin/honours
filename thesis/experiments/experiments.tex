@@ -4,7 +4,7 @@
 
 \chapter{Experiments} \label{chap:experiments}
 
-To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor. The main machine learning algorithms' performance which we tested were Gaussian Process Classification, and Dirichlet Multinomial Regression.
+To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor. The main machine learning algorithms' performance which we tested were Gaussian Process Classification, and Dirichlet Multinomial Regression. In this section, the experiments were designed to display the benefits of a Gaussian Process Classifier's probabilistic output, as well as the label distributions of a Dirichlet Multinomial Regressor.
 
 \section{Mathematical Background}
 \todo{(this needs/should be in its own chapter)}
@@ -69,6 +69,7 @@ The second summed label counts in the same way, but clusters were instead formed
 For a fair comparison between Gaussian process classification and dirichlet multinomial regression, the downsampled data was used to train the GPs as well - although this seems like an unnecessary handicap to the GP, it is more appropriate considering that one of the aims here is to demonstrate what sort of information can be gained from a DM vs. a GP, given the same \textit{raw} data.
 
 \begin{figure}[H]
+    \includegraphics[scale=0.7]{training_map_fixedgrid.pdf}
     \caption{\todo{create} Fixed-sized grids placed over training data}
     \label{fig:gridsplit}
 \end{figure} 
@@ -82,7 +83,7 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 \subsection{Simplifying labels}
 Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels(\todo{generate these images} \ref{fig:singlelabeldistr} and \ref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only a rough approximation of an area's benthic map were required.
 
-\todo{label mappings - give the `English' labels for the simplified classes}
+\todo{label mappings - give the labels for the simplified classes, e.g. coral, etc.}
 
 \begin{tabular}{|c| c|}
     \hline
@@ -94,7 +95,7 @@ Another step that was considered during experiments was the aggregation of habit
     \hline
 \end{tabular}
 
-\todo{put some images here from both original and simplified classes}
+\todo{put some images here from both original and simplified classes. don't use squidle's downloader, visit server directory and d/l from there directly, 100x+ faster}
 
 \begin{figure}[H]
     \begin{minipage}{.49\linewidth}
@@ -125,7 +126,6 @@ Another step that was considered during experiments was the aggregation of habit
 \end{figure}
 
 \subsection{Coordinates as features}
-\todo{not taking coordiantes in features - include image of broken random forest predictions, perhaps?}
 Due to the abundant bathymetry data that was available in the form of depth, rugosity and aspect at each available data point, there was reason not to include the coordinates themselves in the feature space. Whilst it does make sense that in a natural environment, areas that were spatially near to one another would also have similar properties, this should not be relied upon, and other intrinsic properties should be the basis upon which predictions are made. Forming predictions on the full query dataset using a random forest supports this notion quite strongly - whilst 10-fold cross validation using the coordinates as features had a notably higher F-score of 0.61 compared to 0.40 without, the unnaturally straight split between the left and right segments over a 12km region suggests that the predictive map is flawed. \todo{(argument here alone is weak. for simplified labels using coords is still much better by a similar margin, do some reading to back this up properly)}
 
 \begin{figure}[H]
@@ -145,14 +145,54 @@ Due to the abundant bathymetry data that was available in the form of depth, rug
 
 \subsection{Subsampling for Gaussian Process experiments}
 
-Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random sets of 1000 with each class sampled equally, and the best set chosen after 200 runs of random subsampling.
+Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random sets of 1000 with each class sampled equally, and the best set chosen after 200 runs of random subsampling.
 
 \section{Illustrative Example}
 
-The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. 
+The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. Note that three clusters were synthesised, with clusters A, B containing $0.7:0.3$ and $0.3:0.7$ average ratios in label mix per point respectively, while cluster C contained an even $0.5:0.5$ average split, where cluster had $100$ points.. Note that the colours on the overall plot are only representative of the \textbf{most} common label at each point - the actual distributions at each point are shown in the graphs following it.
 
-\todo{generate toy example with a mixed label A,B region and separate regions of just A, just B}
+% \todo{generate toy example with a mixed label A,B region and separate regions of mostly A, mostly B respectively}
+
+\begin{figure}[H]
+    \begin{minipage}{.9\linewidth}
+        \includegraphics[width=\linewidth]{toydataplot.pdf}
+        \caption{Plots of the three clusters, with labels taking on the argmax of each point}
+        \label{fig:toyplot}
+    \end{minipage}
+\end{figure}
+
+\todo{insert legend for 3 figures below here}
+
+\begin{figure}[H]
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{toy_clusterA_distr.pdf}
+        \caption{Label distribution of cluster A}
+        \label{fig:toyclusterA}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{toy_clusterB_distr.pdf}
+        \caption{Label distribution of cluster B}
+        \label{fig:toyclusterB}
+    \end{minipage}
+    \begin{minipage}{.49\linewidth}
+        \includegraphics[width=\linewidth]{toy_clusterC_distr.pdf}
+        \caption{Label distribution of cluster C}
+        \label{fig:toyclusterC}
+    \end{minipage}
+\end{figure}
+
+In this example, the GP and DM models were each trained on half of each cluster, and made to predict the other half. However, as a standard GPC can only have single label inputs and outputs, a approximation/simplification was made, whereby the label was simply taken to be the most frequently occurring label at any given point. While this is a reasonable simplification for clusters A, B, it evidently is not for C, as the split between the two labels per point in the cluster is exactly even. Note that while multi-task GPs were considered as a means of making a \textit{fairer} comparison between a GP and DM, the idea was ultimately discarded as it was not fit for purpose, one of the primary issues being that the model does not inherently restrict the outputs of a given datapoint to sum to $1$, instead being at the mercy of the parameters of the GP.
+
+\todo{(insert results of the illustrative example here)}
+
+0.0740971448268
+
+0.266666666667
+
+\todo{plot actual vs predicted for DM}
+\todo{plot the same for GP + with variances/error prediction}
+
+As we can see, the DM performed notably better than the GP, though this is admittedly a rather simple example that assumes we have a sufficient amount of data from the \textit{three} possible habitat clusters - A by itself, B by itself, and a homogeneous mix of A and B.
 
 From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is more confident in the fact that that area does in fact have a mix of labels. 
-
-

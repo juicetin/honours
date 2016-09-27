@@ -149,7 +149,7 @@ Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using 
 
 \section{Illustrative Example}
 
-The differences between a Gaussian Process which provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor which provides the distribution of actual labels at a point, are highlighted in the illustrative example below. Note that three clusters were synthesised, with clusters A, B containing $0.7:0.3$ and $0.3:0.7$ average ratios in label mix per point respectively, while cluster C contained an even $0.5:0.5$ average split, where cluster had $100$ points.. Note that the colours on the overall plot are only representative of the \textbf{most} common label at each point - the actual distributions at each point are shown in the graphs following it.
+The differences between a Gaussian Process that provides the probability distribution of possible labels compared to the Dirichlet Multinomial Regressor that provides the distribution of actual labels at a point, are highlighted in the illustrative example below. Note that three clusters were synthesised, with clusters A, B containing $0.7:0.3$ and $0.3:0.7$ average ratios in label mix per point respectively, while cluster C contained an even $0.5:0.5$ average split, where cluster had $100$ points. The colours on the overall plot are only representative of the \textbf{most} common label at each point - the actual distributions at each point are shown in the graphs following it.
 
 % \todo{generate toy example with a mixed label A,B region and separate regions of mostly A, mostly B respectively}
 
@@ -184,11 +184,16 @@ The differences between a Gaussian Process which provides the probability distri
 
 In this example, the GP and DM models were each trained on half of each cluster, and made to predict the other half. However, as a standard GPC can only have single label inputs and outputs, a approximation/simplification was made, whereby the label was simply taken to be the most frequently occurring label at any given point. While this is a reasonable simplification for clusters A, B, it evidently is not for C, as the split between the two labels per point in the cluster is exactly even. Note that while multi-task GPs were considered as a means of making a \textit{fairer} comparison between a GP and DM, the idea was ultimately discarded as it was not fit for purpose, one of the primary issues being that the model does not inherently restrict the outputs of a given datapoint to sum to $1$, instead being at the mercy of the parameters of the GP.
 
-\todo{(insert results of the illustrative example here)}
+\todo{(insert (more?) results of the illustrative example here)}
 
-0.0740971448268
+\begin{tabular}{|c|c|}
+    \hline
+    Algorithm & Root mean squared error \\\hline
+    Dirichlet Multinomial Regressor & 0.0741 \\
+    Gaussian Process Classifier (argmax) & 0.2667 \\
+    \hline
+\end{tabular}
 
-0.266666666667
 
 \todo{plot actual vs predicted for DM}
 \todo{plot the same for GP + with variances/error prediction}

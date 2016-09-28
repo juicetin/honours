@@ -154,14 +154,16 @@ The differences between a Gaussian Process that provides the probability distrib
 % \todo{generate toy example with a mixed label A,B region and separate regions of mostly A, mostly B respectively}
 
 \begin{figure}[H]
-    \begin{minipage}{.9\linewidth}
-        \includegraphics[width=\linewidth]{toydataplot.pdf}
-        \caption{Plots of the three clusters, with labels taking on the argmax of each point}
-        \label{fig:toyplot}
-    \end{minipage}
+    \includegraphics[scale=0.7]{toydataplot.pdf}
+    \caption{Plots of the three clusters, with labels taking on the argmax of each point}
+    \label{fig:toyplot}
 \end{figure}
 
-\todo{insert legend for 3 figures below here}
+\begin{figure}[H]
+    \includegraphics[trim={0 2cm 0 2cm}]{toyplot_hist_distr_legend.pdf}
+    \caption{Legend/axes for the following histogram plots showing distribution of labels at each point}
+    \label{fig:toyplothist_legend}
+\end{figure}
 
 \begin{figure}[H]
     \begin{minipage}{.49\linewidth}
@@ -182,32 +184,44 @@ The differences between a Gaussian Process that provides the probability distrib
     \end{minipage}
 \end{figure}
 
-In this example, the GP and DM models were each trained on half of each cluster, and made to predict the other half. However, as a standard GPC can only have single label inputs and outputs, a approximation/simplification was made, whereby the label was simply taken to be the most frequently occurring label at any given point. While this is a reasonable simplification for clusters A, B, it evidently is not for C, as the split between the two labels per point in the cluster is exactly even. In an initial attempt to counter this, multi-task GPs were considered as a means of making a \textit{fairer} comparison between a GP and DM, but the idea was ultimately discarded as it was not fit for purpose, one of the primary issues being that the model does not inherently restrict the outputs of a given datapoint to sum to $1$, instead being at the mercy of the parameters of the GP. The results and plots for this example are below, and figures displayed were taken from an average of $20$ runs.
+In this example, the GP and DM models were each trained on half of each cluster, and made to predict the other half. However, as a standard GPC can only have single label inputs and outputs, a approximation/simplification was made for the purpose of calculating average error, whereby the label was simply taken to be the most frequently occurring label at any given point. While this is a reasonable simplification for clusters A, B as the dominant label has majority share, this is not the case for C, as the split between the two labels per point in the cluster is exactly even. In an initial attempt to counter this, multi-task GPs were considered as a means of making a \textit{fairer} comparison between a GP and DM, but the idea was ultimately discarded as it was not fit for purpose, one of the primary issues being that the model does not inherently restrict the outputs of a given datapoint to sum to $1$, instead being at the mercy of the parameters of the GP. The results and plots for this example are below, and figures displayed were taken from an average of $20$ runs.
 
 \begin{tabular}{|C{4cm}|C{4cm}|c|}
     \hline
-    & Dirichlet Multinomial Regression RMSE & Gaussian Process Classifier (argmax) RMSE \\\hline
+    & Dirichlet Multinomial Regression RMSE* & Gaussian Process Classifier (argmax) RMSE \\\hline
     Original data & 0.070179271314358999 & 0.26833333333333337 \\\hline
     Quadratic-space projection & 0.065630111843395234 & 0.43433333333333335 \\\hline
     Cubic-space projection & 0.29019235800882354 & 0.43725490196076466 \\\hline
 \end{tabular}
+\begingroup
+\tiny{RMSE - root mean squared error}
+\endgroup
 
-As can be seen from the above overvise, the DM performed best when projecting the data to quadratic space, while the GPC did best on the original data as-is. The plots below displaying the specific behaviour of the two models for different classes for each of the clusters are for the data in which they performed the best.
+As can be seen from the above overvise, the DM performed best when projecting the data to quadratic space, while the GPC didbest on the original data as-is. This was taken into account for the plots below for the DM and GP respectively, which used an instance of the more favourably performing processed data. Note that the exact probabilities provided by the GP are hown in the following plots, in contrast to the argmax taken for error-calculation purposes.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.7]{toy_dm_pred_plot0.pdf}
+    \includegraphics[scale=0.6]{toy_dm_pred_plot0.pdf}
     \caption{DM Label distribution of label 0}
     \label{fig:toylabel0}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[scale=0.7]{toy_dm_pred_plot1.pdf}
+    \includegraphics[scale=0.6]{toy_dm_pred_plot1.pdf}
     \caption{DM Label distribution of label 1}
     \label{fig:toylabel1}
-\end{figure}
-\todo{sitting on averages particularly in spread out areas. cause for concern?}
+\end{figure} 
+%\todo{dm - sitting on averages in each cluster. cause for concern?}
 
-\todo{plot the same for GP + with variances/error prediction}
+\begin{figure}[H]
+    \includegraphics[scale=0.6]{gp_with_vars0.pdf}
+    \caption{OvR GP performance with variance for label 0}
+    \label{fig:toylabel0}
+\end{figure}
+\begin{figure}[H]
+    \includegraphics[scale=0.6]{gp_with_vars1.pdf}
+    \caption{OvR GP performance with variance for label 1}
+    \label{fig:toylabel1}
+\end{figure} 
 
 As we can see, the DM performed notably better than the GP, though this is admittedly a rather simple example that assumes we have a sufficient amount of data from the \textit{three} possible habitat clusters - A by itself, B by itself, and a homogeneous mix of A and B.
 
-From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is more confident in the fact that that area does in fact have a mix of labels.
+From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and very uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is more confident in the fact that that area does in fact have a mix of labels.

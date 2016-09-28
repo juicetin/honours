@@ -14,11 +14,14 @@
 \contentsline {figure}{\numberline {3.7}{\ignorespaces Full predictive map using Random Forests including coordinates as features}}{19}{figure.3.7}
 \contentsline {figure}{\numberline {3.8}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{19}{figure.3.8}
 \contentsline {figure}{\numberline {3.9}{\ignorespaces Plots of the three clusters, with labels taking on the argmax of each point}}{20}{figure.3.9}
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Label distribution of cluster A}}{21}{figure.3.10}
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Label distribution of cluster B}}{21}{figure.3.11}
-\contentsline {figure}{\numberline {3.12}{\ignorespaces Label distribution of cluster C}}{21}{figure.3.12}
-\contentsline {figure}{\numberline {3.13}{\ignorespaces DM Label distribution of label 0}}{22}{figure.3.13}
-\contentsline {figure}{\numberline {3.14}{\ignorespaces DM Label distribution of label 1}}{23}{figure.3.14}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Legend/axes for the following histogram plots showing distribution of labels at each point}}{21}{figure.3.10}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Label distribution of cluster A}}{21}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Label distribution of cluster B}}{21}{figure.3.12}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Label distribution of cluster C}}{21}{figure.3.13}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces DM Label distribution of label 0}}{23}{figure.3.14}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces DM Label distribution of label 1}}{23}{figure.3.15}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces OvR GP performance with variance for label 0}}{24}{figure.3.16}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces OvR GP performance with variance for label 1}}{24}{figure.3.17}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

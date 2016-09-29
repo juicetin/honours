@@ -4,23 +4,56 @@ The results from the Experiments detailed in Chapter 4 are listed below. The ran
 
 Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps.
 
-The associated generated maps from the experiments are also provided here, but proper evaluation of them, such as what habitat clusters and relationships can be gleaned, will be explored in Chapter 5. 
+In this section, the performance of common machine learning algorithms, namely kNN, Logistic Regression, Random Forest, and SVM are explored first, to provide a comparison to the later, more complex algorithms.
 
-\begin{tabular}{|c|c|c|}
+% The associated generated maps from the experiments are also provided here, but proper evaluation of them, such as what habitat clusters and relationships can be gleaned, will be explored in Chapter 5. 
+
+\pagebreak
+\section{Deterministic Methods}
+
+\todo{results here currently outperform the argmax of GPs and DMs...hmm}
+
+\begin{tabular}{|c|c|c|c|c|c|}
     \hline
-    a & a & a \\
+    Algorithm & 10F-CV F1 & 10F-CV Accuracy & Parameters & Data \\\hline
+        KNN         &  0.7180212553324016  &  0.8752880347998457 &   n = 5  & simple labels \\
+Logistic Regression &  0.21221134330881872 &  0.7374253253308372 &            & simple labels \\
+   Random Forest    &  0.8103659316744121  &  0.9117076519281244 &            & simple labels \\
+        SVC         &  0.21221261743619468 &  0.7374255088743278 &     OvA    & simple labels \\
+         DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\
+        KNN         &  0.4711662374785644  &  0.6510716003156948 &   n = 5  &  full labels  \\
+Logistic Regression &  0.06457891531653175 & 0.25912130389295746 &            &  full labels  \\
+   Random Forest    &  0.6075895500970125  &  0.7263355175008718 &            &  full labels  \\
+        SVC         & 0.012413092166172946 & 0.16549499843988033 &     OvA    &  full labels  \\
+         DM         &  0.13802716811804644 & 0.37856057852908254 &            &  full labels  \\
     \hline
 \end{tabular}
-
-\section{Deterministic Methods}
-\todo{results here currently outperform the argmax of GPs and DMs...hmm}
 
 \section{Gaussian Process Classification}
 
 \todo{transfer all the results from markdown}
 
+\todo{show more stratified results (not just even) to show that even did better}
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    500     & Even       & GP     & 10F-CV & 10        & 0.86534    &                     &         \\
+    500     & Stratified & GP     & 10F-CV & 10        & 0.80136    &                     &         \\
+    1000    & Even       & GP     & All    & 1         & 0.87626    & Deterministic       & 0.56208 \\
+    1000    & Even       & PoEGP  & All    & 5         & 0.80973    &                     & 0.47481 \\
+    1000    & Even       & PoEGP  & All    & 200       & 0.80186    &                     & 0.47595 \\
+    1000    & Even       & GPoEGP & All    & 5         & 0.80864    &                     & 0.51018 \\
+    1000    & Even       & GPoEGP & All    & 200       & 0.80105    &                     & 0.47748 \\
+    1000    & Even       & BCM    & All    & 5         & 0.80682    &                     & 0.48167 \\
+    1000    & Even       & BCM    & All    & 200       & 0.80421    &                     & 0.48227 \\
+    1000    & Even       & GPy    & All    & 1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
+    \hline
+\end{tabular}
+
+\todo{highlight areas with low certainty, etc.}
+
 \section{Dirichlet Multinomial Regression}
 
 \todo{transfer all the results from markdown}
 
-
+\todo{highlight areas with biodiversity, etc.}

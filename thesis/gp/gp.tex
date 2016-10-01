@@ -1,0 +1,12 @@
+\chapter{Gaussian Processes} \label{chap:gps}
+
+\subsection{Gaussian Processes}
+
+\todo {GP equations, description}
+
+\subsection{Subsampling for Gaussian Process experiments}
+\todo {GP approximation methods}
+
+Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random sets of 1000 with each class sampled equally, and the best set chosen after 200 runs of random subsampling.
+
+

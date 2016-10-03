@@ -1,6 +1,12 @@
 \chapter{Literature Review} \label{chap:litreview}
 
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OVERVIEW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Notes
+\begin{enumerate}
+    \item when talking about LR/RF, include some basic maths
+    \item refer back to these equations/etc. in later chapters when describing advantages/etc.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OVERVIEW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
            \section{Overview}
             The process of benthic habitat mapping involves three key steps that the large majority of all studies in the area go through.\footnote{Ozcoasts.gov.au. (2016). Benthic habitat mapping: Mapping Overview. [online] Available at: http://www.ozcoasts.gov.au/geom\_geol/toolkit/mapoverview.jsp}. In this section, we will give a brief overview of each of these steps, along with common procedures used in them across studies in this area.
 
@@ -10,7 +16,7 @@
                 \item \textbf{Habitat Mapping} - using classifications with the larger scale bathymetry data to extrapolate habitat maps 
             \end{enumerate}
 
-                                %%%%%%%%%%%%%%% Habitat Characterisation %%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%% Habitat Characterisation %%%%%%%%%%%%%%%
             \subsection{Habitat Characterisation}
             \todo {not just resolution of data but modality. images vs bathymetry} If we were able to collect high resolution data for the entire ocean's benthos - the job of creating benthic habitats for any given area would be (relatively) trivial. As this is prohibitively expensive, we instead collect large amounts of low resolution data, and small samples of high resolution data (between which we model a relationship). This subsection provides a brief summary of data collected and methods used to do so.
 
@@ -26,7 +32,7 @@
             \paragraph{Other data}
             \todo{(why is water column correction important when correlating images with seagrass standing crop?)} Other data that is less common, but also used to map habitats, is patterns in the water movement (such as tidal currents, wave action)~\citep*{cjbrown11} in the column of water above the area of benthos being mapped - a feature that provided useful input in arriving at an accurate benthic habitat map (in addition to sediment analysis).~\citep*{snelgrove94} Other sources such as UNESCO have also verified the importance and significance of using water column correction techniques to obtain more accurate habitat maps, particularly when correlating images with segrass standing crop. \footnote{Unesco.org. (2016). Water column correction techniques. [online] Available at: http://www.unesco.org/csi/pub/source/rs10.htm} 
 
-%%%%%%%%%%%%%%% Habitat Classification %%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%% Habitat Classification %%%%%%%%%%%%%%%
             \section{Habitat Classification}
 
             \todo{more in-depth focus here, what kind of supervised/unsupervised ML algorithms are used for classification?} Almost all studies use \textit{in situ} 'truthing' data to complement the acoustic data to be able to build a model between the acoustic data and truthing data (creation of these models are explained in following sections). However, we need to know the labels of this data considering that the final goal is to create a habitat map, where any one habitual zone is given its prospetive label - to do this, we also need to label the clusters of truthing data. These categories may be, for example, 'bedrock covered by discontinuous seagrass cover', 'Maerl interspersed with sand and gravel', 'superficially coarse sand to fine gravel covered by dense patches of seagrass', etc.~\citep{micallef12}. The two overarching ways to perform this classification are in the form of supervised and unsupervised algorithms.

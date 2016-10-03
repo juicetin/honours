@@ -14,7 +14,7 @@
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{amsart}}
 
 \ProcessOptions
-\LoadClass[a4paper,oneside,11pt,reqno]{amsbook}
+\LoadClass[a4paper,oneside,12pt,reqno]{amsbook}
 
 \hfuzz=4pt
 \vfuzz=4pt

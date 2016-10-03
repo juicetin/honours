@@ -1,12 +1,54 @@
 \chapter{Gaussian Processes} \label{chap:gps}
 
-\subsection{Gaussian Processes}
+This chapter explores the maths behind Gaussian Process Classification generally, as well as the specific implementation that was used for the experiments that were run. To perform classification, one-vs-all classifiers were used with regressors as the underlying function, and the hyperparameters of each classifier (to be explained below) were trained using leave-one-out cross-validation (LOO-CV) with a squared exponential kernel. The sections regarding Gaussian Process Classification directly (up to but not including the GP approximation sections) are using Rasmussen and Williams's Gaussian Processes for Machine Learning \citep{rasmussen06}. In particular, Chapter 2 - Regression, and Chapter 5 - Model Selection and Adaptation of Hyperparameters (for LOO-CV) were used for reference.
 
-\todo {GP equations, description}
+% $\mathbf{f_*}$ - predictive function outputs corresponding to input data $X_*$
 
-\subsection{Subsampling for Gaussian Process experiments}
-\todo {GP approximation methods}
+\section{Gaussian Process Regression}
 
-Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random sets of 1000 with each class sampled equally, and the best set chosen after 200 runs of random subsampling.
+We define a Gaussian Process on input x to have mean and covariance:
+$$f(x) \sim GP(m(x), k(x, x'))$$
 
+Where the covariance function between points $p, q$ is given by:
+$$cov(f(x_p), f(x_q)) = k(x_p, x_q) = \exp(-\frac{1}{2}|x_p-x_q|^2)$$
+
+* distribution over functions
+
+$$\mathbf{f_*} | X, \mathbf{y}, X* \sim \mathcal{N}(\mathbf{\bar{f_*}}, \text{cov}(\mathbf{f_*})) \text{, where}$$
+$$\mathbf{\bar{f_*}} \triangleq E[f_*|X,\mathbf{y},X_*] = K(X_*, X)[K(X,X) + \sigma^2_n]^{-1}\mathbf{y}$$
+$$cov(\mathbf{f_*}) = K(X_*,X_*) - K(X_*, X)[K(X,X) + \sigma_n^2]^{-1}K(X,X_*)$$
+
+To simplify following notation, we make the following abbreviations:
+$K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
+
+$$\bar{f_*} = k_*^T(K+\sigma_n^2)^{-1} \mathbf{y}$$
+
+\section{Gaussian Process Classification}
+
+\section{Leave-one-out Cross Validation}
+
+The log probability ommitting training case $i$
+
+$$\log p(y_i|X, \mathbf{y_i}, \theta) = -\frac{1}{2}\log\sigma^2_i - \frac{(y_i - \mu_i)^2}{2 \sigma^2_i} - \frac{1}{2}\log2\pi$$
+
+$$ L_{LOO}(X, y, \theta) = \sigma^n_{i=1} \log p(y_i, X, \mathbf{y_i}, \mathbf{\theta})$$
+
+LOO-CV predictive mean and variance
+$$\mu_i= y_i - [K^{-1}\mathbf{y}]_i / [K^{-1}]_{ii} \text{ and } \sigma_i^2 = 1/[K^{-1}]_{ii}$$
+
+partial derivatives with respect to the hyperparameters
+$$\frac{\partial{u_i}}{\partial{\theta_j}} = \frac{[Z_j \alpha]}{[K^{-1}]_{ii}} - \frac{\alpha_i[Z_j K^{-1}_{ii}]_{ii}}{[K^{-1}]^2_{ii}}$$
+$$\frac{\partial{\sigma_i^2}}{\partial{\theta_j}} = \frac{[Z_jK^{-1}]_{ii}}{[K^{-1}]^2_{ii}}$$
+
+where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{\theta_j}}$
+
+\section{Subsampling for Gaussian Process experiments}
+
+Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random subsets of this size. To obtain the 1000 datapoints, both stratified sampling, as well as obtaining ratios of labels matching those in the training set were used. After 200 runs, the set with the best performance was used for the remaining GP experiments.
+
+\section{Gaussian Process Approximation}
+
+However, although significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier, there exist approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second, which is the one we will perform experiments using, is using \textit{ensemble} methods - combining the results of many independent GPs trained in parallel, at the expense of computational power.
+
+\citep{deisenroth15}
 

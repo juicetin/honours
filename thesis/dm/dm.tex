@@ -86,16 +86,19 @@ In this example, the GP and DM models were each trained on half of each cluster,
 
 The results and plots for this example are below, and figures displayed were taken from an average of $20$ runs.
 
-\begin{tabular}{|C{4cm}|C{4cm}|c|}
-    \hline
-    & Dirichlet Multinomial Regression RMSE* & Gaussian Process Classifier (argmax) RMSE \\\hline
-    Original data & 0.070179271314358999 & 0.26833333333333337 \\\hline
-    Quadratic-space projection & 0.065630111843395234 & 0.43433333333333335 \\\hline
-    Cubic-space projection & 0.29019235800882354 & 0.43725490196076466 \\\hline
-\end{tabular}
-\begingroup
-\tiny{RMSE - root mean squared error}
-\endgroup
+\begin{table}[H]
+    \label{table:toy_gm_vs_gp}
+    \begin{tabular}{|C{4cm}|C{4cm}|c|}
+        \hline
+        & Dirichlet Multinomial Regression RMSE* & Gaussian Process Classifier (argmax) RMSE \\\hline
+        Original data & 0.070179271314358999 & 0.26833333333333337 \\\hline
+        Quadratic-space projection & 0.065630111843395234 & 0.43433333333333335 \\\hline
+        Cubic-space projection & 0.29019235800882354 & 0.43725490196076466 \\\hline
+    \end{tabular}
+    \begingroup
+    \tiny{RMSE - root mean squared error}
+    \endgroup
+\end{table}
 
 As can be seen from the above overvise, the DM performed best when projecting the data to quadratic space, while the GPC didbest on the original data as-is. This was taken into account for the plots below for the DM and GP respectively, which used an instance of the more favourably performing processed data. Note that the exact probabilities provided by the GP are hown in the following plots, in contrast to the argmax taken for error-calculation purposes.
 
@@ -127,5 +130,4 @@ As we can see, the DM performed notably better than the GP, with the predictions
 However, this is admittedly admittedly a rather simple example that assumes we have a sufficient amount of data from the \textit{three} possible habitat clusters - A by itself, B by itself, and a homogeneous mix of A and B, and as such, more detailed comparisons will be made using the full training dataset.
 
 From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and very uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is more confident in the fact that that area does in fact have a mix of labels.
-
 

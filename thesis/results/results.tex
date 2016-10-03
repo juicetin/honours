@@ -20,12 +20,10 @@ In this section, the performance of common machine learning algorithms, namely k
 Logistic Regression &  0.21221134330881872 &  0.7374253253308372 &            & simple labels \\
    Random Forest    &  0.8103659316744121  &  0.9117076519281244 &            & simple labels \\
         SVC         &  0.21221261743619468 &  0.7374255088743278 &     OvA    & simple labels \\
-         DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\
         KNN         &  0.4711662374785644  &  0.6510716003156948 &   n = 5  &  full labels  \\
 Logistic Regression &  0.06457891531653175 & 0.25912130389295746 &            &  full labels  \\
    Random Forest    &  0.6075895500970125  &  0.7263355175008718 &            &  full labels  \\
         SVC         & 0.012413092166172946 & 0.16549499843988033 &     OvA    &  full labels  \\
-         DM         &  0.13802716811804644 & 0.37856057852908254 &            &  full labels  \\
     \hline
 \end{tabular}
 
@@ -50,32 +48,30 @@ Logistic Regression &  0.06457891531653175 & 0.25912130389295746 &            & 
     \hline
 \end{tabular}
 
-\todo{highlight areas with low/high certainty, etc.}
+\todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
 
 \section{Dirichlet Multinomial Regression}
 
-\todo{transfer all the results from markdown}
-Success: True, final objective = 3913.8572360999738.
-0.199794976896
-Success: True, final objective = 3927.5321104690765.
-0.192835558564
-Success: True, final objective = 3925.9034987284517.
-0.195386663189
-Success: True, final objective = 3879.9722475717376.
-0.203971406818
-Success: True, final objective = 3908.6004550069883.
-0.197255577737
-Success: True, final objective = 3915.3513496785285.
-0.199563666814
-Success: True, final objective = 3903.6599254078446.
-0.199662834998
-Success: True, final objective = 3914.487254186762.
-0.197538693463
-Success: True, final objective = 3934.1967907157946.
-0.190080656617
-Success: True, final objective = 3938.2977172382407.
-0.193515492187
-Average error was 0.19696055272835952
+% \begin{tabular}{|c|c|c|c|c|c|}
+%     \hline
+%     Algorithm & 10F-CV F1 & 10F-CV Accuracy & Parameters & Data \\\hline
+%          DM         &  0.13802716811804644 & 0.37856057852908254 &            &  full labels  \\
+%          DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\ %     \hline
+% \end{tabular}
+
+\begin{tabular}{|c|c|}
+    \hline
+        Features & Root Mean Squared Error \\\hline
+        Original features, using coordinates & 0.3360700584111156 \\
+        Original features, not using coordinates & 0.33676707345298545 \\
+        Quadratic projection, using coordinates & 0.19695170465540882 \\
+        Quadratic projection, not using coordinates & 0.19726479764111976 \\
+    \hline
+\end{tabular}
+
+In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement wasmuch more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example.
+
+As a means of effectively visuailsing the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. This allows initial observations to be made of where certain labels are more abundant than others. Immediately, we can see the concrete advantages of using a multi-output model, as individual points no longer contain only a single label - it is now possible to see, for example, that the outreaching \textit{arm-like} portions on the right hand side of Scott Reef Central contain large areas of even splits of label 1 and 2, with trace amounts of label 0, but almost no label 3, which is otherwise the most frequently occuring habitat in the area \todo{(get the \textbf{actual} label names!)}.
 
 \begin{figure}[H]
     \begin{minipage}{.45\linewidth}
@@ -104,6 +100,9 @@ Average error was 0.19696055272835952
     \todo{fix the bar legends here}
 \end{figure}
 
-In the simple case where the labels are summarised down to just the basic four, 
+In the simple case where the labels are summarised down the basic four, we can see \todo{I can't remember what I was saying here...}
 
-\todo{highlight areas with biodiversity, etc.}
+In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels, it is expected that the DM would be confident that an even mix of labels exist in these areas. \todo{summarise and plot the variances}
+
+\subsection{Biodiversity}
+\todo{highlight areas with biodiversity, particular co-occurring species, etc.}

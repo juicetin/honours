@@ -6,29 +6,30 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Plots of the three clusters, with labels taking on the argmax of each point}}{16}{figure.4.1}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Legend/axes for the following histogram plots showing distribution of labels at each point}}{17}{figure.4.2}
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Label distribution of cluster A}}{17}{figure.4.3}
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Label distribution of cluster B}}{17}{figure.4.4}
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Label distribution of cluster C}}{17}{figure.4.5}
-\contentsline {figure}{\numberline {4.6}{\ignorespaces DM Label distribution of label 0}}{19}{figure.4.6}
-\contentsline {figure}{\numberline {4.7}{\ignorespaces DM Label distribution of label 1}}{19}{figure.4.7}
-\contentsline {figure}{\numberline {4.8}{\ignorespaces OvR GP performance with variance for label 0}}{20}{figure.4.8}
-\contentsline {figure}{\numberline {4.9}{\ignorespaces OvR GP performance with variance for label 1}}{20}{figure.4.9}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Plots of the three clusters, with labels taking on the argmax of each point}}{21}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Legend/axes for the following histogram plots showing distribution of labels at each point}}{21}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Label distribution of cluster A}}{22}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Label distribution of cluster B}}{22}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Label distribution of cluster C}}{22}{figure.4.5}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces DM Label distribution of label 0}}{24}{figure.4.6}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces DM Label distribution of label 1}}{24}{figure.4.7}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces OvR GP performance with variance for label 0}}{25}{figure.4.8}
+\contentsline {figure}{\numberline {4.9}{\ignorespaces OvR GP performance with variance for label 1}}{25}{figure.4.9}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces {\color {red} create} Fixed-sized grids placed over training data}}{23}{figure.5.1}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Dendrogram of training data}}{24}{figure.5.2}
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Distribution of labels in original dataset}}{25}{figure.5.3}
-\contentsline {figure}{\numberline {5.4}{\ignorespaces Distribution of labels in multi-label outputs}}{25}{figure.5.4}
-\contentsline {figure}{\numberline {5.5}{\ignorespaces Distribution of simplified labels in original dataset}}{25}{figure.5.5}
-\contentsline {figure}{\numberline {5.6}{\ignorespaces Distribution of simplified labels in multi-label outputs}}{25}{figure.5.6}
-\contentsline {figure}{\numberline {5.7}{\ignorespaces Full predictive map using Random Forests including coordinates as features}}{26}{figure.5.7}
-\contentsline {figure}{\numberline {5.8}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{26}{figure.5.8}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Aerial shot of Scott Reef from \citep {NASA:SRI}}}{28}{figure.5.1}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Fixed-sized grids placed over training data}}{30}{figure.5.2}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Dendrogram of training data}}{30}{figure.5.3}
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Distribution of labels in original dataset}}{32}{figure.5.4}
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Distribution of labels in multi-label outputs}}{32}{figure.5.5}
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Distribution of simplified labels in original dataset}}{32}{figure.5.6}
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Distribution of simplified labels in multi-label outputs}}{32}{figure.5.7}
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Full predictive map using Random Forests including coordinates as features}}{33}{figure.5.8}
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{33}{figure.5.9}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces label 0}}{30}{figure.6.1}
-\contentsline {figure}{\numberline {6.2}{\ignorespaces label 1}}{30}{figure.6.2}
-\contentsline {figure}{\numberline {6.3}{\ignorespaces label 2}}{30}{figure.6.3}
-\contentsline {figure}{\numberline {6.4}{\ignorespaces label 3}}{30}{figure.6.4}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces label 0}}{37}{figure.6.1}
+\contentsline {figure}{\numberline {6.2}{\ignorespaces label 1}}{37}{figure.6.2}
+\contentsline {figure}{\numberline {6.3}{\ignorespaces label 2}}{37}{figure.6.3}
+\contentsline {figure}{\numberline {6.4}{\ignorespaces label 3}}{37}{figure.6.4}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

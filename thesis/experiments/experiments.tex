@@ -2,12 +2,12 @@
 \renewcommand{\fnum@figure}{Figure \thefigure}
 \makeatother
 
-\chapter{Experiments} \label{chap:experiments}
+\chapter{Experiments and Results} \label{chap:experiments}
 
-To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor. The main machine learning algorithms' performance which we tested were Gaussian Process Classification, and Dirichlet Multinomial Regression. In this section, the experiments were designed to display the benefits of a Gaussian Process Classifier's probabilistic output, as well as the label distributions of a Dirichlet Multinomial Regressor.
+To identify whether the Dirichlet Multinomial Regression method proposed can provide richer and more valuable information than single-output or deterministic methods can alone, we ran experiments on the data obtained from the ACFR's Sirius AUV and Schmidt's Falkor. The main machine learning algorithms' performance which we tested were Gaussian Process Classification, and Dirichlet Multinomial Regression. In this chapter, we detail the experiments designed to display the benefits of a Gaussian Process Classifier's probabilistic output, as well as the label distributions of a Dirichlet Multinomial Regressor and their respective results. \todo{(flimsy, fix)}
 
 \section{Training Data}
-To perform our experiments, bathymetry data and images of Scott Reef Central were used (the reef in the centre of \autoref{fig:scottreefaerial}). The bathymetry data was collected using Eric Schmidt's Falkor, a ship dedicated to marine research, and the (over 700GB) of images corresponding to all the bathymetry data was collected by The University of Sydney's Australian Centre for Field Robotic's Sirius Autonomous Underwater Vehicle (AUV). The training set provided already had labels assigned, which was a result of previous efforts using Variational Dirichlet Processes that performed the unsupervised clustering \citep{steinberg11}. On close inspection, the UTM coordinates in the training set do not correspond to the original data available from \cite{squidle} - this was because the exact point of retrieval for the bathymetry and image weren't exact matches. To account for this, labels corresponding to bathymetry points were in fact taken from the closest images, rather than exact longitude/latitude or UTM matches, although the UTM coordinates in the training data itself remains as the original.
+To perform our experiments, bathymetry data and images of Scott Reef Central were used (the reef in the centre of \autoref{fig:scottreefaerial}). The bathymetry data was collected using Eric Schmidt's Falkor (at the locations in \autoref{fig:gridsplit}), a ship dedicated to marine research, and the (over 700GB) of images corresponding to all the bathymetry data was collected by The University of Sydney's Australian Centre for Field Robotic's Sirius Autonomous Underwater Vehicle (AUV). The training set provided already had labels assigned, which was a result of previous efforts using Variational Dirichlet Processes that performed the unsupervised clustering \citep{steinberg11}. On close inspection, the UTM coordinates in the training set do not correspond to the original data available from \cite{squidle} - this was because the exact point of retrieval for the bathymetry and image weren't exact matches. To account for this, labels corresponding to bathymetry points were in fact taken from the closest images, rather than exact longitude/latitude or UTM matches, although the UTM coordinates in the training data itself remains as the original.
 
 \todo{(describe the specific features - depth, aspect, rugosity, etc.)}
 
@@ -16,7 +16,6 @@ To perform our experiments, bathymetry data and images of Scott Reef Central wer
     \caption{Aerial shot of Scott Reef from \cite{NASA:SRI}}
     \label{fig:scottreefaerial}
 \end{figure}
-
 
 \section{Data Preprocessing}
 
@@ -106,8 +105,175 @@ Due to the abundant bathymetry data that was available in the form of depth, rug
 \end{figure}
 
 \subsection{Preprocessing and Feature Projection}
-To maximise performance (in terms of minimising error/maximising the correctness metrics used) of the algorithms used across the experiments, a number of preprocessing steps were taken to ultimately improve the performance of the predictions made. The features in the data were first scaled, where each feature was centred to the mean with unit variance), then normalised over each future such that they had unit length \todo{(include plots of the diff approaches across DM/GP/others, ref plots)}. To further minimise bias and variance, the original feature set (which from this point onwards refers to all the non-coordinate features) was projected into higher dimensions, using combinations of features in higher degrees. \todo{(ref plots)}
+To maximise performance (in terms of minimising error/maximising the correctness metrics used) of the algorithms used across the experiments, a number of preprocessing steps were taken to ultimately improve the performance of the predictions made. The features in the data were first scaled, where each feature was centred to the mean with unit variance), then normalised over each future such that they had unit length \todo{(include plots of the diff approaches across DM/GP/others, ref plots)}. To further minimise bias and variance\todo{(maybe add to this technically)}, the original feature set (which from this point onwards refers to all the non-coordinate features) was projected into degree-2 space with a $1$-bias term. For example, given features $x_0, x_1, x_2, x_3$ is projected to $1, x_0, x_1, x_2, x_3, x_0^2, x_1^2, x_2,^2, x_3^2$. This projection was chosen from comparing the performance of different projections
+
+\todo{(ref plots)}
 
 \todo{(show plots)}
 
+\section{Results}
 As evident from above, adding the square ($^2$) of each feature with a 1 regulariser \todo{(figure out what 1 column should be called)} yielded in performance that was negligibly lower ($\sim 1e-5$) than projection into full quadratic space, whilst requiring considerably fewer features - 19 for the former, vs. 55 for the latter. While this difference isn't significant for GPs \todo{(perhaps provide a time benchmark for this too)}, it has a significant effect on running time later on when using Markov Chain Monte Carlo (MCMC) to obtain draws of the weights of the Dirichlet Multinomial Regressor - when working with the simplified 4-label case, there are $19*4 =76 \text{ vs. } 55*4=220$ weights, i.e. dimensions to deal with, whereas the full 24-label case would involve $19*24=456$ and $55*24=1320$ weights respectively, which would result in a very significant increase in computing power needed for the MCMC chains to converge in the latter case, relatively speaking.
+
+The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
+
+Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps.
+
+In this section, the performance of common machine learning algorithms, namely kNN, Logistic Regression, Random Forest, and SVM are explored first, to provide a comparison to the later, more complex algorithms.
+
+% The associated generated maps from the experiments are also provided here, but proper evaluation of them, such as what habitat clusters and relationships can be gleaned, will be explored in Chapter 5. 
+
+\pagebreak
+\section{Deterministic Methods}
+
+To first set a baseline for predictions over the bathymetry dataset, we look at the performance of some deterministic methods with respect to their weighted (by number of instances per label) f-scores. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section.
+
+\begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Algorithm & 10F-CV F1 & 10F-CV Accuracy & Label type\\\hline
+    SVC & 0.21514 & 0.75554 & 4 labels \\
+    LogisticRegression & 0.33713 & 0.77001 & 4 labels \\
+    KNeighborsClassifier & 0.4714 & 0.7796 & 4 labels \\
+    RandomForestClassifier & 0.4737 & 0.79406 & 4 labels \\
+    SVC & 0.10355 & 0.29408 & 24 labels \\
+    LogisticRegression & 0.13335 & 0.31389 & 24 labels \\
+    KNeighborsClassifier & 0.22593 & 0.33093 & 24 labels \\
+    RandomForestClassifier & 0.22015 & 0.3405 & 24 labels \\
+    \hline
+\end{tabular}
+
+While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former's f1-score is very poor at $0.33$, and the latter two sit just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. the weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and weighted f1 score of $0.6503$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \todo{(ref figure)} below shows the predictions of each of the above predictions on the full query data for the 4 and 24-label data respectively.
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{det_preds.pdf}
+    \caption{Full predictive map using Random Forests excluding coordinates as features}
+    \label{fig:det4maps}
+\end{figure}
+
+\section{Gaussian Process Classification}
+
+\todo{transfer all the results from markdown}
+
+\todo{show more stratified results (not just even split) to show that even splits did better}
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    500     & Even       & GP     & 10F-CV & 10        & 0.86534    &                     &         \\
+    500     & Stratified & GP     & 10F-CV & 10        & 0.80136    &                     &         \\
+    1000    & Even       & GP     & All    & 1         & 0.87626    & Deterministic       & 0.56208 \\
+    1000    & Even       & PoEGP  & All    & 5         & 0.80973    &                     & 0.47481 \\
+    1000    & Even       & PoEGP  & All    & 200       & 0.80186    &                     & 0.47595 \\
+    1000    & Even       & GPoEGP & All    & 5         & 0.80864    &                     & 0.51018 \\
+    1000    & Even       & GPoEGP & All    & 200       & 0.80105    &                     & 0.47748 \\
+    1000    & Even       & BCM    & All    & 5         & 0.80682    &                     & 0.48167 \\
+    1000    & Even       & BCM    & All    & 200       & 0.80421    &                     & 0.48227 \\
+    1000    & Even       & GPy    & All    & 1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
+    \hline
+\end{tabular}
+
+\todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
+
+\todo{(maps of 4-label full predictions)}
+
+\todo{(maps of all-label full predictions)}
+
+\section{Dirichlet Multinomial Regression}
+
+% \begin{tabular}{|c|c|c|c|c|c|}
+%     \hline
+%     Algorithm & 10F-CV F1 & 10F-CV Accuracy & Parameters & Data \\\hline
+%          DM         &  0.13802716811804644 & 0.37856057852908254 &            &  full labels  \\
+%          DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\ %     \hline
+% \end{tabular}
+
+\subsection{Parameter Selection}
+
+To select an optimal set of parameters for the dirichlet multinomial, Markov Chain Monte Carlo (MCMC) was used to draw samples from the posterior distribution \todo{(refer to equation?)} over \todo{(?)} runs, with the maximum a posteriori estimate used as the starting value for the weights. To select the single best set of weights from the sequence of chains, every single one was evaluated by being used to do Dirichlet Multinomial regression, where the weights that resulted in the lowest predictive variance (average over all variances) was considered to be the best set of parameters. The weights that corresponded to the lowest average variance also corresponded to the lowest average error compared to the original normalised weights. After the \todo{(?)} runs, the MCMC in both cases (the simplified 24 labels, as well as the full set) was considered to have converged, as the Gelman and Rubin ($\hat{r}$) convergence statistics were calculated to be \todo{(? and ?)}, both very close to the ideal value of  $1.0$, and below the convergence threshold of $1.1$. Furthermore, for the 
+
+% MCMC 2 million runs, 24 labels
+% 18-smallest variance corresponds to the 1-smallest error - index 1444288 \\
+% 19-smallest variance corresponds to the 2-smallest error - index 1444289 \\
+% 20-smallest variance corresponds to the 4-smallest error - index 1444292 \\
+% 21-smallest variance corresponds to the 0-smallest error - index 1444291 \\
+% 22-smallest variance corresponds to the 3-smallest error - index 1444290 \\
+
+% np.save('data/W_2m_1444288', chains[1444288])
+% np.save('data/W_2m_1444289', chains[1444289])
+% np.save('data/W_2m_1444292', chains[1444292])
+% np.save('data/W_2m_1444291', chains[1444291])
+% np.save('data/W_2m_1444290', chains[1444290])
+
+\begin{figure}[H]
+    \centerline{\includegraphics{dm_mcmc_weight_hist_sample.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(not complete)}}
+    \label{fig:mcmc_weights}
+\end{figure}
+
+\begin{tabular}{|c|c|}
+    \hline
+        Features & Root Mean Squared Error \\\hline
+        Original features, using coordinates & 0.3360700584111156 \\
+        Original features, not using coordinates & 0.33676707345298545 \\
+        Quadratic projection, using coordinates & 0.19695170465540882 \\
+        Quadratic projection, not using coordinates & 0.19726479764111976 \\
+    \hline
+\end{tabular}
+
+In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement was much more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example. \todo{(numbers here will change})
+
+As a means of effectively visuailsing the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. This allows initial observations to be made of where certain labels are more abundant than others. Immediately, we can see the concrete advantages of using a multi-output model, as individual points no longer contain only a single label - \autoref{fig:dm_4label_heatmap} for example, shows that the majority of the reef is predominantly sand (label 3) with smaller proportions of the other labels, with the bottom-left region being mostly an even combination of labels 1, 2 \todo{(get actual labels)} and scattered sections of sand. Using the approaches previously explored, it would not have been directly inferable (without extra processing of labels/results) that the sand-dominant areas also contained small amounts of other labels.
+
+% that the outreaching \textit{arm-like} portions on the right hand side of Scott Reef Central contain large areas of even splits of label 1 and 2, with trace amounts of label 0, but almost no label 3, which is otherwise the most frequently occuring habitat in the area \todo{(get the \textbf{actual} label names!)}.
+
+\begin{figure}[H]
+    \begin{minipage}{\linewidth}
+        \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+        \centerline{\includegraphics{dm_simplelabel_heatmaps.pdf}}
+        \caption{Distribution heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}
+        \label{fig:dm_4label_heatmap}
+    \end{minipage}
+    \hfill
+\end{figure}
+
+In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. \todo{summarise and plot the variances} To obtain a sufficiently large area/number of points where a number of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), and compared the variance in this region compared to that of a Gaussian Processes'.
+
+What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
+
+\begin{figure}[H]
+    \textbf{DM Full Label 1-6 Predictions}
+    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics[scale=1.0]{dm_alllabels_heatmap_1-6.pdf}}
+    \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-1_label_heatmap}
+    \hfill
+\end{figure}
+\begin{figure}[H]
+    \textbf{DM Full Label 7-12 Predictions}
+    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_7-12.pdf}}
+    \caption{Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-2_label_heatmap}
+    \hfill
+\end{figure}
+\begin{figure}[H]
+    \textbf{DM Full Label 13-18 Predictions}
+    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_13-18.pdf}}
+    \caption{Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-3_label_heatmap}
+    \hfill
+\end{figure}
+\begin{figure}[H]
+    \textbf{DM Full Label 19-24 Predictions}
+    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_19-24.pdf}}
+    \caption{Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-4_label_heatmap}
+    \hfill
+\end{figure}
+
+\subsection{Biodiversity}
+\todo{highlight areas with biodiversity, particular co-occurring species, etc.}
+
+Another beneficial aspect of DMs are that they can inherently provide information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens of dimensions.
+
+Although the example above was simultaneously an instance of the co-occurrence of labels 1 and 3

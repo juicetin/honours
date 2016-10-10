@@ -25,7 +25,7 @@ For the regressor, the two activation functions that were considered were expone
 $$\alpha_k = \exp\{x^T w_k\}$$
 $$\alpha_k = \text{softmax}\{x^T w_k\}$$
 
-The weights $w$ here are in fact a matrix of weights with dimensions $(K \times D)$, where $K$ is the number of possible labels across the dataset, and $D$ is the dimensionality of the dataset. Muliplying the dirichlet multinomial prior by the likelihood then then gives the equation over which to optimise to predict the normalised label counts at any given point.
+The weights $w$ here are in fact a matrix of weights with dimensions $(K \times D)$, where $K$ is the number of possible labels across the dataset, and $D$ is the dimensionality of the dataset. Muliplying the dirichlet multinomial prior by the likelihood then then gives the posterior over which to optimise to obtain the weights required to predict the normalised label counts at any given point.
 
 This gives the joint-log-likelihood over both the dirichlet and multinomial distributions:
 \begin{multline}
@@ -100,7 +100,7 @@ The results and plots for this example are below, and figures displayed were tak
     \endgroup
 \end{table}
 
-As can be seen from the above overvise, the DM performed best when projecting the data to quadratic space, while the GPC didbest on the original data as-is. This was taken into account for the plots below for the DM and GP respectively, which used an instance of the more favourably performing processed data. Note that the exact probabilities provided by the GP are hown in the following plots, in contrast to the argmax taken for error-calculation purposes.
+As can be seen from the above overvise, the DM performed best when projecting the data to quadratic space, while the GPC didbest on the original data as-is. This was taken into account for the plots below for the DM and GP respectively, which used an instance of the more favourably performing processed data. Note that the exact probabilities provided by the GP are hown in the following plots, in contrast to the argmax taken for error-calculation purposes. \todo{(don't use these graph plots here, do per-label heatmaps)}
 
 \begin{figure}[H]
     \includegraphics[scale=0.6]{toy_dm_pred_plot0.pdf}

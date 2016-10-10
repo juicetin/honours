@@ -18,18 +18,20 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {5.1}{\ignorespaces Aerial shot of Scott Reef from \citep {NASA:SRI}}}{29}{figure.5.1}
 \contentsline {figure}{\numberline {5.2}{\ignorespaces Fixed-sized grids placed over training data}}{30}{figure.5.2}
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Dendrogram of training data}}{30}{figure.5.3}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Dendrogram of training data}}{31}{figure.5.3}
 \contentsline {figure}{\numberline {5.4}{\ignorespaces Distribution of labels in original dataset}}{32}{figure.5.4}
 \contentsline {figure}{\numberline {5.5}{\ignorespaces Distribution of labels in multi-label outputs}}{32}{figure.5.5}
-\contentsline {figure}{\numberline {5.6}{\ignorespaces Distribution of simplified labels in original dataset}}{32}{figure.5.6}
-\contentsline {figure}{\numberline {5.7}{\ignorespaces Distribution of simplified labels in multi-label outputs}}{32}{figure.5.7}
-\contentsline {figure}{\numberline {5.8}{\ignorespaces Full predictive map using Random Forests including coordinates as features}}{33}{figure.5.8}
-\contentsline {figure}{\numberline {5.9}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{33}{figure.5.9}
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces label 0}}{38}{figure.6.1}
-\contentsline {figure}{\numberline {6.2}{\ignorespaces label 1}}{38}{figure.6.2}
-\contentsline {figure}{\numberline {6.3}{\ignorespaces label 2}}{38}{figure.6.3}
-\contentsline {figure}{\numberline {6.4}{\ignorespaces label 3}}{38}{figure.6.4}
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Distribution of simplified labels in original dataset}}{33}{figure.5.6}
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Distribution of simplified labels in multi-label outputs}}{33}{figure.5.7}
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Full predictive map using Random Forests including coordinates as features}}{34}{figure.5.8}
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{34}{figure.5.9}
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Full predictive map using Random Forests excluding coordinates as features}}{37}{figure.5.10}
+\contentsline {figure}{\numberline {5.11}{\ignorespaces MCMC weights for 4-label, 19-dimension data case {\color {red} (not complete)}}}{39}{figure.5.11}
+\contentsline {figure}{\numberline {5.12}{\ignorespaces Distribution heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}}{41}{figure.5.12}
+\contentsline {figure}{\numberline {5.13}{\ignorespaces Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}}{43}{figure.5.13}
+\contentsline {figure}{\numberline {5.14}{\ignorespaces Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}}{44}{figure.5.14}
+\contentsline {figure}{\numberline {5.15}{\ignorespaces Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}}{45}{figure.5.15}
+\contentsline {figure}{\numberline {5.16}{\ignorespaces Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}}{46}{figure.5.16}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

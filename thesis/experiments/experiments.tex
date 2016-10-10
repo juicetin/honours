@@ -41,28 +41,35 @@ For a fair comparison between Gaussian process classification and dirichlet mult
 \subsection{Simplifying labels}
 Another step that was considered during experiments was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels (\autoref{fig:singlelabeldistr} and \autoref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only an approximation equivalent to observable human differences of an area's benthic map were required. Moreover, due to the unsupervised nature of the labeling, certain clusters were notably \textit{inconsistent} with the rest, for example when sea cucumbers became the identifying feature of one of the 24 labels.
 
-\todo{label mappings - give the labels for the simplified classes, e.g. coral, etc.}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c| c|}
+        \hline
+        simplified & original \\\hline
+        0 & 1, 2, 18, 20, 21, 23, 24 \\
+        1 & 3, 5, 10, 16, 17, 19, 22\\
+        2 & 13, 14, 15 \\
+        3 - Sand & 4, 6, 7, 8, 9, 11, 12 \\
+        \hline
+    \end{tabular}
+    \caption{Full-simplified label mappings \tiny{\todo{label mappings - sand, coral, patchy coral, (?) halameda, rhodliths}}}
+    \label{table:labelmappings}
+\end{table}
 
-\begin{tabular}{|c| c|}
-    \hline
-    simplified & original \\\hline
-    0 & 1, 2, 18, 20, 21, 23, 24 \\
-    1 & 3, 5, 10, 16, 17, 19, 22\\
-    2 & 13, 14, 15 \\
-    3 & 4, 6, 7, 8, 9, 11, 12 \\
-    \hline
-\end{tabular}
-
-\todo{put some images here from both original and simplified classes. don't use squidle's downloader, visit server directory and d/l from there directly, 100x+ faster}
+\begin{figure}
+    \includegraphics[scale=0.17]{class_mosaic_24_classes.jpg}
+    \caption{Samples of images from each of the full 24 classes}
+    \label{fig:24classes}
+\end{figure}
 
 \begin{figure}[H]
-    \begin{minipage}{.49\linewidth}
+    \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_full_labels.pdf}
         \caption{Distribution of labels in original dataset}
         \label{fig:singlelabeldistr}
     \end{minipage}
     \hfill
-    \begin{minipage}{.49\linewidth}
+    \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_full_multi_labels.pdf}
         \caption{Distribution of labels in multi-label outputs}
         \label{fig:multilabeldistr}
@@ -70,13 +77,13 @@ Another step that was considered during experiments was the aggregation of habit
 \end{figure}
 
 \begin{figure}[H]
-    \begin{minipage}{.49\linewidth}
+    \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_simple_labels.pdf}
         \caption{Distribution of simplified labels in original dataset}
         \label{fig:singlelabeldistr}
     \end{minipage}
     \hfill
-    \begin{minipage}{.49\linewidth}
+    \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_simple_multi_labels.pdf}
         \caption{Distribution of simplified labels in multi-label outputs}
         \label{fig:multilabeldistr}
@@ -127,6 +134,8 @@ In this section, the performance of common machine learning algorithms, namely k
 
 To first set a baseline for predictions over the bathymetry dataset, we look at the performance of some deterministic methods with respect to their weighted (by number of instances per label) f-scores. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section.
 
+\begin{table}
+    \centering
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     Algorithm & 10F-CV F1 & 10F-CV Accuracy & Label type\\\hline
@@ -140,6 +149,9 @@ To first set a baseline for predictions over the bathymetry dataset, we look at 
     RandomForestClassifier & 0.22015 & 0.3405 & 24 labels \\
     \hline
 \end{tabular}
+\label{table:detresults}
+    \caption{Performance of common machine learning models}
+\end{table}
 
 While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former's f1-score is very poor at $0.33$, and the latter two sit just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. the weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and weighted f1 score of $0.6503$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \todo{(ref figure)} below shows the predictions of each of the above predictions on the full query data for the 4 and 24-label data respectively.
 
@@ -204,19 +216,24 @@ To select an optimal set of parameters for the dirichlet multinomial, Markov Cha
 
 \begin{figure}[H]
     \centerline{\includegraphics{dm_mcmc_weight_hist_sample.pdf}}
-    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(not complete)}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(not complete/not latest)}}
     \label{fig:mcmc_weights}
 \end{figure}
 
-\begin{tabular}{|c|c|}
-    \hline
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
         Features & Root Mean Squared Error \\\hline
         Original features, using coordinates & 0.3360700584111156 \\
         Original features, not using coordinates & 0.33676707345298545 \\
         Quadratic projection, using coordinates & 0.19695170465540882 \\
         Quadratic projection, not using coordinates & 0.19726479764111976 \\
-    \hline
-\end{tabular}
+        \hline
+    \end{tabular}
+    \label{table:dmbasicresults}
+    \caption{Dirichlet Multinomial Regression results}
+\end{table}
 
 In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement was much more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example. \todo{(numbers here will change})
 
@@ -234,13 +251,15 @@ As a means of effectively visuailsing the separate labels, we need to look at th
     \hfill
 \end{figure}
 
-In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. \todo{summarise and plot the variances} To obtain a sufficiently large area/number of points where a number of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), and compared the variance in this region compared to that of a Gaussian Processes'.
+In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
+
+\todo{summarise and plot the variances here}
 
 What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
 
 \begin{figure}[H]
     \textbf{DM Full Label 1-6 Predictions}
-    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
     \centerline{\includegraphics[scale=1.0]{dm_alllabels_heatmap_1-6.pdf}}
     \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
     \label{fig:dm_24-1_label_heatmap}
@@ -248,7 +267,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
 \end{figure}
 \begin{figure}[H]
     \textbf{DM Full Label 7-12 Predictions}
-    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
     \centerline{\includegraphics{dm_alllabels_heatmap_7-12.pdf}}
     \caption{Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
     \label{fig:dm_24-2_label_heatmap}
@@ -256,7 +275,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
 \end{figure}
 \begin{figure}[H]
     \textbf{DM Full Label 13-18 Predictions}
-    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
     \centerline{\includegraphics{dm_alllabels_heatmap_13-18.pdf}}
     \caption{Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
     \label{fig:dm_24-3_label_heatmap}
@@ -264,7 +283,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
 \end{figure}
 \begin{figure}[H]
     \textbf{DM Full Label 19-24 Predictions}
-    \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
     \centerline{\includegraphics{dm_alllabels_heatmap_19-24.pdf}}
     \caption{Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
     \label{fig:dm_24-4_label_heatmap}
@@ -274,6 +293,8 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
 \subsection{Biodiversity}
 \todo{highlight areas with biodiversity, particular co-occurring species, etc.}
 
-Another beneficial aspect of DMs are that they can inherently provide information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens of dimensions.
+Another beneficial aspect of DMs are that they can inherently provide information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. To locate certain co-existence of species, the only step required would be to search over the space of predictions for the desired distributions simultaneously, assigning each a particular portion, with a margin of error. For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
 
-Although the example above was simultaneously an instance of the co-occurrence of labels 1 and 3
+\todo{(some plots of these - pick ones that have `nice' graphs)}
+
+The above scenario assumes, however, that an ecologist (or anyone using the data) is already aware of the proportions of habitats they are searching for, which may not be the case if \todo{(describe a scenario here where the application is to detect changes in biodiversity over time)}

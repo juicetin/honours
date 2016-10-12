@@ -26,6 +26,8 @@ The second summed label counts in the same way, but clusters were instead formed
 
 For a fair comparison between Gaussian process classification and dirichlet multinomial regression, the downsampled data was used to train the GPs as well - although this seems like an unnecessary handicap to the GP, it is more appropriate considering that one of the aims here is to demonstrate what sort of information can be gained from a DM vs. a GP, given the same \textit{raw} data.
 
+\todo{(cut down this section (probably down to one paragraph) - and also talk about how for the single label case, instead of summing counts for the new 'label', labels were chosen at random (for more variance in the GP which is otherwise too certain about everything being sand))}
+
 \begin{figure}[H]
     \includegraphics[scale=0.6]{training_map_fixedgrid.pdf}
     \caption{Fixed-sized grids placed over training data}
@@ -181,6 +183,7 @@ While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier 
     1000    & Even       & GPy    & All    & 1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
     \hline
 \end{tabular}
+\todo{(look at AUROC/AUC and log probabilities as well)}
 
 \todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
 

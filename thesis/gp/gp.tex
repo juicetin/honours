@@ -6,28 +6,68 @@ This chapter explores the maths behind Gaussian Process Classification generally
 
 \section{Gaussian Process Regression}
 
-Compared to standard linear regression that explains data by optimising $\mathbf{y=X\beta} + \epsilon$, where $\mathbf{y}$ are the response variables, $\mathbf{X}$ are the input variables, and $\mathbf{\beta}$ are the regression coefficients, Gaussian process regression takes a Bayesian approach and performs inference over functions.
+Compared to standard linear regression that explains data by optimising $\mathbf{y=X\beta} + \epsilon$, where $\mathbf{y}$ are the response variables, $\mathbf{X}$ are the input variables, and $\mathbf{\beta}$ are the regression coefficients, Gaussian process regression takes a Bayesian approach by adjusting probabilities when given more information (input data), and performs inference over functions.
 
-We define a Gaussian Process on input x to have mean and covariance:
-$$f(x) \sim GP(m(x), k(x, x'))$$
+We define a Gaussian Process on input $\mathbf{x}$ to have mean ($m$) and covariance ($k$), where $\mathbf{x}$ and $\mathbf{x'}$ are the training and test inputs respectively:
+\begin{equation}
+f(x) \sim GP(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x'}))
+\end{equation}
 
-Where the covariance function between points $p, q$ is given by:
-$$cov(f(x_p), f(x_q)) = k(x_p, x_q) = \exp(-\frac{1}{2}|x_p-x_q|^2)$$
+The chosen kernel is the squared exponential (on the right hand side). The base covariance function between points $p, q$, where $\mathbf{x_p, x_q}$ are the vector of $n$ features at each point is thus given by:
+\begin{equation}\label{eq:simplegpcov}
+    cov(f(\mathbf{x_p}), f(\mathbf{x_q)}) = k(\mathbf{x_p, x_q}) = \exp(-\frac{1}{2}|\mathbf{x_p}-\mathbf{x_q}|^2)
+\end{equation}
+\eqref{eq:simplegpcov}
 
-* distribution over functions
+From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian Process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
+\begin{equation}\label{eq:fullgpcov}
+    k\mathbf{(x_p, x_q)} = \sigma^2_f \exp(-\frac{1}{2l^2} (\mathbf{x_p-x_q})^2) + \sigma^2_nI
+\end{equation}
+where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the variance of the Gaussian noise. \todo{clarify what's happening here}
 
-$$\mathbf{f_*} | X, \mathbf{y}, X* \sim \mathcal{N}(\mathbf{\bar{f_*}}, \text{cov}(\mathbf{f_*})) \text{, where}$$
-$$\mathbf{\bar{f_*}} \triangleq E[f_*|X,\mathbf{y},X_*] = K(X_*, X)[K(X,X) + \sigma^2_n]^{-1}\mathbf{y}$$
-$$cov(\mathbf{f_*}) = K(X_*,X_*) - K(X_*, X)[K(X,X) + \sigma_n^2]^{-1}K(X,X_*)$$
+To allow simplifications of notation in the following equations, we define some abbreviations related to \ref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
 
-To simplify following notation, we make the following abbreviations:
-$K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
+To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
+To indicate the full covariance between training points and test points: $K_* = K(X, X_*)$
+To indicate the covariance between a single test point with all training points: $\mathbf{k_*} = \mathbf{k(x_*}, X)$
 
-$$\bar{f_*} = k_*^T(K+\sigma_n^2)^{-1} \mathbf{y}$$
+By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points:
+\begin{equation}
+    \mathbf{f_*} | \mathbf{x_*}, X, \mathbf{f} \sim \mathcal{N}( \mathbf{k_*} K^{-1} \mathbf{f},  
+    k(\mathbf{x_*, x_*}) - \mathbf{k_*} K^{-1} K_*)
+\end{equation}
+
+Taking the first part of the Gaussian Distribution, the mean, and the second, the variance, we obtain our predictions and variance on a single test point:
+\begin{equation}
+    \bar{f_*} = \mathbf{k_*}^T(K+\sigma_n^2)^{-1} \mathbf{y}
+\end{equation}
+\begin{equation}
+    \mathbb{V}[f_*] = K(\mathbf{x_*},\mathbf{x_*}) - \mathbf{k_*}^T (K+\sigma^2_n)^{-1}\mathbf{k_*}
+\end{equation}
+
+In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved.
+
+% * distribution over functions
+% \begin{equation}
+% \mathbf{f_*} | X, \mathbf{y}, X* \sim \mathcal{N}(\mathbf{\bar{f_*}}, \text{cov}(\mathbf{f_*})) \text{, where}
+% \end{equation}
+% \begin{equation}
+% \mathbf{\bar{f_*}} \triangleq E[f_*|X,\mathbf{y},X_*] = K(X_*, X)[K(X,X) + \sigma^2_n]^{-1}\mathbf{y}
+% \end{equation}
+% \begin{equation}
+%     cov(\mathbf{f_*}) = K(X_*,X_*) - K(X_*, X)[K(X,X) + \sigma_n^2]^{-1}K(X,X_*)
+% \end{equation}
+% 
+% To simplify following notation, we make the following abbreviations:
+% $K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
 
 \section{Gaussian Process Classification}
 
+To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label, in a one-vs-all format, where every label at each data point is ultimately assigned both a probability and variance.
+
 \section{Leave-one-out Cross Validation}
+
+To train our data, we chose the extreme case of of cross-validation for model selection, where $k$ folds are used, for some small integer-valued $k$. 
 
 The log probability ommitting training case $i$
 

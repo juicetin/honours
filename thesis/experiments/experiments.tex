@@ -1,4 +1,4 @@
-\makeatletter
+\makeatletter[H]
 \renewcommand{\fnum@figure}{Figure \thefigure}
 \makeatother
 
@@ -171,16 +171,17 @@ While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier 
 
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
     \hline
-    500     & Even       & GP     & 10F-CV & 10        & 0.86534    &                     &         \\
-    500     & Stratified & GP     & 10F-CV & 10        & 0.80136    &                     &         \\
-    1000    & Even       & GP     & All    & 1         & 0.87626    & Deterministic       & 0.56208 \\
-    1000    & Even       & PoEGP  & All    & 5         & 0.80973    &                     & 0.47481 \\
-    1000    & Even       & PoEGP  & All    & 200       & 0.80186    &                     & 0.47595 \\
-    1000    & Even       & GPoEGP & All    & 5         & 0.80864    &                     & 0.51018 \\
-    1000    & Even       & GPoEGP & All    & 200       & 0.80105    &                     & 0.47748 \\
-    1000    & Even       & BCM    & All    & 5         & 0.80682    &                     & 0.48167 \\
-    1000    & Even       & BCM    & All    & 200       & 0.80421    &                     & 0.48227 \\
-    1000    & Even       & GPy    & All    & 1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
+    No. points & Type of split & Type of GP & Number of runs & AUROC & Notes & F1-score \\\hline
+    500     & Even       & GP     &  10        & 0.86534    &                     &         \\
+    500     & Stratified & GP     &  10        & 0.80136    &                     &         \\
+    1000    & Even       & GP     &  1         & 0.87626    & Deterministic       & 0.56208 \\
+    1000    & Even       & PoEGP  &  5         & 0.80973    &                     & 0.47481 \\
+    1000    & Even       & PoEGP  &  200       & 0.80186    &                     & 0.47595 \\
+    1000    & Even       & GPoEGP &  5         & 0.80864    &                     & 0.51018 \\
+    1000    & Even       & GPoEGP &  200       & 0.80105    &                     & 0.47748 \\
+    1000    & Even       & BCM    &  5         & 0.80682    &                     & 0.48167 \\
+    1000    & Even       & BCM    &  200       & 0.80421    &                     & 0.48227 \\
+    1000    & Even       & GPy    &  1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
     \hline
 \end{tabular}
 \todo{(look at AUROC/AUC and log probabilities as well)}
@@ -218,12 +219,18 @@ To select an optimal set of parameters for the dirichlet multinomial, Markov Cha
 % np.save('data/W_2m_1444290', chains[1444290])
 
 \begin{figure}[H]
-    \centerline{\includegraphics{dm_mcmc_weight_hist_sample.pdf}}
-    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(not complete/not latest)}}
-    \label{fig:mcmc_weights}
+    \centerline{\includegraphics{dm4_9m_0_mcmc_weight_hist.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
+    \label{fig:4l-mcmc_weights}
 \end{figure}
 
-\begin{table}
+\begin{figure}[H]
+    \centerline{\includegraphics{dm24_950k_0_mcmc_weight_hist.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
+    \label{fig:24l-mcmc_weights}
+\end{figure}
+
+\begin{table}[H]
     \centering
     \begin{tabular}{|c|c|}
         \hline

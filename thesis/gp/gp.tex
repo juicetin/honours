@@ -17,7 +17,6 @@ The chosen kernel is the squared exponential (on the right hand side). The base 
 \begin{equation}\label{eq:simplegpcov}
     cov(f(\mathbf{x_p}), f(\mathbf{x_q)}) = k(\mathbf{x_p, x_q}) = \exp(-\frac{1}{2}|\mathbf{x_p}-\mathbf{x_q}|^2)
 \end{equation}
-\eqref{eq:simplegpcov}
 
 From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian Process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
 \begin{equation}\label{eq:fullgpcov}
@@ -27,11 +26,12 @@ where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the var
 
 To allow simplifications of notation in the following equations, we define some abbreviations related to \ref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
 
+\todo{(lay out these abbreviations nicely)}
 To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
 To indicate the full covariance between training points and test points: $K_* = K(X, X_*)$
 To indicate the covariance between a single test point with all training points: $\mathbf{k_*} = \mathbf{k(x_*}, X)$
 
-By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points:
+By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points \todo{(EXPAND. Possibly include non-abberviated version first for clarity)}:
 \begin{equation}
     \mathbf{f_*} | \mathbf{x_*}, X, \mathbf{f} \sim \mathcal{N}( \mathbf{k_*} K^{-1} \mathbf{f},  
     k(\mathbf{x_*, x_*}) - \mathbf{k_*} K^{-1} K_*)
@@ -45,7 +45,24 @@ Taking the first part of the Gaussian Distribution, the mean, and the second, th
     \mathbb{V}[f_*] = K(\mathbf{x_*},\mathbf{x_*}) - \mathbf{k_*}^T (K+\sigma^2_n)^{-1}\mathbf{k_*}
 \end{equation}
 
-In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved.
+In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved. These equations are used on the basis that all their parameters have already been determined - the most common process for doing this and the one used in this study is to maximise the log marginal likelihood. Although optimising the log marginal likelihood is required to use the above equations, its representation requires notation defined above, and as such formalising this aspect has been withheld until this point. However, because a slightly customised log likelihood function is used in Leave-ont-out Cross Validation (LOO-CV) below, we will only cover the standard marginal likelihood used by Gaussian Processes briefly here.
+
+The marginal likelihood for this model can be obtained by integrating the likelihood times the prior with respect to function values $\mathbf{f}$:
+\begin{equation}
+    p(\mathbf{y}|X) = \int p(\mathbf{y|f}, X)p(\mathbf{y}|X)d\mathbf{f}
+\end{equation}
+
+Taking the log of this then gives:
+\begin{equation}
+    \log p(\mathbf{f}|X) = -\frac{1}{2} \mathbf{f}^T K^{-1} \mathbf{f} - \frac{1}{2} \log|K| - \frac{n}{2} \log 2\pi
+\end{equation}
+
+As this equation has an analytical first derivative which can be used to speed up optimisation so long as a software package is used where the optimisation algorithms allows a derivative (also known as a Jacobian), we wish to also know its derivative:
+\begin{equation}
+    \frac{\partial}{\partial\theta_j} \log p(\mathbf{y}|X,\mathbf{\theta}) = \frac{1}{2} \text{tr}((\mathbf{\alpha\alpha}^T - K^{-1}) \frac{\partial K}{\partial \theta_j}) \text{ where } \mathbf{\alpha} = K^{-1}\mathbf{y}
+\end{equation}
+
+Keeping in mind that $K$ initially contains a number of initially unknown parameters ($\sigma_n, \sigma_f, l$), we can then optimise over this log marginal likelihood function as a whole using its derivative to search the multi-dimensional space. However, a variant of this will be used, as explained in the following section.
 
 % * distribution over functions
 % \begin{equation}
@@ -61,13 +78,10 @@ In practice, a test dataset would not be calculated one test point at a time as 
 % To simplify following notation, we make the following abbreviations:
 % $K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
 
-\section{Gaussian Process Classification}
-
-To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label, in a one-vs-all format, where every label at each data point is ultimately assigned both a probability and variance.
-
 \section{Leave-one-out Cross Validation}
 
-To train our data, we chose the extreme case of of cross-validation for model selection, where $k$ folds are used, for some small integer-valued $k$. 
+\todo{(expand section)}
+To train our data, we chose the extreme case of of cross-validation for model selection, where the number of folds used, $k$, is equal to the number of datapoints.
 
 The log probability ommitting training case $i$
 
@@ -84,6 +98,13 @@ $$\frac{\partial{\sigma_i^2}}{\partial{\theta_j}} = \frac{[Z_jK^{-1}]_{ii}}{[K^{
 
 where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{\theta_j}}$
 
+
+\section{Gaussian Process Classification}
+
+To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label using a one-vs-all approach, where every label at each data point is assigned both a probability and variance.
+
+\todo{(expand)}
+
 \section{Subsampling for Gaussian Process experiments}
 \todo{(may need to take this section out - GPy wrapper deals with thousands of points no problem, no longer need to subsample with only 4000 after downsampling the data)}
 
@@ -91,7 +112,47 @@ Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using 
 
 \section{Gaussian Process Approximation}
 
-However, although significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier, there exist approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second, which is the one we will perform experiments using, is using \textit{ensemble} methods - combining the results of many independent GPs trained in parallel, at the expense of computational power.
+However, although significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier, there exist approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second is \textit{ensemble} methods - combining the results of several independent Gaussian Processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
+
+\subsection{Product of Experts and Variations}
+\todo{(EXPAND explanations in this section)}
+
+Product of GP Experts
+\begin{equation}
+    \mu_*^{poe} = (\sigma_*^{poe})^2 \sum_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+\end{equation}
+\begin{equation}
+    (\sigma_*^{poe})^{-2} = \sum_k \sigma_k^{-2} (\mathbf{x_*})
+\end{equation}
+
+Generalised Product of GP Experts
+\begin{equation}
+    \mu_*^{gpoe} = (\sigma_*^{gpoe})^2 \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+\end{equation}
+\begin{equation}
+    (\sigma_*^{gpoe})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*})
+\end{equation}
+The value of each $\beta_k$ is flexible, but as scaling Gaussian Processes to large datasets isn't the primary focus of this study, we simply set each $\beta_k$ to $\frac{1}{M}$, where $M$ is the number of experts, as suggested in \citep{deisenroth15} to maintain reasonable margins of error.
+
+\subsection{Bayesian Committee Machines and Variations}
+
+Bayesian Committee Machine
+\begin{equation}
+    \mu_*^{bcm} = (\sigma_*^{bcm})^2 \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+\end{equation}
+\begin{equation}
+    (\sigma_*^{bcm})^{-2} = \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) + (1-M)\sigma_{**}^{-2}
+\end{equation}
+where $\sigma_{**}^{-2}$ is the prior precision of $p(f_*)$, which itself is the inverse of the prior variances.
+
+Robust Bayesian Committee Machine
+\begin{equation}
+    \mu_*^{rbcm} = (\sigma_*^{rbcm})^2 \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+\end{equation}
+\begin{equation}
+    (\sigma_*^{rbcm})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) + (1-\sum_{k=1}^M \beta_k) \sigma_{**}^{-2}
+\end{equation}
+where each $\beta_k$ follows the same rules as for the Product of Experts and its variations.
 
 \citep{deisenroth15}
 

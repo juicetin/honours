@@ -1,6 +1,8 @@
-\chapter{Gaussian Processes} \label{chap:gps}
+\chapter{Probabilistic Habitat Mapping} \label{chap:gps}
 
-This chapter explores the maths behind Gaussian Process Classification generally, as well as the specific implementation that was used for the experiments that were run. To perform classification, one-vs-all classifiers were used with regressors as the underlying function, and the hyperparameters of each classifier (to be explained below) were trained using leave-one-out cross-validation (LOO-CV) with a squared exponential kernel. The sections regarding Gaussian Process Classification directly (up to but not including the GP approximation sections) are using Rasmussen and Williams's Gaussian Processes for Machine Learning \citep{rasmussen06}. In particular, Chapter 2 - Regression, and Chapter 5 - Model Selection and Adaptation of Hyperparameters (for LOO-CV) were used for reference.
+The methods of habitat mapping explored until now were mostly deterministic ones, where predictions were absolute, and as such did not provide a \textit{level of confidence} in the predictions made, or in other words, probabilistic output. The exception to this was logistic regression, but even then, as a parametric method, the complexity of the model must be defined beforehand, whereas a Gaussian Process in simple terms allows the data to 'speak for itself`. More formally, this refers to a Gaussian Process' non-parametric nature, meaning the data is incorporated directly into the model where new data can increase the confidence of the model.
+
+In this chapter, we will look at Gaussian Processes as technique to generate predictive habitat maps. We begin by visting Gaussian Process Regression, and how a small extension/post-processing step extends it to allow Gaussian Process Classification. Of the different ways to train the hyperparameters of Gaussian Processes, the one selected was Leave-One-Out Cross Validation (LOO-CV). They also need to use a \textit{kernel} that defines the relationship between any two points, forming the full covariance matrix - the one chosen was the squared exponential kernel, explained in detail in the following sections. Note that detailed proofs and derivations are not covered here, and interested readers should consult Rasmussen and William's Gaussian Processes for machine Learning \cite{rasmussen06} for a definitive guide to all things Gaussian Process related. In particular, Chapters 2 and 5 are of the most relevance, as they detail Gaussian Process Regression, and Model Selection and Adaptation of Hyperparameters respectively.
 
 % $\mathbf{f_*}$ - predictive function outputs corresponding to input data $X_*$
 
@@ -18,7 +20,7 @@ The chosen kernel is the squared exponential (on the right hand side). The base 
     cov(f(\mathbf{x_p}), f(\mathbf{x_q)}) = k(\mathbf{x_p, x_q}) = \exp(-\frac{1}{2}|\mathbf{x_p}-\mathbf{x_q}|^2)
 \end{equation}
 
-From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian Process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
+From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ (as $\lim_{\mathbf{x_p=x_q}} exp(-\frac{1}{2}|\mathbf{x_p-x_q}^2| = 1$) - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian Process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
 \begin{equation}\label{eq:fullgpcov}
     k\mathbf{(x_p, x_q)} = \sigma^2_f \exp(-\frac{1}{2l^2} (\mathbf{x_p-x_q})^2) + \sigma^2_nI
 \end{equation}
@@ -78,10 +80,11 @@ Keeping in mind that $K$ initially contains a number of initially unknown parame
 % To simplify following notation, we make the following abbreviations:
 % $K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
 
-\section{Leave-one-out Cross Validation}
+\section{Leave-One-Out Cross Validation}
 
 \todo{(expand section)}
-To train our data, we chose the extreme case of of cross-validation for model selection, where the number of folds used, $k$, is equal to the number of datapoints.
+
+To train our data, we chose the extreme case of of cross-validation for model training, where the number of folds used, $k$, is equal to the number of datapoints. By optimising over the sum of cross-valiated log likelihoods, it is no longer strictly only assessing the log marginal likelihood, instead acting as more of a pseudo-likelihood. Directly optimising over the marginal likelihood provides the probability of observed data \textit{given model assumptions}, whereas the cross-validation approach provides the log predictive probability estimates independent of the fufilment of said model assumptions. The latter case is preferrable here as biological experts were not consulted for the duration of the study, meaning some assumptions could have been tuned more accurately if external help was available.
 
 The log probability ommitting training case $i$
 

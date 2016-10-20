@@ -120,23 +120,20 @@ To maximise performance (in terms of minimising error/maximising the correctness
 
 \todo{(show plots)}
 
-\section{Results}
 As evident from above, adding the square ($^2$) of each feature with a 1 regulariser \todo{(figure out what 1 column should be called)} yielded in performance that was negligibly lower ($\sim 1e-5$) than projection into full quadratic space, whilst requiring considerably fewer features - 19 for the former, vs. 55 for the latter. While this difference isn't significant for GPs \todo{(perhaps provide a time benchmark for this too)}, it has a significant effect on running time later on when using Markov Chain Monte Carlo (MCMC) to obtain draws of the weights of the Dirichlet Multinomial Regressor - when working with the simplified 4-label case, there are $19*4 =76 \text{ vs. } 55*4=220$ weights, i.e. dimensions to deal with, whereas the full 24-label case would involve $19*24=456$ and $55*24=1320$ weights respectively, which would result in a very significant increase in computing power needed for the MCMC chains to converge in the latter case, relatively speaking.
 
-The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
+The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison \todo{(this hasn't actually happened yet)}. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
 
-Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps.
-
-In this section, the performance of common machine learning algorithms, namely kNN, Logistic Regression, Random Forest, and SVM are explored first, to provide a comparison to the later, more complex algorithms.
+Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps. \todo{(again, hasn't happened yet)}
 
 % The associated generated maps from the experiments are also provided here, but proper evaluation of them, such as what habitat clusters and relationships can be gleaned, will be explored in Chapter 5. 
 
 \pagebreak
 \section{Deterministic Methods}
 
-To first set a baseline for predictions over the bathymetry dataset, we look at the performance of some deterministic methods with respect to their weighted (by number of instances per label) f-scores. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section.
+To first set a baseline for predictions over the bathymetry dataset, we look at the performance of some deterministic methods with respect to their unweighted (average of each label) f-scores. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section. \todo{(hasn't happened yet)}
 
-\begin{table}
+\begin{table}[H]
     \centering
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
@@ -155,7 +152,7 @@ To first set a baseline for predictions over the bathymetry dataset, we look at 
     \caption{Performance of common machine learning models}
 \end{table}
 
-While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former's f1-score is very poor at $0.33$, and the latter two sit just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. the weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and weighted f1 score of $0.6503$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \todo{(ref figure)} below shows the predictions of each of the above predictions on the full query data for the 4 and 24-label data respectively.
+While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. the weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and weighted f1 score of $0.6503$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \autoref{fig:det4maps} below shows the predictions of each of the above predictions on the full query data for the 4 and 24-label data respectively.
 
 \begin{figure}[H]
     \includegraphics[width=\linewidth]{det_preds.pdf}
@@ -191,6 +188,10 @@ While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier 
 \todo{(maps of 4-label full predictions)}
 
 \todo{(maps of all-label full predictions)}
+
+\subsection{Using Multiple Gaussian Process Regressors per normalised Multi-output label}
+Average error was $0.14409166865082482$ in 10-fold CV
+
 
 \section{Dirichlet Multinomial Regression}
 

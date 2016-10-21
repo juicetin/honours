@@ -112,13 +112,11 @@ Due to the abundant bathymetry data that was available in the form of depth, rug
 \end{figure}
 
 \subsection{Preprocessing and Feature Projection}
-To maximise performance of the algorithms used across the experiments, a number of preprocessing steps were taken to improve the predictions made. The features in the data were first scaled, where each feature was centred to the mean with unit variance), then normalised over each future such that they had unit length \todo{(include plots of the diff approaches across DM/GP/others, ref plots)}. To allow the algorithms tested to learn the data and its complexities better, projecting the data into higher dimensional space was required. Full quadratic projections ($x_0, x_1, x_2 \Rightarrow x_0^2 ,x_1^2 ,x_2 ,2x_0x_1 ,2x_0x_2 ,2x_1x_2$) and squared terms with a $1$ bias terms ($x_0, x_1, x_2 \Rightarrow x_0 + x_1 , x_2 ,x_0^2 ,x_1^2, x_2^2, 1$) were both tested. Due to the negligible drop-off in performance of the latter ($\leq e^{-5}$) whilst requiring only a little over a third of the number of features of the former - $55$ vs. $19$. It was also chosen to allow predictions to run faster, and for the Markov Chain Monte Carlo for Dirichlet Multinomial Regression later in this chapter, \textbf{significantly} reduce the number of dimensions that need to be traversed - considering the number of weights required is features $\times$ number of labels, this would correspond to the 4-label data needing $19*4=76$ vs $55*4=220$ weights, and the full 24-label case requiring $19*24=456$ vs $55*24=1320$ weights.
+To maximise performance of the algorithms used across the experiments, a number of preprocessing steps were taken to improve the predictions made. The features in the data were first scaled, where each feature was centred to the mean with unit variance), then normalised over each future such that they had unit length \todo{(include plots of the diff approaches across DM/GP/others, ref plots)}. To allow the algorithms tested to learn the data and its complexities better, projecting the data into higher dimensional space was required. Full quadratic projections ($x_0, x_1, x_2 \Rightarrow x_0^2 ,x_1^2 ,x_2 ,2x_0x_1 ,2x_0x_2 ,2x_1x_2$) and squared terms with a $1$ bias terms ($x_0, x_1, x_2 \Rightarrow x_0 + x_1 , x_2 ,x_0^2 ,x_1^2, x_2^2, 1$) were both tested. The latter was chosen, one of the reasons being that it resulted in an lower average error when performing 10-fold cross-validation using Dirichlet Multinomial Regression (\autoref{table:dmbasicresults}). It was also chosen to allow predictions to run faster, and for the Markov Chain Monte Carlo for Dirichlet Multinomial Regression later in this chapter, \textbf{significantly} reduce the number of dimensions that need to be traversed - considering the number of weights required is features $\times$ number of labels, this would correspond to the 4-label data needing $19*4=76$ vs $55*4=220$ weights, and the full 24-label case requiring $19*24=456$ vs $55*24=1320$ weights.
 
 \todo{(ref plots)}
 
 \todo{(show plots)}
-
-As evident from above, adding the square ($^2$) of each feature with a 1 regulariser \todo{(figure out what 1 column should be called)} yielded in performance that was negligibly lower ($\approx1^{-5}$) than projection into full quadratic space, whilst requiring considerably fewer features - $19$ for the former, vs. $55$ for the latter. While this difference isn't significant for GPs \todo{(perhaps provide a time benchmark for this too)}, it has a significant effect on running time later on when using Markov Chain Monte Carlo (MCMC) to obtain draws of the weights of the Dirichlet Multinomial Regressor - when working with the simplified 4-label case, there are $19*4 =76 \text{ vs. } 55*4=220$ weights, i.e. dimensions to deal with, whereas the full 24-label case would involve $19*24=456$ and $55*24=1320$ weights respectively, which would result in a significant increase in computing power needed for the MCMC chains to converge in the latter case.
 
 % The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison \todo{(this hasn't actually happened yet)}. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
 % 
@@ -262,17 +260,20 @@ To select an optimal set of parameters for the dirichlet multinomial, Markov Cha
 
 \begin{table}[H]
     \centering
+    \title{Dirichlet Multinomial Regression Average Errors}
     \begin{tabular}{|c|c|}
         \hline
         Features & Root Mean Squared Error \\\hline
-        Original features, using coordinates & 0.3360700584111156 \\
-        Original features, not using coordinates & 0.33676707345298545 \\
-        Quadratic projection, using coordinates & 0.19695170465540882 \\
-        Quadratic projection, not using coordinates & 0.19726479764111976 \\
+        Original Features, using coordinates & 0.18953610105996818 \\
+        Original Features, not using coordinates & 0.2823490793194339 \\
+        Squared features with 1 bias, using coordinates & 0.20925520941595718 \\
+        Squared features with 1 bias, not using coordinates & 0.1664202148790301 \\
+        Quadratic projection, using coordinates & 0.19461122367888578 \\
+        Quadratic projection, not using coordinates & 0.16938698362360433 \\
         \hline
     \end{tabular}
     \label{table:dmbasicresults}
-    \caption{Dirichlet Multinomial Regression results}
+    \caption{Dirichlet Multinomial Regression average error using different data configurations}
 \end{table}
 
 In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement was much more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example. \todo{(numbers here will change})

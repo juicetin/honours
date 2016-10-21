@@ -22,7 +22,7 @@ To perform our experiments, bathymetry data and images of Scott Reef Central wer
 \section{Data Preprocessing}
 
 \subsection{Downsampling the Data}
-As the purpose of using Dirichlet Multinomial Regression was to be able to model the distribution of habitat label occurrences over an area, we downsampled the combined 2011+2015 dataset which was at a siginficantly higher resolution than the 2009 dataset \todo{(calculate how much perhaps)}. To do this, a overlaying 'grid` of squares was essentially placed over the original space. In the case of the downsampled multi-output labels, all label counts in each lower-resolution grid were summed, whereas for the single label case, the label was selected randomly \textit{but} with more weighting to the non-sand labels, to slightly increase the variance of labels observed. The reason for doing this in the single label case was because of the dominance of the 'sand` habitat - random selection resulted in an even larger portion of sand than in the original dataset, cauing predictions on the full query data to tend towards being almost all sand in some cases.
+As the purpose of using Dirichlet Multinomial Regression was to be able to model the distribution of habitat label occurrences over an area, we downsampled the combined 2011, 2015 dataset which was at a significantly higher resolution than the 2009 dataset \todo{(calculate how much perhaps)}. To do this, `grid' of squares was essentially mapped onto original space, and points in each grid grouped together into a single point. For the multi-output labels, all label counts in each lower-resolution grid were summed, whereas for the single label case, the label was selected randomly \textit{but} with more weighting to the non-sand labels, to slightly increase the variance of labels observed. The reason for doing this was because of the dominance of the 'sand` habitat - random selection when only one absolute label per point was present resulted in an even larger portion of sand than in the original dataset, causing predictions on the full query data to sometimes result in almost $100\%$ sand, even moreso than was already the case in \autoref{fig:det4maps}.
 
 % Two methods of downsampling in particular were tested. The first coarser approach involved simply taking the space in which the data was collected and placing grids of fixed size over them as in \cref{fig:gridsplit}, binning all points falling within each grid into a single datapoint. Each of these data points contained multiple points from the original dataset with their own counts for each of the possible labels, so the downsampled points simply took the sum of all the label counts in each fixed grid. 
 % 
@@ -97,9 +97,7 @@ Another step that was considered during experiments was the aggregation of habit
 Note that from this point onwards, we will be working with the reduced feature set, in line with the aim of the paper to show the advantages of dirichlet multinomial regression when studies (environmental or otherwise) are limited to lower resolution data where strictly assigning only a single label to the features at a given data point is not representative of the otherwise rich information available.
 
 \subsection{Coordinates as features}
-Due to the abundant bathymetry data that was available in the form of depth, rugosity and aspect at each available data point, there was reason not to include the coordinates themselves in the feature space. Whilst it does make sense that in a natural environment, areas that were spatially near to one another would also have similar properties, this should not be relied upon, and other intrinsic properties should be the basis upon which predictions are made. Forming predictions on the full query dataset using a random forest supports this notion quite strongly - whilst 10-fold cross validation using the coordinates as features had a notably higher F-score of 0.61 compared to 0.40 without, the unnaturally straight split between the left and right segments over a 12km region suggests that the predictive map is flawed. Moreover, by including the coordinates as a training feature, an assertion is made about the direct relationship between a benthic location and the habitat class/es it contains, despite having other bathymetry information such as depth, aspect, etc. 
-
-\todo{(argument/s here alone is/are weak. for simplified labels using coords is still much better by a similar (small) margin, do some reading to back this up properly)}
+Due to the abundant bathymetry data that was available in the form of depth, rugosity and aspect at each available data point, there was reason not to include the coordinates themselves in the feature space. Whilst it s logical that in a natural environment, areas that are spatially close would also have similar properties, this should not be relied upon, and other intrinsic properties where available should be the basis upon which predictions are made. Forming predictions on the full query dataset using a random forest supports this notion quite strongly - whilst 10-fold cross validation using the coordinates as features had a notably higher F-score of 0.61 compared to 0.40 without, the unnaturally straight split between the left and right segments over a 12km region suggests that the predictive map is flawed. Moreover, by including the coordinates as a training feature, an assertion is made about the direct relationship between a benthic location and the habitat class/es it contains, despite having other bathymetry information such as depth, aspect, etc. 
 
 \begin{figure}[H]
     \begin{minipage}{.49\linewidth}
@@ -122,24 +120,25 @@ To maximise performance (in terms of minimising error/maximising the correctness
 
 \todo{(show plots)}
 
-As evident from above, adding the square ($^2$) of each feature with a 1 regulariser \todo{(figure out what 1 column should be called)} yielded in performance that was negligibly lower ($\sim 1e-5$) than projection into full quadratic space, whilst requiring considerably fewer features - 19 for the former, vs. 55 for the latter. While this difference isn't significant for GPs \todo{(perhaps provide a time benchmark for this too)}, it has a significant effect on running time later on when using Markov Chain Monte Carlo (MCMC) to obtain draws of the weights of the Dirichlet Multinomial Regressor - when working with the simplified 4-label case, there are $19*4 =76 \text{ vs. } 55*4=220$ weights, i.e. dimensions to deal with, whereas the full 24-label case would involve $19*24=456$ and $55*24=1320$ weights respectively, which would result in a very significant increase in computing power needed for the MCMC chains to converge in the latter case, relatively speaking.
+As evident from above, adding the square ($^2$) of each feature with a 1 regulariser \todo{(figure out what 1 column should be called)} yielded in performance that was negligibly lower ($\approx1^{-5}$) than projection into full quadratic space, whilst requiring considerably fewer features - $19$ for the former, vs. $55$ for the latter. While this difference isn't significant for GPs \todo{(perhaps provide a time benchmark for this too)}, it has a significant effect on running time later on when using Markov Chain Monte Carlo (MCMC) to obtain draws of the weights of the Dirichlet Multinomial Regressor - when working with the simplified 4-label case, there are $19*4 =76 \text{ vs. } 55*4=220$ weights, i.e. dimensions to deal with, whereas the full 24-label case would involve $19*24=456$ and $55*24=1320$ weights respectively, which would result in a significant increase in computing power needed for the MCMC chains to converge in the latter case.
 
-The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison \todo{(this hasn't actually happened yet)}. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
-
-Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps. \todo{(again, hasn't happened yet)}
+% The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison \todo{(this hasn't actually happened yet)}. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
+% 
+% Due to the low occurrence of some labels in the original dataset though, they have ended up being ommitted in predictions - these are excluded from the colour schemes of the benthic maps generated, so that those that do occur can be given more distinct colours from one another as to better differentiate between the habitats of a map, as well as allow a consistent comparison of across different maps. \todo{(again, hasn't happened yet)}
 
 % The associated generated maps from the experiments are also provided here, but proper evaluation of them, such as what habitat clusters and relationships can be gleaned, will be explored in Chapter 5. 
 
-\pagebreak
-\section{Deterministic Methods}
+\section{Single-Output Predictions}
 
-To first set a baseline for predictions over the bathymetry dataset, we look at the performance of some deterministic methods with respect to their unweighted (average of each label) f-scores. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section. \todo{(hasn't happened yet)}
+\subsection{Deterministic Approaches}
 
-\begin{table}[H]
+We first briefly review the machine learning techniques more commonly used in benthic habitat mapping first, to get an idea for the sort of maps generated as well as their performance for the given dataset. To quantifiably compare their predictions, we calculate their unweighted f-scores. The \textit{f-score} of predictions are a measure of accuracy in classification problems that takes into account both precision and recall across each possible label, and is calculated by $2*\frac{\text{precision*recall}}{precision+recall}$. The use of unweighted f-scores means, we calculated the \textit{f-score} separately for each label in the predictions, and simply took the average of them. This was chosen in favour of weighted f-scores that provide a larger weight for more frequent labels as the high occurrence of sand would hide the fact that the other labels are constantly incorrectly predicted, if this was the case. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logit}, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section. \todo{(this GP-LR comparison hasn't happened yet)}
+
+\begin{table}
     \centering
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
-    Algorithm & 10F-CV F1 & 10F-CV Accuracy & Label type\\\hline
+    Algorithm & 10F-CV F-score & 10F-CV Accuracy & Label type\\\hline
     SVC & 0.21514 & 0.75554 & 4 labels \\
     LogisticRegression & 0.33713 & 0.77001 & 4 labels \\
     KNeighborsClassifier & 0.4714 & 0.7796 & 4 labels \\
@@ -154,18 +153,16 @@ To first set a baseline for predictions over the bathymetry dataset, we look at 
     \caption{Performance of common machine learning models}
 \end{table}
 
-While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. the weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and weighted f1 score of $0.6503$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \autoref{fig:det4maps} below shows the predictions of each of the above predictions on the full query data for the 4 and 24-label data respectively.
-
 \begin{figure}[H]
     \includegraphics[width=\linewidth]{det_preds.pdf}
-    \caption{Full predictive map using Random Forests excluding coordinates as features}
+    \caption{Full predictive map using SVMs, Logistic Regression, kNN, and Random Forests}
     \label{fig:det4maps}
 \end{figure}
 
-\section{Gaussian Process Classification}
+While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. The weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and an average f-score of $0.215$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \autoref{fig:det4maps} visualises the predictions from \autoref{table:detresults} on the full query data for the 4 and 24-label data respectively\todo{(only showing 4-label(?) case atm! and need to include discrete label colourbar!)}. The Support Vector Machines (SVM) that generally provides moderately respectable real-world performance has noticably failed to predict anything other than sand throughout the query space, hinting the underlying data has complexities that require more complex models to explain it. The predictive maps generate using Logistic Regression and kNN bear noticable similarities in many areas of the map, while Random Forests identified regions that the others didn't.
 
-\todo{transfer all the results from markdown}
-
+\subsection{Probabilistic Approaches}
+\subsubsection{Single-Output Gaussian Process Classification}
 \todo{show more stratified results (not just even split) to show that even splits did better}
 
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -191,13 +188,43 @@ While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier 
 
 \todo{(maps of all-label full predictions)}
 
-\subsection{Using Multiple Gaussian Process Regressors per normalised Multi-output label}
-Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. Acknowledging the key flaw that this method does not ensure the constraint that predictions at each point need to sum back to $1$ 
+\section{Multi-Output Predictions} 
+Looking at the maps from \autoref{fig:det4maps}, it is obvious, visually, where clusters of certain habitats are - but what can't be easily obtained, or at least automated without non-trivial extra effort, is identifying exactly \textit{where} these clusters are the frequency of co-occurrence with other nearby labels. This is a consequence of only having a single label per point, but considering the considerable area covered by a single data point, it is unrealistic to imagine the entire surface being only a \textit{single} label. Thus, we explore how to predict the \textbf{distribution} of labels at each point as represented in the original data, to provide richer habitat maps that naturally illustrate the co-occurrence of different habitats.
 
-Average error was $0.14409166865082482$ in 10-fold CV
+\subsection{Coercion of Common Regression Machine Learning Algorithms} \label{ss:commonMLcoercion}
+To do this, we first look at the regression version of algorithms used in the previous section, instead applied individually to each of the label distribution values in the original dataset, rather than simplifying them down to a single habitat label. In particular, Linear Regression, Random Forest Regression, and K-Nearest Neighbour Regression were used. SVM Regression was ommitted largely due to its very poor performance in the single-label case, but also in part from the extensive computational time that would be required across predictions per label.
 
+\begin{figure}[h]
+    \title{\large{\textbf{Linear Regression}}}
+    \centerline{\includegraphics{multi4_preds_lr.pdf}}
+    \caption{Map of full query Linear Regression 4-label predictions}
+    \label{fig:multi4_lr}
+\end{figure}
 
-\section{Dirichlet Multinomial Regression}
+\begin{figure}[h]
+    \title{\large{\textbf{K Nearest Neighbour Regression}}}
+    \centerline{\includegraphics{multi4_preds_kn.pdf}}
+    \caption{Map of full query K Nearest Neighbour Regression 4-label predictions}
+    \label{fig:multi4_rf}
+\end{figure}
+
+\begin{figure}[h]
+    \title{\large{\textbf{Random Forest Regression}}}
+    \centerline{\includegraphics{multi4_preds_rf.pdf}}
+    \caption{Map of full query Random Forest Regression 4-label predictions}
+    \label{fig:multi4_rf}
+\end{figure}
+
+As a result, demonstrating how to use multiple, independent regressors for this purpose is more an illustrative exercise than a practical one that can be relied on in the field - because the constraint that the normalised distributions should sum to $1$ at each point is violated, where in some cases \textit{no} labels exist at points, while in others, the distributions sum to as high as $3$.
+
+\subsection{Coersion of Gaussian Process Regression}
+Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. 
+
+Average error was $0.14409166865082482$ in 10-fold CV \todo{(format)}
+
+While the ability of a Gaussian Process allows the data to `speak for itself' aided in bringing the average sum of distributions per point to $1$ compared to the simpler models in \ref{ss:commonMLcoercion}, this property is still not inherently there, not to mention that the full query dataset of just under $3,000,000$ points was too computational intensive to perform full predictions on.
+
+\subsection{Dirichlet Multinomial Regression}
 
 % \begin{tabular}{|c|c|c|c|c|c|}
 %     \hline
@@ -206,7 +233,7 @@ Average error was $0.14409166865082482$ in 10-fold CV
 %          DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\ %     \hline
 % \end{tabular}
 
-\subsection{Parameter Selection}
+\subsubsection{Parameter Selection}
 
 To select an optimal set of parameters for the dirichlet multinomial, Markov Chain Monte Carlo (MCMC) was used to draw samples from the posterior distribution \todo{(refer to equation?)} over $3,000,000$ runs, with the maximum a posteriori estimate used as the starting value for the weights. To select the single best set of weights from the sequence of chains, every single one was evaluated by being used to do Dirichlet Multinomial regression, where the weights that resulted in the lowest predictive variance (average over all variances) was considered to be the best set of parameters. The weights that corresponded to the lowest average variance also corresponded to the lowest average error compared to the original normalised weights. After the $3,000,000$ runs, the MCMC in both cases (the simplified 24 labels, as well as the full set) was considered to have converged, as the Gelman and Rubin ($\hat{r}$) convergence statistics were calculated to be \todo{(? and ?)}, both very close to the ideal value of $1.0$, Furthermore, for the \todo{24-label case}
 
@@ -305,7 +332,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
     \hfill
 \end{figure}
 
-\subsection{Biodiversity}
+\section{Biodiversity}
 \todo{highlight areas with biodiversity, particular co-occurring species, etc.}
 
 Another beneficial aspect of DMs are that they can inherently provide information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. To locate certain co-existence of species, the only step required would be to search over the space of predictions for the desired distributions simultaneously, assigning each a particular portion, with a margin of error. For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
@@ -313,3 +340,4 @@ Another beneficial aspect of DMs are that they can inherently provide informatio
 \todo{(some plots of these - pick ones that have `nice' graphs)}
 
 The above scenario assumes, however, that an ecologist (or anyone using the data) is already aware of the proportions of habitats they are searching for, which may not be the case if \todo{(describe a scenario here where the application is to detect changes in biodiversity over time)}
+

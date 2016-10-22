@@ -6,7 +6,7 @@ In this chapter, we will look at Gaussian Processes as technique to generate pre
 
 % $\mathbf{f_*}$ - predictive function outputs corresponding to input data $X_*$
 
-\section{Gaussian Process Regression}
+\section{Gaussian Process Regression}\label{chapsec:gpr}
 
 Compared to standard linear regression that explains data by optimising $\mathbf{y=X\beta} + \epsilon$, where $\mathbf{y}$ are the response variables, $\mathbf{X}$ are the input variables, and $\mathbf{\beta}$ are the regression coefficients, Gaussian process regression takes a Bayesian approach by adjusting probabilities when given more information (input data), and performs inference over functions.
 
@@ -102,7 +102,7 @@ $$\frac{\partial{\sigma_i^2}}{\partial{\theta_j}} = \frac{[Z_jK^{-1}]_{ii}}{[K^{
 where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{\theta_j}}$
 
 
-\section{Gaussian Process Classification}
+\section{Gaussian Process Classification} \label{chapsec:gpc}
 
 To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label using a one-vs-all approach, where every label at each data point is assigned both a probability and variance.
 

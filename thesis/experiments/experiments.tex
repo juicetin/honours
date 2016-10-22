@@ -213,6 +213,8 @@ Area Under The Receiver Operating Curve
 \section{Multi-Output Predictions} 
 Looking at the maps from \autoref{fig:det4maps}, it is obvious, visually, where clusters of certain habitats are - but what can't be easily obtained, or at least automated without non-trivial extra effort, is identifying exactly \textit{where} these clusters are the frequency of co-occurrence with other nearby labels. This is a consequence of only having a single label per point, but considering the considerable area covered by a single data point, it is unrealistic to imagine the entire surface being only a \textit{single} label. Thus, we explore how to predict the \textbf{distribution} of labels at each point as represented in the original data, to provide richer habitat maps that naturally illustrate the co-occurrence of different habitats.
 
+As a means of effectively visualising the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. In the maps below created from each model's respective predictions, each class is represented on a separate heatmap, with the occurence (with a maximum of $1$, when an area is predicted to \textit{only} contain that label) indicated by the colour bars included above each map. This allows initial observations to be made of where certain labels are more abundant than others. This representation allows a user/viewer to easily manually identify where and which labels have a high occurrence (without being required to constantly check which specific colour a label was, etc.), but also larger areas where habitats co-occur.
+
 \subsection{Coercion of Common Regression Machine Learning Algorithms} \label{ss:commonMLcoercion}
 To do this, we first look at the regression version of algorithms used in the previous section, instead applied individually to each of the label distribution values in the original dataset, rather than simplifying them down to a single habitat label. In particular, Linear Regression, Random Forest Regression, and K-Nearest Neighbour Regression were used. 
 
@@ -309,7 +311,7 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
     \caption{Dirichlet Multinomial Regression average error using different data configurations}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}
     \begin{minipage}{\linewidth}
         \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
         \centerline{\includegraphics{dm_simplelabel_heatmaps.pdf}}
@@ -321,7 +323,7 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
 
 In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement was much more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example. \todo{(numbers here will change})
 
-As a means of effectively visuailsing the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. This allows initial observations to be made of where certain labels are more abundant than others. Immediately, we can see the concrete advantages of using a multi-output model, as individual points no longer contain only a single label - \autoref{fig:dm_4label_heatmap} for example, shows that the majority of the reef is predominantly sand (label 3) with smaller proportions of the other labels, with the bottom-left region being mostly an even combination of labels 1 and 2 \todo{(get actual labels)}, with scattered sections of sand. Using the previously explored deterministic methods, it would not have been directly inferable (without extra processing of labels/results) that the sand-dominant areas also contained small amounts of other labels.
+\todo{As a means of effectively visuailsing the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. This allows initial observations to be made of where certain labels are more abundant than others.} Immediately, we can see the concrete advantages of using a multi-output model, as individual points no longer contain only a single label - \autoref{fig:dm_4label_heatmap} for example, shows that the majority of the reef is predominantly sand (label 3) with smaller proportions of the other labels, with the bottom-left region being mostly an even combination of labels 1 and 2 \todo{(get actual labels)}, with scattered sections of sand. Using the previously explored deterministic methods, it would not have been directly inferable (without extra processing of labels/results) that the sand-dominant areas also contained small amounts of other labels.
 
 % that the outreaching \textit{arm-like} portions on the right hand side of Scott Reef Central contain large areas of even splits of label 1 and 2, with trace amounts of label 0, but almost no label 3, which is otherwise the most frequently occuring habitat in the area \todo{(get the \textbf{actual} label names!)}.
 
@@ -398,7 +400,8 @@ While the basic results for the Dirichlet Multinomial were obtained using the Ma
 \section{Biodiversity}
 \todo{highlight areas with biodiversity, particular co-occurring species, etc.}
 
-Another beneficial aspect of DMs are that they can inherently provide information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. To locate certain co-existence of species, the only step required would be to search over the space of predictions for the desired distributions simultaneously, assigning each a particular portion, with a margin of error. For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
+Another beneficial aspect of Dirichlet Multinomial Regression it inherently provides information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. To locate certain co-existence of species, the only step required would be to search over the space of predictions for the desired distributions simultaneously. As an alternative, or extra step, the predictive variance at these points indicate the confidence by the DM about the predicted mix of labels. 
+For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
 
 \todo{(some plots of these - pick ones that have `nice' graphs)}
 

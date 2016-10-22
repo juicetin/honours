@@ -321,13 +321,9 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
     \hfill
 \end{figure}
 
-In line with what was observed in the DM illustrative example in \autoref{table:toy_gm_vs_gp}, performance was better when taking the quadratic projection of the original features - though in this case, the improvement was much more significant, namely by 41.4\% compared to the 6.5\% in the illustrative example. \todo{(numbers here will change})
+For the 4-label case, we can see similarities with the models generated using the previous methods, with certain regions matching up to different predictions. For example, all predictions were able to agree on the significant presence of label $3$ in the arm of the reef in the direction of the upper right corner of the region, though its dominance was in contention - with the Dirichlet Multinomial and Random Forest Regressor claiming the highest presence of sand in that region. 
 
-\todo{As a means of effectively visuailsing the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. This allows initial observations to be made of where certain labels are more abundant than others.} Immediately, we can see the concrete advantages of using a multi-output model, as individual points no longer contain only a single label - \autoref{fig:dm_4label_heatmap} for example, shows that the majority of the reef is predominantly sand (label 3) with smaller proportions of the other labels, with the bottom-left region being mostly an even combination of labels 1 and 2 \todo{(get actual labels)}, with scattered sections of sand. Using the previously explored deterministic methods, it would not have been directly inferable (without extra processing of labels/results) that the sand-dominant areas also contained small amounts of other labels.
-
-% that the outreaching \textit{arm-like} portions on the right hand side of Scott Reef Central contain large areas of even splits of label 1 and 2, with trace amounts of label 0, but almost no label 3, which is otherwise the most frequently occuring habitat in the area \todo{(get the \textbf{actual} label names!)}.
-
-In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
+In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels \todo{(don't know this yet! waiting for predictions to run)}, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
 
 \todo{summarise and plot the variances here}
 
@@ -366,7 +362,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
     \hfill
 \end{figure}
 
-\subsubsection{Parameter Selection}
+\subsection{Dirichlet Multinomial Predictive Map Variance}
 
 While the basic results for the Dirichlet Multinomial were obtained using the Maximum a Posteriori (MAP) estimate, Markov Chain Monte Carlo (MCMC) was used to obtain draws of weights from the posterior distribution. The purpose of this was to be able to obtain chains that had converged, then create a large number of maps from these chains (that were actually the weight parameters) to visualise which areas of the predictive map would remain relatively consistent across chains, and which ones wouldn't. Both the $4$-label case and $24$-label case were run for about a day, corresponding to a $4*19=76$ and $24*19=456$ dimensional space respectively in which the MCMC had to traverse.
 

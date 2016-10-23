@@ -95,7 +95,7 @@ Another preprocessing step that was performed was the aggregation of habitat lab
     \end{minipage}
 \end{figure}
 
-Note that from this point onwards, we will be working with the reduced feature set, in line with the aim of the paper to show the advantages of dirichlet multinomial regression when studies (environmental or otherwise) are limited to lower resolution data where strictly assigning only a single label to the features at a given data point is not representative of the otherwise rich information available. This restriction is a realistic one, because to be able to monitor large portions of the ocean for conservational and management reasons amongst others, data needs to be collected economically en-masse - and this means not collecting very high resolution data that would attract obscene costs at scale.
+Note that from this point onwards, we will be working with the reduced feature set, in line with the aim of the paper to show the advantages of dirichlet multinomial regression when studies (environmental or otherwise) are limited to lower resolution data where strictly assigning only a single label to the features at a given data point is not representative of the otherwise rich information available. This restriction is a realistic one, because to be able to monitor large portions of the ocean for conservational and management reasons amongst others, data needs to be collected economically en-masse - and this means not collecting very high resolution data that would attract large costs at scale.
 
 \subsection{Coordinates as features}
 Due to the abundant bathymetry data that was available in the form of depth, rugosity and aspect at each available data point, the coordinates themselves were not included in the feature space for experiments. Whilst it is logical that in a natural environment, areas that were spatially close would also have similar properties, this should not be relied upon, and other intrinsic properties should be the basis upon which predictions are made. Forming predictions on the full query dataset using a random forest supports this notion quite strongly - whilst 10-fold cross validation using the coordinates as features had a notably higher F-score of 0.61 compared to 0.40 without, the unnaturally straight split between the left and right segments (\autoref{fig:rf_w_coords_preds}) over a 12km region suggests that the predictive map is flawed. Moreover, by including the coordinates as a training feature, an assertion is made about the direct relationship between a benthic location and the habitat class/es it contains, despite its other physical properties such as depth, aspect, etc - an assumption that should not be embedded into the model before fitting it to the data even begins.
@@ -155,7 +155,7 @@ We first briefly review the machine learning techniques more commonly used in be
 While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. The weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and an average f-score of $0.215$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \autoref{fig:det4maps} visualises the predictions from \autoref{table:detresults} on the full query data for the 4 and 24-label data respectively\todo{(only showing 4-label(?) case atm! and need to include discrete label colourbar!)}. The Support Vector Machines (SVM) that generally provides moderately respectable real-world performance has noticably failed to predict anything other than sand throughout the query space, hinting the underlying data has complexities that require more complex models to explain it. The predictive maps generate using Logistic Regression and kNN bear noticable similarities in many areas of the map, while Random Forests identified regions that the others didn't. 
 
 \begin{figure}[H]
-    \includegraphics[width=\linewidth]{det_preds.pdf}
+    \includegraphics[width=\linewidth]{det4_preds.pdf}
     \caption{Full predictive map using SVMs, Logistic Regression, kNN, and Random Forests}
     \label{fig:det4maps}
 \end{figure}
@@ -211,12 +211,12 @@ Area Under The Receiver Operating Curve
 \todo{(maps of all-label full predictions)}
 
 \section{Multi-Output Predictions} 
-Looking at the maps from \autoref{fig:det4maps}, it is obvious, visually, where clusters of certain habitats are - but what can't be easily obtained, or at least automated without non-trivial extra effort, is identifying exactly \textit{where} these clusters are the frequency of co-occurrence with other nearby labels. This is a consequence of only having a single label per point, but considering the considerable area covered by a single data point, it is unrealistic to imagine the entire surface being only a \textit{single} label. Thus, we explore how to predict the \textbf{distribution} of labels at each point as represented in the original data, to provide richer habitat maps that naturally illustrate the co-occurrence of different habitats.
+Looking at the Logistic Regression map from \autoref{fig:det4maps} (as the rest provide little to no useful information), it can be observed where clusters of certain habitats are - but what can't be easily obtained, or at least automated without non-trivial extra effort, is identifying exactly \textit{where} these clusters are, and the frequency of co-occurrence between the different habitats. This is a consequence of only having a single label per point, but considering the area covered by a single data point, it is unrealistic to imagine the entire surface being only a \textit{single} label. Thus, we explore how to predict the \textbf{distribution} of labels at each point as represented in the original data, to provide richer habitat maps that naturally illustrate the co-occurrence of different habitats.
 
 As a means of effectively visualising the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. In the maps below created from each model's respective predictions, each class is represented on a separate heatmap, with the occurence (with a maximum of $1$, when an area is predicted to \textit{only} contain that label) indicated by the colour bars included above each map. This allows initial observations to be made of where certain labels are more abundant than others. This representation allows a user/viewer to easily manually identify where and which labels have a high occurrence (without being required to constantly check which specific colour a label was, etc.), but also larger areas where habitats co-occur.
 
 \subsection{Coercion of Common Regression Machine Learning Algorithms} \label{ss:commonMLcoercion}
-To do this, we first look at the regression version of algorithms used in the previous section, instead applied individually to each of the label distribution values in the original dataset, rather than simplifying them down to a single habitat label. In particular, Linear Regression, Random Forest Regression, and K-Nearest Neighbour Regression were used. 
+To do this, we first look at the regression version of algorithms used in the previous section, instead applied individually to each of the label distribution values in the original dataset, rather than simplifying them down to a single habitat label. 
 
 \begin{table}[H]
     \centering
@@ -243,34 +243,44 @@ Note that the smaller errors when predicting using all 24-labels do not mean tha
 \begin{figure}[H]
     \title{\large{\textbf{Linear Regression}}}
     \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
-    \centerline{\includegraphics[scale=0.95]{multi4_preds_lr.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_lr.pdf}}
     \caption{Map of full query Linear Regression 4-label predictions}
     \label{fig:multi4_lr}
 \end{figure}
 
-It is immediately apparent that while linear regression has an average error within reason, the maps generated are likely faulty - each label's distribution is almost consistent throughout the $200$km-squared area, a uniformity that is highly improbable given the large area of benthos covered.
+It is immediately apparent that while linear regression has an average error within reason, the maps generated are likely faulty - each label's distribution is almost consistent throughout the $200$km-squared area, a uniformity that is highly improbable if not impossible, given the large area of benthos covered. Moreover, the sum of the normalised predictive distributions at most points sum to almost $2$ - well beyond the expected value, $1$.
 
 \begin{figure}[H]
     \title{\large{\textbf{K Nearest Neighbour Regression}}}
     \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
-    \centerline{\includegraphics[scale=0.95]{multi4_preds_kn.pdf}}
+    \centerline{\includegraphics[scale=0.75]{multi4_preds_knn.pdf}}
     \caption{Map of full query K Nearest Neighbour Regression 4-label predictions}
     \label{fig:multi4_rf}
 \end{figure}
 
-K-Nearest Neighbour performs notably better, as there are actually visible differences in distributions of labels on different parts of the map. For example, label 1 and 3 are mostly scattered throught the area, whereas label 2 has more noticable hotspots, and lablel 4 occurs at quite a dense rate throughout most of Scott Reef.
+K-Nearest Neighbour performs slightly better, as there are actually visible differences in the distribution of label 3 throughout the area, whilst showing traces of the other three labels. However, the failure for label distributions per point can be easily observed here, considering that a sizable portion of label 3 areas occur at roughtly a $0.5$ rate, but the combination of other labels in the same space quite clearly don't make up the remaining $0.5$, as they mostly sit near the $0.0$ mark. Moreover, the predictions themselves are very noisy - there are no observable contiguous areas where the occurrence of a habitat occurs at a similar rate, and nor are there visible smooth transitions where a habitat goes from high to low density.
+
+\begin{figure}[H]
+    \title{\large{\textbf{SVM Regression}}}
+    \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_svm.pdf}}
+    \caption{Map of full query SVM Regression 4-label predictions}
+    \label{fig:multi4_svr}
+\end{figure}
+
+SVM Regression is able to provide more reasonable predictions showing distinct areas of specific habitats that are more `natural' compared to Logistic Regression and K-NN regression thus far. However, considering the rarity of labels $0$ and $1$ in the original data, it is quite unrealistic that they could be almost uniformly present throughout the entire of Scott Reef at such a high rate. Again, visual inspection indicates that a large portion of the map has violated the constraints of the normalised label distributions summing back up to $1$ at each datapoint.
 
 \begin{figure}[H]
     \title{\large{\textbf{Random Forest Regression}}}
     \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
-    \centerline{\includegraphics[scale=0.95]{multi4_preds_rf.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_rf.pdf}}
     \caption{Map of full query Random Forest Regression 4-label predictions}
     \label{fig:multi4_rf}
 \end{figure}
 
-Random Forest Regression produces a similarly varied map, but very different to that of kNN regression. Labels 1, 2, and 3 have a notably higher predicted occurence rate throughout Scott Reef, with visible swaths that outweigh label $4$ in the region. Without marine biologist expert or similar input, however, it is hard to determine whether the large regions of the less common habitats predicted by the Random Forest Regressor are likely in a location such as Scott Reef.
+Random Forest Regression produces a similarly varied map, but very different to that of KNN and SVM regression in some key areas. Labels 1, 2, and 3 have a notably higher predicted occurence rate throughout Scott Reef, with visible swaths that outweigh label $4$ in the region. Without marine biologist expert or similar input, however, it is hard to determine whether the large regions of the less common habitats predicted by the Random Forest Regressor are likely in a location such as Scott Reef.
 
-As a result, demonstrating how to use multiple, independent regressors for this purpose is more an illustrative exercise than a practical one that can be relied on in the field - because the constraint that the normalised distributions should sum to $1$ at each point is violated, where in some cases \textit{no} labels exist at points, while in others, the distributions sum to as high as $3$.
+As a result of the constraint requiring label distributions per point to sum to $1$, the above use of independent regressors is more of an illustrative exercise than one that can be relied on for real-world use - even if some of the information it provides appears to be of some use. In the extreme cases, some coordinates had no labels at all (the distribtions `summed' to $0$), while others were as high as $3$. These suffer from the same disadvantage as in the previous section on single-output predictions by stating predictions in absolutes rather than providing confidence levels - and again, we apply Gaussian Processes to the problem to attempt to alleviate this, but using regression this time around.
 
 \subsection{Coercion of Gaussian Process Regression}
 Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. 
@@ -281,7 +291,7 @@ While the ability of a Gaussian Process allows the data to `speak for itself' ai
 
 \subsection{Dirichlet Multinomial Regression}
 
-The last model used was the Dirichlet Multinomial, which actually incorporates the constraint where predictions over any number of labels had to sum back to $1$, as a result of the Dirichlet distribution component. This means that from a mathematical standpoint, these predictions will be more `correct' for multi-output labels than all the previosly explored models - but we also want to see how they hold up in practice.
+The last model used was the Dirichlet Multinomial, which incorporates the constraint where predictions over any number of labels had to sum back to $1$, as a result of the Dirichlet distribution component. This means that from a mathematical standpoint, these predictions will be more `correct' for multi-output labels than all the previosly explored models - but we also want to see how they hold up in practice.
 
 To assess initial performance, the weights and hence the $\alpha$ parameter was obtained via the maximum a posteriori estimation.
 
@@ -293,25 +303,26 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
 % \end{tabular}
 
 
-\begin{table}[H]
+\begin{table}
     \centering
-    \title{Dirichlet Multinomial Regression Average Errors}
     \begin{tabular}{|c|c|}
         \hline
-        Features & Root Mean Squared Error \\\hline
-        Original Features, using coordinates & 0.18953610105996818 \\
-        Original Features, not using coordinates & 0.2823490793194339 \\
-        Squared features with 1 bias, using coordinates & 0.20925520941595718 \\
-        Squared features with 1 bias, not using coordinates & 0.1664202148790301 \\
-        Quadratic projection, using coordinates & 0.19461122367888578 \\
-        Quadratic projection, not using coordinates & 0.16938698362360433 \\
+        Labels used & Root Mean Squared Error \\\hline
+        4 & 0.17664\\
+        24  & 0.05916\\
+        % Original Features, using coordinates & 0.18953610105996818 \\
+        % Original Features, not using coordinates & 0.2823490793194339 \\
+        % Squared features with 1 bias, using coordinates & 0.20925520941595718 \\
+        % Squared features with 1 bias, not using coordinates & 0.1664202148790301 \\
+        % Quadratic projection, using coordinates & 0.19461122367888578 \\
+        % Quadratic projection, not using coordinates & 0.16938698362360433 \\
         \hline
     \end{tabular}
     \label{table:dmbasicresults}
-    \caption{Dirichlet Multinomial Regression average error using different data configurations}
+    \caption{Dirichlet Multinomial Regression average error for the two label sets}
 \end{table}
 
-\begin{figure}
+\begin{figure}[H]
     \begin{minipage}{\linewidth}
         \centerline{\includegraphics{dm_standalone_colorbar.pdf}}
         \centerline{\includegraphics{dm_simplelabel_heatmaps.pdf}}
@@ -321,22 +332,31 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
     \hfill
 \end{figure}
 
-For the 4-label case, we can see similarities with the models generated using the previous methods, with certain regions matching up to different predictions. For example, all predictions were able to agree on the significant presence of label $3$ in the arm of the reef in the direction of the upper right corner of the region, though its dominance was in contention - with the Dirichlet Multinomial and Random Forest Regressor claiming the highest presence of sand in that region. 
+For the 4-label case, we can see some similarities with the models generated using the previous methods, with certain regions matching up to different predictions. For example, all predictions were able to agree on the significant presence of label $3$ in the arm of the reef in the direction of the upper right corner of the region, though its dominance was in contention - with the Dirichlet Multinomial claiming parts of this area were around $0.75$ label 3, whereas Linear, SVM, and kNN regression all predicted it to be mainly around $0.5$. Now that we have correctly modeled the data (at least in terms of properties of the predictions), more detailed observations can actually be made without the validity of the predictions being brought into question. This was the only model where predictions for label 3 exceeded a $0.5\%$ occupancy rate, with roughly $10,000$ points with over a proprtion of $0.9$ of label 3. $82\%$ of points contained over $0.5$ label 3, and $30\%$ over $0.8$. These statistics are attained with a single line of Python code (that runs essentially instantaneously) once the predictions have been made. Being able to conveniently determine these properties of the benthic body can be of immense use - if new low resolution bathymetry data and images is collected every several years, the rate at which the occupancy of certain habitats can be calculated without the need for expensive and possibly time-consuming post-processing of predictive maps.
 
-In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels \todo{(don't know this yet! waiting for predictions to run)}, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
+The Dirichlet Multinomial also allows us to observe the variance for each label at each datapoint, which can be interpreted as the `confidence' in which the model has that label $l$ at data point $x$ occupies some ratio $r$ of the points at that particular coordinate. This is invaluable information for conservation, for example, as it attaches a level of risk or assurance to any decisions or actions that need to be carried out, in contrast to the uncertainty when dealing with absolutes such as with linear regression in \autoref{fig:det4maps}. These confidence levels can be ovserved in \autoref{fig:dm_4label_variance}, where the variance over the query space for each label is mapped on a separate heatmap. The trend that can be seen here is that the model has generally high confidence (low variance) in the areas there are few to no labels, whereas the areas with a high occurrence of a particular label generally results in higher variance as well.
 
-\todo{summarise and plot the variances here}
+\begin{figure}[H]
+    \begin{minipage}{\linewidth}
+        \centerline{\includegraphics{dm_var_colorbar.pdf}}
+        \centerline{\includegraphics{dm_simplelabel_variance.pdf}}
+        \caption{Variance heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}
+        \label{fig:dm_4label_variance}
+    \end{minipage}
+    \hfill
+\end{figure}
 
-What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
+% \todo{summarise and plot the variances here}
 
 \begin{figure}[H]
     \textbf{DM Full Label 1-6 Predictions}
     \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-    \centerline{\includegraphics[scale=1.0]{dm_alllabels_heatmap_1-6.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_1-6.pdf}}
     \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
     \label{fig:dm_24-1_label_heatmap}
     \hfill
 \end{figure}
+
 \begin{figure}[H]
     \textbf{DM Full Label 7-12 Predictions}
     \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
@@ -345,6 +365,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
     \label{fig:dm_24-2_label_heatmap}
     \hfill
 \end{figure}
+
 \begin{figure}[H]
     \textbf{DM Full Label 13-18 Predictions}
     \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
@@ -353,6 +374,7 @@ What becomes apparent is that in the areas where the DM is confident of a mix of
     \label{fig:dm_24-3_label_heatmap}
     \hfill
 \end{figure}
+
 \begin{figure}[H]
     \textbf{DM Full Label 19-24 Predictions}
     \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
@@ -394,12 +416,17 @@ While the basic results for the Dirichlet Multinomial were obtained using the Ma
 \end{figure}
 
 \section{Biodiversity}
-\todo{highlight areas with biodiversity, particular co-occurring species, etc.}
 
 Another beneficial aspect of Dirichlet Multinomial Regression it inherently provides information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. To locate certain co-existence of species, the only step required would be to search over the space of predictions for the desired distributions simultaneously. As an alternative, or extra step, the predictive variance at these points indicate the confidence by the DM about the predicted mix of labels. 
-For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
+% For example, we could easily locate areas with mixes of \todo{(change here for a good example)} labels 5, 9, and 14, with each having an even split with a margin of $0.05$ - this would result in us searching the predictions with the conditions where label 5 has a predictive distribution $[0.28, 0.38]$, as would labels, 9, 14. 
 
-\todo{(some plots of these - pick ones that have `nice' graphs)}
+% \todo{(some plots of these - pick ones that have `nice' graphs)}
 
-The above scenario assumes, however, that an ecologist (or anyone using the data) is already aware of the proportions of habitats they are searching for, which may not be the case if \todo{(describe a scenario here where the application is to detect changes in biodiversity over time)}
+% The above scenario assumes, however, that an ecologist (or anyone using the data) is already aware of the proportions of habitats they are searching for, which may not be the case if \todo{(describe a scenario here where the application is to detect changes in biodiversity over time)}
+
+% \todo{(stuff below is old, figure out whether to keep/rephrase, etc.)}
+
+In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels \todo{(don't know this yet! waiting for predictions to run)}, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
+
+What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
 

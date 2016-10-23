@@ -18,7 +18,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amsthm}
-\usepackage{cleveref}
+\usepackage{amsthm}
 \usepackage[english]{babel}
 \usepackage[colorlinks=false,plainpages=false,a4paper,pdfborder={0 0 0},backref=false]{hyperref}
 \usepackage[all]{hypcap}
@@ -50,6 +50,9 @@
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
+\theoremstyle{definition}
+\newtheorem{ex}{Example}[section]
+
 \graphicspath{{images/}}
 
 \rcDecimalSignOutput{.} % rccol
@@ -67,6 +70,8 @@
 \newcommand{\todo}[1]{{\color{red} #1}}
 \newcommand{\sent}[1]{{\color{blue}\texttt{#1}\xspace}}
 
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\logistic}{logistic}
 
 %%%%%%%%%%%%
 % Maths functions

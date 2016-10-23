@@ -26,7 +26,7 @@ From the above equation, it is evident that points that are very close together 
 \end{equation}
 where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the variance of the Gaussian noise. \todo{clarify what's happening here}
 
-To allow simplifications of notation in the following equations, we define some abbreviations related to \ref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
+To allow simplifications of notation in the following equations, we define some abbreviations related to \autoref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
 
 \todo{(lay out these abbreviations nicely)}
 To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
@@ -104,18 +104,18 @@ where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{
 
 \section{Gaussian Process Classification} \label{chapsec:gpc}
 
-To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label using a one-vs-all approach, where every label at each data point is assigned both a probability and variance.
+To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label using a one-vs-all approach as in Example \autoref{ex:one-vs-all}, and every label at each data point is assigned both a probability and variance. To ensure the predictions at each point for each label is propertly constrained to be in the range $[0,1]$, we again pass predictions through the logistic sigmoid function (\autoref{eq:logistic}).
 
 \todo{(expand)}
 
-\section{Subsampling for Gaussian Process experiments}
-\todo{(may need to take this section out - GPy wrapper deals with thousands of points no problem, no longer need to subsample with only 4000 after downsampling the data)}
-
-Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random subsets of this size. To obtain the 1000 datapoints, both stratified sampling, as well as obtaining ratios of labels matching those in the training set were used. After 200 runs, the set with the best performance was used for the remaining GP experiments.
+% \section{Subsampling for Gaussian Process experiments}
+% \todo{(may need to take this section out - GPy wrapper deals with thousands of points no problem, no longer need to subsample with only 4000 after downsampling the data)}
+% 
+% Due to the $O(n^3)$ complexity of training a Gaussian Process Classifier, using all $16502$ points was infeasible, so it was necessary to use only a subsample of the training data. As can be seen in the above histograms \todo{(reference the figure instead. may need to combine them into one)}, the distribution of classes in both the simplified and non-simplified versions was very uneven. As a result of this skew, randomly sampling the the training data to fit our GP classifier against resulted in worse results than samplying an equal \textit{number} of points for each class. To obtain a reasonably well-performing set of 1000 points (the number chosen to obtain a balance between performance and time required), 10-fold cross validation was performed on random subsets of this size. To obtain the 1000 datapoints, both stratified sampling, as well as obtaining ratios of labels matching those in the training set were used. After 200 runs, the set with the best performance was used for the remaining GP experiments.
 
 \section{Gaussian Process Approximation}
 
-However, although significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier, there exist approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second is \textit{ensemble} methods - combining the results of several independent Gaussian Processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
+However, significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier. To counter this, there are approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second are \textit{ensemble} methods - combining the results of several independent Gaussian Processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
 
 \subsection{Product of Experts and Variations}
 \todo{(EXPAND explanations in this section)}

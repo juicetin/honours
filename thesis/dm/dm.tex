@@ -1,6 +1,9 @@
-\chapter{Multi-label Habitat Mapping} \label{chap:dms}
+\chapter{Multi-output Habitat Mapping} \label{chap:dms}
+On top of being able to produce probabilistic outputs, it would be of further advantage if preditions could be performed on multi-output data as well, to fully utilise the fact that many areas of the benthos will contain more than one label at any given time, where the simplifcation of these multi-labels to a single one thus far causes a considerable loss of information from the original data before the model fitting even begins. This is the motivation for us to explore the Dirichlet Multinomial Distributions that have the ability to perform predictions over category counts, a perfect fit for the original data used in this study.
 
-Dirichlet multinomial regression, as the name suggestions, combines dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationship in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. \todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
+Dirichlet multinomial regression, as the name suggestions, combines dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationship in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. To appreciate the Dirichlet Multinomial distribution as a whole, we first provide a brief overview of the multinomial and dirichlet distributions separately.
+
+\todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
 
 \section{Multinomial Distribution}
 \todo {equations, description}
@@ -42,8 +45,10 @@ To optimise this equation, the partial derivative of the above over the weights 
 
 \todo {explain all the symbols here}
 
-\subsection{Using MCMC instead of MAP}
-\todo{(explain why)}
+\subsection{Using Markov Chain Monte Carlo (MCMC) instead of MAP}
+\todo{(give extra info on MCMC here)}
+
+Using the MAP for optimisation, while a valid option, ignores all the possible weights in the given posterior distribution where they could also be drawn from. To create more certainty that the weights drawn from the distribution are in agreeance about the actual maps generated, MCMC would need to be used. By applying weights from the MCMC chains back to predictions and visually comparing differences, visual confirmation can be had on whether the maps remain reasonably consistent using weights drawn from the posterior.
 
 \section{Illustrative Example}
 

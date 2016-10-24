@@ -1,0 +1,222 @@
+\section{Multi-Output Predictions} 
+Looking at the Logistic Regression map from \autoref{fig:det4maps} (as the rest provide little to no useful information), it can be observed where clusters of certain habitats are - but what can't be easily obtained, or at least automated without non-trivial extra effort, is identifying exactly \textit{where} these clusters are, and the frequency of co-occurrence between the different habitats. This is a consequence of only having a single label per point, but considering the area covered by a single data point, it is unrealistic to imagine the entire surface being only a \textit{single} label. Thus, we explore how to predict the \textbf{distribution} of labels at each point as represented in the original data, to provide richer habitat maps that naturally illustrate the co-occurrence of different habitats.
+
+As a means of effectively visualising the separate labels, we need to look at the normalised distribution of habitat classes for each label separately. In the maps below created from each model's respective predictions, each class is represented on a separate heatmap, with the occurence (with a maximum of $1$, when an area is predicted to \textit{only} contain that label) indicated by the colour bars included above each map. This allows initial observations to be made of where certain labels are more abundant than others. This representation allows a user/viewer to easily manually identify where and which labels have a high occurrence (without being required to constantly check which specific colour a label was, etc.), but also larger areas where habitats co-occur.
+
+\subsection{Coercion of Common Regression Machine Learning Algorithms} \label{ss:commonMLcoercion}
+To do this, we first look at the regression version of algorithms used in the previous section, instead applied individually to each of the label distribution values in the original dataset, rather than simplifying them down to a single habitat label. 
+
+\begin{table}[H]
+    \centering
+    \title{\large{\textbf{Multi-output average Errors}}}
+    \begin{tabular}{|c|C{2cm}|C{2cm}|C{2cm}|C{2cm}|C{2cm}|}
+        \hline
+        Algorithm & Average Error & Labels Used & Average Row Sum* & Min Row Sum & Max Row Sum\\\hline
+        SVR & 0.2073 & 4 & 0.7407 & 0.1687 & 1.4418\\
+        LinearRegression & 0.1827 & 4 & 0.5224 & 0.1136 & 0.8421\\
+        KNeighborsRegressor & 0.1698 & 4 & 0.5365 & 0.0 & 1.0\\
+        RandomForestRegressor & 0.1722 & 4 & 0.5267 & 0.0 & 1.4\\
+        SVR & 0.0983 & 24 & 1.8567 & 1.826 & 1.8834\\
+        LinearRegression & 0.0463 & 24 & 0.155 & -0.1624 & 0.4006\\
+        KNeighborsRegressor & 0.0434 & 24 & 0.1655 & 0.0 & 1.0\\
+        RandomForestRegressor & 0.0441 & 24 & 0.1842 & 0.0 & 1.3\\
+        \hline
+    \end{tabular}
+    \label{table:dmbasicresults}
+    \caption{Average errors of multi-output versions of single-output regression methods}
+\end{table}
+
+Note that the smaller errors when predicting using all 24-labels do not mean that it is `better' to do so - because the values in the training set are smaller to begin with, it follows that the variance in predictions will also be smaller as a result. To visualise how these results translate when each of the models' trained parameters are used to predict the labels over the query space, heatmaps of each label were used, to allow easy identification of information such as which areas are particularly domianted by a single habitat, where they are particularly scarce, or areas where multiple habitats co-exist. Full predictions using SVM Regression was ommitted largely due to its poor performance observed from the average error above, in addition to the extensive computational time required for predictions compared to the other three algorithms.
+
+\begin{figure}[H]
+    \title{\large{\textbf{Linear Regression}}}
+    \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_lr.pdf}}
+    \caption{Map of full query Linear Regression 4-label predictions}
+    \label{fig:multi4_lr}
+\end{figure}
+
+It is immediately apparent that while linear regression has an average error within reason, the maps generated are likely faulty - each label's distribution is almost consistent throughout the $200$km-squared area, a uniformity that is highly improbable if not impossible, given the large area of benthos covered. Moreover, the sum of the normalised predictive distributions at most points sum to almost $2$ - well beyond the expected value, $1$.
+
+\begin{figure}[H]
+    \title{\large{\textbf{K Nearest Neighbour Regression}}}
+    \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
+    \centerline{\includegraphics[scale=0.75]{multi4_preds_knn.pdf}}
+    \caption{Map of full query K Nearest Neighbour Regression 4-label predictions}
+    \label{fig:multi4_rf}
+\end{figure}
+
+K-Nearest Neighbour performs slightly better, as there are actually visible differences in the distribution of label 3 throughout the area, whilst showing traces of the other three labels. However, the failure for label distributions per point can be easily observed here, considering that a sizable portion of label 3 areas occur at roughtly a $0.5$ rate, but the combination of other labels in the same space quite clearly don't make up the remaining $0.5$, as they mostly sit near the $0.0$ mark. Moreover, the predictions themselves are very noisy - there are no observable contiguous areas where the occurrence of a habitat occurs at a similar rate, and nor are there visible smooth transitions where a habitat goes from high to low density.
+
+\begin{figure}[H]
+    \title{\large{\textbf{SVM Regression}}}
+    \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_svm.pdf}}
+    \caption{Map of full query SVM Regression 4-label predictions}
+    \label{fig:multi4_svr}
+\end{figure}
+
+SVM Regression is able to provide more reasonable predictions showing distinct areas of specific habitats that are more `natural' compared to Logistic Regression and K-NN regression thus far. However, considering the rarity of labels $0$ and $1$ in the original data, it is quite unrealistic that they could be almost uniformly present throughout the entire of Scott Reef at such a high rate. Again, visual inspection indicates that a large portion of the map has violated the constraints of the normalised label distributions summing back up to $1$ at each datapoint.
+
+\begin{figure}[H]
+    \title{\large{\textbf{Random Forest Regression}}}
+    \centerline{\includegraphics[scale=0.85]{multioutput_distr_colourbar.pdf}}
+    \centerline{\includegraphics[scale=0.85]{multi4_preds_rf.pdf}}
+    \caption{Map of full query Random Forest Regression 4-label predictions}
+    \label{fig:multi4_rf}
+\end{figure}
+
+Random Forest Regression produces a similarly varied map, but very different to that of KNN and SVM regression in some key areas. Labels 1, 2, and 3 have a notably higher predicted occurence rate throughout Scott Reef, with visible swaths that outweigh label $4$ in the region. Without marine biologist expert or similar input, however, it is hard to determine whether the large regions of the less common habitats predicted by the Random Forest Regressor are likely in a location such as Scott Reef.
+
+As a result of the constraint requiring label distributions per point to sum to $1$, the above use of independent regressors is more of an illustrative exercise than one that can be relied on for real-world use - even if some of the information it provides appears to be of some use. In the extreme cases, some coordinates had no labels at all (the distribtions `summed' to $0$), while others were as high as $3$. These suffer from the same disadvantage as in the previous section on single-output predictions by stating predictions in absolutes rather than providing confidence levels - and again, we apply Gaussian Processes to the problem to attempt to alleviate this, but using regression this time around.
+
+\subsection{Coercion of Gaussian Process Regression}
+Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. Morever, compared to the previous coercion of deterministic methods, we can use the variance of the Gaussian Process over each label to visualise the uncertainty of predictions.
+
+Average error was $0.14409166865082482$ in 10-fold CV \todo{(format)}
+
+While the ability of a Gaussian Process allows the data to `speak for itself' aided in bringing the average sum of distributions per point to $1$ compared to the simpler models in \ref{ss:commonMLcoercion}, this property is still not inherently there, not to mention that the full query dataset of just under $3,000,000$ points was too computational intensive to perform full predictions on.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.85]{gpm4_simplelabels_allpreds_colourbar.pdf}
+    \includegraphics[scale=0.85]{gpm4_simplelabels_allpreds.pdf}
+    \label{fig:gpm4_simple_preds}
+    \caption{Gaussian Process predictions on full query data}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.85]{gpm4_simplelabels_allvars_colourbar.pdf}
+    \includegraphics[scale=0.85]{gpm4_simplelabels_allvars.pdf}
+    \label{fig:gpm4_simple_vars}
+    \caption{Gaussian Process variances on full query data}
+\end{figure}
+
+
+\subsection{Dirichlet Multinomial Regression}
+
+The last model used was the Dirichlet Multinomial, which incorporates the constraint where predictions over any number of labels had to sum back to $1$, as a result of the Dirichlet distribution component. This means that from a mathematical standpoint, these predictions will be more `correct' for multi-output labels than all the previosly explored models - but we also want to see how they hold up in practice.
+
+To assess initial performance, the weights and hence the $\alpha$ parameter was obtained via the maximum a posteriori estimation.
+
+% \begin{tabular}{|c|c|c|c|c|c|}
+%     \hline
+%     Algorithm & 10F-CV F1 & 10F-CV Accuracy & Parameters & Data \\\hline
+%          DM         &  0.13802716811804644 & 0.37856057852908254 &            &  full labels  \\
+%          DM         &   0.287405310254214  &  0.757925654489819  &            & simple labels \\ %     \hline
+% \end{tabular}
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Labels used & Root Mean Squared Error \\\hline
+        4 & 0.17664\\
+        24  & 0.05916\\
+        % Original Features, using coordinates & 0.18953610105996818 \\
+        % Original Features, not using coordinates & 0.2823490793194339 \\
+        % Squared features with 1 bias, using coordinates & 0.20925520941595718 \\
+        % Squared features with 1 bias, not using coordinates & 0.1664202148790301 \\
+        % Quadratic projection, using coordinates & 0.19461122367888578 \\
+        % Quadratic projection, not using coordinates & 0.16938698362360433 \\
+        \hline
+    \end{tabular}
+    \label{table:dmbasicresults}
+    \caption{Dirichlet Multinomial Regression average error for the two label sets}
+\end{table}
+
+\begin{figure}[H]
+    \begin{minipage}{\linewidth}
+        \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
+        \centerline{\includegraphics[scale=0.85]{dm_simplelabel_heatmaps.pdf}}
+        \caption{Distribution heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}
+        \label{fig:dm_4label_heatmap}
+    \end{minipage}
+    \hfill
+\end{figure}
+
+For the 4-label case, we can see some similarities with the models generated using the previous methods, with certain regions matching up to different predictions. For example, all predictions were able to agree on the significant presence of label $3$ in the arm of the reef in the direction of the upper right corner of the region, though its dominance was in contention - with the Dirichlet Multinomial claiming parts of this area were around $0.75$ label 3, whereas Linear, SVM, and kNN regression all predicted it to be mainly around $0.5$. Now that we have correctly modeled the data (at least in terms of properties of the predictions), more detailed observations can actually be made without the validity of the predictions being brought into question. This was the only model where predictions for label 3 exceeded a $0.5\%$ occupancy rate, with roughly $10,000$ points with over a proprtion of $0.9$ of label 3. $82\%$ of points contained over $0.5$ label 3, and $30\%$ over $0.8$. These statistics are attained with a single line of Python code (that runs essentially instantaneously) once the predictions have been made. Being able to conveniently determine these properties of the benthic body can be of immense use - if new low resolution bathymetry data and images is collected every several years, the rate at which the occupancy of certain habitats can be calculated without the need for expensive and possibly time-consuming post-processing of predictive maps.
+
+The Dirichlet Multinomial also allows us to observe the variance for each label at each datapoint, which can be interpreted as the `confidence' in which the model has that label $l$ at data point $x$ occupies some ratio $r$ of the points at that particular coordinate. This is invaluable information for conservation, for example, as it attaches a level of risk or assurance to any decisions or actions that need to be carried out, in contrast to the uncertainty when dealing with absolutes such as with linear regression in \autoref{fig:det4maps}. These confidence levels can be ovserved in \autoref{fig:dm_4label_variance}, where the variance over the query space for each label is mapped on a separate heatmap. The trend that can be seen here is that the model has generally high confidence (low variance) in the areas there are few to no labels, whereas the areas with a high occurrence of a particular label generally results in higher variance as well.
+
+\begin{figure}[H]
+    \begin{minipage}{\linewidth}
+        \centerline{\includegraphics{dm_var_colorbar.pdf}}
+        \centerline{\includegraphics{dm_simplelabel_variance.pdf}}
+        \caption{Variance heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}
+        \label{fig:dm_4label_variance}
+    \end{minipage}
+    \hfill
+\end{figure}
+
+% \todo{summarise and plot the variances here}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 1-6 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_1-6.pdf}}
+    \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-1_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 7-12 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_7-12.pdf}}
+    \caption{Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-2_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 13-18 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_13-18.pdf}}
+    \caption{Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-3_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 19-24 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
+    \centerline{\includegraphics{dm_alllabels_heatmap_19-24.pdf}}
+    \caption{Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-4_label_heatmap}
+    \hfill
+\end{figure}
+
+\subsection{Dirichlet Multinomial Predictive Map Variance}
+
+While the basic results for the Dirichlet Multinomial were obtained using the Maximum a Posteriori (MAP) estimate, Markov Chain Monte Carlo (MCMC) was used to obtain draws of weights from the posterior distribution. The purpose of this was to be able to obtain chains that had converged, then create a large number of maps from these chains (that were actually the weight parameters) to visualise which areas of the predictive map would remain relatively consistent across chains, and which ones wouldn't. Both the $4$-label case and $24$-label case were run for about a day, corresponding to a $4*19=76$ and $24*19=456$ dimensional space respectively in which the MCMC had to traverse.
+
+% To select an optimal set of parameters for the dirichlet multinomial, Markov Chain Monte Carlo (MCMC) was used to draw samples from the posterior distribution \todo{(refer to equation?)} over $3,000,000$ runs, with the maximum a posteriori estimate used as the starting value for the weights. To select the single best set of weights from the sequence of chains, every single one was evaluated by being used to do Dirichlet Multinomial regression, where the weights that resulted in the lowest predictive variance (average over all variances) was considered to be the best set of parameters. The weights that corresponded to the lowest average variance also corresponded to the lowest average error compared to the original normalised weights. After the $3,000,000$ runs, the MCMC in both cases (the simplified 24 labels, as well as the full set) was considered to have converged, as the Gelman and Rubin ($\hat{r}$) convergence statistics were calculated to be \todo{(? and ?)}, both very close to the ideal value of $1.0$, Furthermore, for the \todo{24-label case}
+
+% MCMC 2 million runs, 24 labels
+% 18-smallest variance corresponds to the 1-smallest error - index 1444288 \\
+% 19-smallest variance corresponds to the 2-smallest error - index 1444289 \\
+% 20-smallest variance corresponds to the 4-smallest error - index 1444292 \\
+% 21-smallest variance corresponds to the 0-smallest error - index 1444291 \\
+% 22-smallest variance corresponds to the 3-smallest error - index 1444290 \\
+
+% np.save('data/W_2m_1444288', chains[1444288])
+% np.save('data/W_2m_1444289', chains[1444289])
+% np.save('data/W_2m_1444292', chains[1444292])
+% np.save('data/W_2m_1444291', chains[1444291])
+% np.save('data/W_2m_1444290', chains[1444290])
+
+\begin{figure}[H]
+    \centerline{\includegraphics{dm4_9m_0_mcmc_weight_hist.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
+    \label{fig:4l-mcmc_weights}
+\end{figure}
+
+\begin{figure}[H]
+    \centerline{\includegraphics{dm24_950k_0_mcmc_weight_hist.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
+    \label{fig:24l-mcmc_weights}
+\end{figure}
+

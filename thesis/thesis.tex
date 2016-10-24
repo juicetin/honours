@@ -19,6 +19,7 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amsthm}
+\usepackage[toc,page]{appendix}
 \usepackage[english]{babel}
 \usepackage[colorlinks=false,plainpages=false,a4paper,pdfborder={0 0 0},backref=false]{hyperref}
 \usepackage[all]{hypcap}
@@ -157,10 +158,12 @@
 }
 
 %%%% Appendices
-%%%\appendix
-%%%\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
-%%%\input{wikifeats/wikifeats.tex}
-%%%\input{candcner/candcner.tex}
-%%%\input{comparedata/comparedata.tex}
+\appendix
+addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+% \input{appendix}
+\input{appendix/appendix.tex}
+% input{wikifeats/wikifeats.tex}
+% input{candcner/candcner.tex}
+% input{comparedata/comparedata.tex}
 
 \end{document}

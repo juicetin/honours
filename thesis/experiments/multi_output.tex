@@ -71,24 +71,40 @@ Random Forest Regression produces a similarly varied map, but very different to 
 As a result of the constraint requiring label distributions per point to sum to $1$, the above use of independent regressors is more of an illustrative exercise than one that can be relied on for real-world use - even if some of the information it provides appears to be of some use. In the extreme cases, some coordinates had no labels at all (the distribtions `summed' to $0$), while others were as high as $3$. These suffer from the same disadvantage as in the previous section on single-output predictions by stating predictions in absolutes rather than providing confidence levels - and again, we apply Gaussian Processes to the problem to attempt to alleviate this, but using regression this time around.
 
 \subsection{Coercion of Gaussian Process Regression}
-Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. Morever, compared to the previous coercion of deterministic methods, we can use the variance of the Gaussian Process over each label to visualise the uncertainty of predictions.
+Although a Gaussian Process is only designed to deal with single outputs, each of the label distributions per datapoint are seperate values, meaning it is possible to use multiple Gaussian Processes to allow it to work as a multi-output model. Morever, compared to the previous coercion of deterministic methods, we can use the variance of the Gaussian Process over each label to visualise the uncertainty of predictions. In contrast to previous methods however, due to the established $O(n^3)$ complexity, it was impractical to perform 10-fold cross validation on the full $\geq 5000$ data points in the downsampled training set. Instead, a method similar to \todo{argmax, 230 points per class, 920 total, randomly sample the 920 until predictions on remaining points gives best performance} was used to select the training points.
 
-Average error was $0.14409166865082482$ in 10-fold CV \todo{(format)}
+% Average error was $0.14409166865082482$ in 10-fold CV \todo{(format)}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Labels used & Root Mean Squared Error \\\hline
+        4 & 0.14409\\
+        24  & ? \\
+        \hline
+    \end{tabular}
+    \label{table:gpmbasicresults}
+    \caption{Multiple Gaussian Process Regression average error for the two label sets}
+\end{table}
 
-While the ability of a Gaussian Process allows the data to `speak for itself' aided in bringing the average sum of distributions per point to $1$ compared to the simpler models in \ref{ss:commonMLcoercion}, this property is still not inherently there, not to mention that the full query dataset of just under $3,000,000$ points was too computational intensive to perform full predictions on.
+\autoref{fig:gpm4_simple_preds} below shows the full predictions for the 4-label dataset, with the majority of predictions for labels $0$, $1$, and $2$ lying in the range $[0.1, 0.2]$. This is a likely indicator that the model and its parameters are inappropriate for the problem at hand, despite the variability of label 3 providing a more reasonable prediction of its occurrence. Looking at the actual predicted values, however, reveals how far they have deviated from summing to $1$ per point - \todo{waiting for another prediction to finish to pull values back up}.
+
+% While the ability of a Gaussian Process allows the data to `speak for itself' aided in bringing the average sum of distributions per point to $1$ compared to the simpler models in \ref{ss:commonMLcoercion}, this property is still not inherently there, not to mention that the full query dataset of just under $3,000,000$ points was too computational intensive to perform full predictions on.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.85]{gpm4_simplelabels_allpreds_colourbar.pdf}
-    \includegraphics[scale=0.85]{gpm4_simplelabels_allpreds.pdf}
+    \includegraphics[scale=0.85]{gp4_mp_allpreds_colourbar.pdf}
+    \includegraphics[scale=0.85]{gp4_mp_allpreds.pdf}
     \label{fig:gpm4_simple_preds}
     \caption{Gaussian Process predictions on full query data}
 \end{figure}
 
+Since multiple Gaussian Process Classification (Regression) does not discard a majority of the data compared to single-label Gaussian Process Classification, observing the variance is now more meaningful as \textit{each } each of the possible $c$ classes has a probability and corresponding variance of occurrence. However, as we see in \autoref{fig:gpm4_simple_vars}, not much can be gained from the 4-label case, considering that labels 0, 1, 2 have almost no variance, with only label 3 contaiing any visible sections with variance higher than $0.13$, going as high as $0.41$. Given that none of the methods so far are able to simultaneously (at least mostly) adhere to the constraints of the Dirichlet Distribution without explicitly incorporating it or provide realistic predictions given the rich habitat distribution data, we turn to a model that can in theory do both.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.85]{gpm4_simplelabels_allvars_colourbar.pdf}
-    \includegraphics[scale=0.85]{gpm4_simplelabels_allvars.pdf}
+    \includegraphics[scale=0.85]{gp4_mp_vars_all_colourbar.pdf}
+    \includegraphics[scale=0.85]{gp4_mp_vars_all.pdf}
     \label{fig:gpm4_simple_vars}
     \caption{Gaussian Process variances on full query data}
 \end{figure}
@@ -108,7 +124,7 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
 % \end{tabular}
 
 
-\begin{table}
+\begin{table}[H]
     \centering
     \begin{tabular}{|c|c|}
         \hline
@@ -152,43 +168,6 @@ The Dirichlet Multinomial also allows us to observe the variance for each label 
 \end{figure}
 
 % \todo{summarise and plot the variances here}
-
-\begin{figure}[H]
-    \textbf{DM Full Label 1-6 Predictions}
-    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-    \centerline{\includegraphics{dm_alllabels_heatmap_1-6.pdf}}
-    \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
-    \label{fig:dm_24-1_label_heatmap}
-    \hfill
-\end{figure}
-
-\begin{figure}[H]
-    \textbf{DM Full Label 7-12 Predictions}
-    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-    \centerline{\includegraphics{dm_alllabels_heatmap_7-12.pdf}}
-    \caption{Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
-    \label{fig:dm_24-2_label_heatmap}
-    \hfill
-\end{figure}
-
-\begin{figure}[H]
-    \textbf{DM Full Label 13-18 Predictions}
-    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-    \centerline{\includegraphics{dm_alllabels_heatmap_13-18.pdf}}
-    \caption{Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
-    \label{fig:dm_24-3_label_heatmap}
-    \hfill
-\end{figure}
-
-\begin{figure}[H]
-    \textbf{DM Full Label 19-24 Predictions}
-    \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-    \centerline{\includegraphics{dm_alllabels_heatmap_19-24.pdf}}
-    \caption{Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
-    \label{fig:dm_24-4_label_heatmap}
-    \hfill
-\end{figure}
-
 \subsection{Dirichlet Multinomial Predictive Map Variance}
 
 While the basic results for the Dirichlet Multinomial were obtained using the Maximum a Posteriori (MAP) estimate, Markov Chain Monte Carlo (MCMC) was used to obtain draws of weights from the posterior distribution. The purpose of this was to be able to obtain chains that had converged, then create a large number of maps from these chains (that were actually the weight parameters) to visualise which areas of the predictive map would remain relatively consistent across chains, and which ones wouldn't. Both the $4$-label case and $24$-label case were run for about a day, corresponding to a $4*19=76$ and $24*19=456$ dimensional space respectively in which the MCMC had to traverse.

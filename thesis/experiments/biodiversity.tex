@@ -11,6 +11,46 @@ Another beneficial aspect of Dirichlet Multinomial Regression it inherently prov
 
 In contrast to the GP above where the uncertainty was greatest when there were even distributions of labels \todo{(don't know this yet! waiting for predictions to run)}, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), pairs of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segment was found where the average variance over these points were significantly lower than the variance in label distributions across the overall predictions. The variance in this regions were then compared to that of a Gaussian Processes'.
 
+Because the 4-label case already aggregated similar classes from the original $24$ down to $4$, there was limited biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity.
+
+\begin{figure}[H]
+    \textbf{DM Full Label 1-6 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm24_mp_colourbar.pdf}}
+    \centerline{\includegraphics{dm24_mp_1-6.pdf}}
+    \caption{Distribution heatmaps over labels 1-6 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-1_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 7-12 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm24_mp_colourbar.pdf}}
+    \centerline{\includegraphics{dm24_mp_7-12.pdf}}
+    \caption{Distribution heatmaps over labels 7-12 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-2_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 13-18 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm24_mp_colourbar.pdf}}
+    \centerline{\includegraphics{dm24_mp_13-18.pdf}}
+    \caption{Distribution heatmaps over labels 13-18 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-3_label_heatmap}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \textbf{DM Full Label 19-24 Predictions}
+    \centerline{\includegraphics[scale=0.85]{dm24_mp_colourbar.pdf}}
+    \centerline{\includegraphics{dm24_mp_19-24.pdf}}
+    \caption{Distribution heatmaps over labels 19-24 (in the full 24-label case) for Dirichlet Multinomial Regressor output on query points}
+    \label{fig:dm_24-4_label_heatmap}
+    \hfill
+\end{figure}
+
+\todo{describe the sampling of co-existing habitats here, and the results}
+
 What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
 
 

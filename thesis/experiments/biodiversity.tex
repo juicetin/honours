@@ -13,6 +13,8 @@ In contrast to the GP above where the uncertainty was greatest when there were e
 
 Because the 4-label case already aggregated similar classes from the original $24$ down to $4$, there was limited biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity.
 
+To perform initial measures of biodiversity, areas where $2$ or more labels co-existed were searched, but where their occurrence ratios lie within a certain range. The examples we show below limited this range to $0.03$ - however, this is arbitrary, and also tunable depending on the specifics of the benthic region, as well as the goals of obtaining biodiversity metrics. These searches were automated over the query space to find sections where the average variance was noticably lower than other parts of Scott Reef, indicating that the model had a higher confidence of a particular mix of habitats in the given section.
+
 \begin{figure}[H]
     \textbf{DM Full Label 1-6 Predictions}
     \centerline{\includegraphics[scale=0.85]{dm24_mp_colourbar.pdf}}
@@ -49,7 +51,8 @@ Because the 4-label case already aggregated similar classes from the original $2
     \hfill
 \end{figure}
 
-\todo{describe the sampling of co-existing habitats here, and the results}
+\todo{[PLACEHOLDER]}
+We can visually observe that labels $7, 8, 10$ (variants of sand) occur in the same regions, with the following occupancy rates, beyond areas containing only negliglble traces ($\equiv0.00-0.02$) $7$ at a $\approx0.12$ occpuance rate, $8$ at $\approx0.18-0.20$, and $10$ at $\approx.17$.
 
 What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
 

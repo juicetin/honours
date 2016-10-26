@@ -1,0 +1,86 @@
+\section{Probabilistic Approaches (Single Output)}
+
+In this section, we will add an extra layer of information to our models' outputs - the confidence of the label predictions made. When predictive variance at each point is given, a large variance would indicate a low level of confidence as the predicted value is any within a large range, whereas a small variance indicates a high level of confidence in a prediction, as the possible range of values is only a small one. For this, we need probabilistic models that naturally provide this desired variance in its predictions. In particular, as we saw in \Cref{chapsec:gpc}, Gaussian Process Classification is a good option for this.
+
+\subsection{Gaussian Process Classification}
+
+While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian Process Classification, we introduce another metric, Area Under the Receiver Operating Curve, to make use of the fact that the one-vs-all Gaussian Process Classifier provides a \textit{likelihood} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. 
+
+Area Under The Receiver Operating Curve
+\todo{TODO}
+
+\todo{show more stratified results (not just even split) to show that even splits did better}
+
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Type of GP Classification & AUROC & Accuracy & F-score & Labels used\\\hline
+    Normal & \todo{TODO} & 0.75525 & 0.47921 & 4 labels \\
+    PoEGP & & & & \\
+    GPoEGP & & & & \\
+    BCM & & & & \\
+    \hline
+\end{tabular}
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    No. points & Type of split & Type of GP & Number of runs & AUROC & Notes & F1-score \\\hline
+    500     & Even       & GP     &  10        & 0.86534    &                     &         \\
+    500     & Stratified & GP     &  10        & 0.80136    &                     &         \\
+    1000    & Even       & GP     &  1         & 0.87626    & Deterministic       & 0.56208 \\
+    1000    & Even       & PoEGP  &  5         & 0.80973    &                     & 0.47481 \\
+    1000    & Even       & PoEGP  &  200       & 0.80186    &                     & 0.47595 \\
+    1000    & Even       & GPoEGP &  5         & 0.80864    &                     & 0.51018 \\
+    1000    & Even       & GPoEGP &  200       & 0.80105    &                     & 0.47748 \\
+    1000    & Even       & BCM    &  5         & 0.80682    &                     & 0.48167 \\
+    1000    & Even       & BCM    &  200       & 0.80421    &                     & 0.48227 \\
+    1000    & Even       & GPy    &  1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
+    \hline
+\end{tabular}
+\todo{(look at AUROC/AUC and log probabilities as well)}
+
+\todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
+
+\todo{(talk about variance and extra probabilistic info to be gained)}
+
+\todo{(maps of 4-label full predictions)}
+
+\todo{(maps of all-label full predictions)}
+
+\subsection{Ensemble Gaussian Process Approximations}
+
+Although Gaussian processes provide the benefit of the possible variance for every prediction, the matrix inversion steps required and the $O(n^3)$ complexity prevents scaling of fitting the model beyond several thousand points (that even on consumer hardware is impractically time-consuming), and predictions an order of magnitude above that. Using the naive Gaussian process, model fitting on the $4$-label data with $5000$ data points took over a day\todo{(double check this again!)}, with the predictions of the $500,000$ training points taking another day. It would be helpful to note that the formulation of Gaussian process classification used in this study (binary one-vs-all classifiers per label) means the complexity not only scales with number of points, but also in the number of possible labels, as each requires another underlying Gaussian process to account for it. Due to hardware constraints, running the $24$-label cases were not run to completion.
+
+On the other hand, the benefits of Gaussian processes need not be sacrificed on account of this disadvantage of Gaussian processes, as approximations exist to break the original dataset into smaller chunks, allowing parallelisation and model fitting per smaller set of data that is only limited by the available hardware. \textbf{d2.8xlarge} Elastic Container instances from Amazon were used for these experiments, with the following specifications:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        Instance Type & vCPUs* & Memory(GB) & Physical Processor & Clock Speed \\\hline
+        d2.8xlarge & 36 & 244 & Intel Xeon E5-2676v3 & 2.4Ghz\\\hline
+    \end{tabular}
+    \label{table:ec2specs}
+    \caption{Amazon EC2 Instance Machine Specifications}
+\end{table}
+
+The following abbreviations are used for the table below: product of experts (PoE), generalised product of experts (GPoE), Bayesian committee machines (BCM), robust Bayesian committee machines (rBCM)
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|C{3cm}|c|c|C{3cm}|}
+        \hline
+        Ensemble Type & Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
+        PoE & 5000 points, 4-labels & Model Fitting & \\
+        PoE & 5000, 4 labels & Training & \\
+        PoE & 5000 points, 24-labels & Model Fitting &  \\
+        PoE & 5000, 24 labels & Training & \\
+        GPoE  & 5000 points, 4-labels & Model Fitting & 00:00:23 \\
+        GPoE  & 5000, 4 labels & Training & 00:03:31 \\
+        GPoE  & 5000 points, 24-labels & Model Fitting & 00:00:40 \\
+        GPoE  & 5000, 24 labels & Training & 01:40:30 \\
+        BCM  & 4-label & Training & \\
+        rBCM & 4-label & Training & \\
+        \hline
+    \end{tabular}
+    \label{table:gpensemble-results}
+    \caption{Gaussian process ensemble method results}
+\end{table}

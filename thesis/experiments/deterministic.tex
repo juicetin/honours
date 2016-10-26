@@ -1,6 +1,4 @@
-\section{Single-Output Predictions}
-
-\subsection{Deterministic Approaches}
+\section{Deterministic Approaches (Single Output)}
 
 We first briefly review the machine learning techniques more commonly used in benthic habitat mapping first, to get an idea for the sort of maps generated as well as their performance for the given dataset. To quantifiably compare their predictions, we calculate their unweighted f-scores. The \textit{f-score} of predictions are a measure of accuracy in classification problems that takes into account both precision and recall across each possible label, and is calculated by $2*\frac{\text{precision*recall}}{precision+recall}$. The use of unweighted f-scores means, we calculated the \textit{f-score} separately for each label in the predictions, and simply took the average of them. This was chosen in favour of weighted f-scores that provide a larger weight for more frequent labels as the high occurrence of sand would hide the fact that the other labels are constantly incorrectly predicted, if this was the case. Logistic regression has been included here despite containing 'probabilistic` predictions in the form of regression values passed through the \textit{logistic} function, and as such the results displayed are a result of simply taking the argmax over possible the predictive probability over possible for each datapoint. Those probabilistic outputs are useful for comparisons with those of Gaussian Processes, however, which will be explored in the next section. \todo{(this GP-LR comparison hasn't happened yet)}
 
@@ -32,53 +30,4 @@ While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier 
 \end{figure}
 
 The maps in \Cref{fig:det4maps} (with the exception of the SVM-generated one) provide some insight into where certain habitats occur in Scott Reef. However, as the results of the other three models were comparable, particularly for Random Forests and K-Nearest Neighbours, it is not obvious which one is more `trustworthy', and what prediction to take in areas that they disagree on. One piece of information that can aid in this regard is if a level of \textit{confidence}, which we explore in the next section.
-
-\subsection{Probabilistic Approaches}
-
-In this section, we will add an extra layer of information to our models' outputs - the confidence of the label predictions made. When predictive variance at each point is given, a large variance would indicate a low level of confidence as the predicted value is any within a large range, whereas a small variance indicates a high level of confidence in a prediction, as the possible range of values is only a small one. For this, we need probabilistic models that naturally provide this desired variance in its predictions. In particular, as we saw in \Cref{chapsec:gpc}, Gaussian Process Classification is a good option for this.
-
-\subsubsection{Single-Output Gaussian Process Classification}
-
-While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian Process Classification, we introduce another metric, Area Under the Receiver Operating Curve, to make use of the fact that the one-vs-all Gaussian Process Classifier provides a \textit{likelihood} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. 
-
-Area Under The Receiver Operating Curve
-\todo{TODO}
-
-\todo{show more stratified results (not just even split) to show that even splits did better}
-
-\begin{tabular}{|c|c|c|c|c|}
-    \hline
-    Type of GP Classification & AUROC & Accuracy & F-score & Labels used\\\hline
-    Normal & \todo{TODO} & 0.75525 & 0.47921 & 4 labels \\
-    PoEGP & & & & \\
-    GPoEGP & & & & \\
-    BCM & & & & \\
-    \hline
-\end{tabular}
-
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-    \hline
-    No. points & Type of split & Type of GP & Number of runs & AUROC & Notes & F1-score \\\hline
-    500     & Even       & GP     &  10        & 0.86534    &                     &         \\
-    500     & Stratified & GP     &  10        & 0.80136    &                     &         \\
-    1000    & Even       & GP     &  1         & 0.87626    & Deterministic       & 0.56208 \\
-    1000    & Even       & PoEGP  &  5         & 0.80973    &                     & 0.47481 \\
-    1000    & Even       & PoEGP  &  200       & 0.80186    &                     & 0.47595 \\
-    1000    & Even       & GPoEGP &  5         & 0.80864    &                     & 0.51018 \\
-    1000    & Even       & GPoEGP &  200       & 0.80105    &                     & 0.47748 \\
-    1000    & Even       & BCM    &  5         & 0.80682    &                     & 0.48167 \\
-    1000    & Even       & BCM    &  200       & 0.80421    &                     & 0.48227 \\
-    1000    & Even       & GPy    &  1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
-    \hline
-\end{tabular}
-\todo{(look at AUROC/AUC and log probabilities as well)}
-
-\todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
-
-\todo{(talk about variance and extra probabilistic info to be gained)}
-
-\todo{(maps of 4-label full predictions)}
-
-\todo{(maps of all-label full predictions)}
-
 

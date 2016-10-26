@@ -10,9 +10,10 @@ As the purpose of using Dirichlet Multinomial Regression was to be able to model
 % \todo{(cut down this section (probably down to one paragraph) - and also talk about how for the single label case, instead of summing counts for the new 'label', labels were chosen at random (for more variance in the GP which is otherwise too certain about everything being sand))}
 % 
 \begin{figure}[H]
-    \includegraphics[scale=0.55]{training_map_fixedgrid.pdf}
-    \caption{Fixed-sized grids placed over training data \todo{(redo this plot nicely!)}}
-    \label{fig:gridsplit}
+    \centering
+    \includegraphics[scale=0.85]{training_plots.pdf}
+    \caption{Original training data points ($16502$)}
+    \label{fig:trainingpoints}
 \end{figure} 
 
 % \begin{figure}[H]
@@ -52,7 +53,7 @@ Another preprocessing step that was performed was the aggregation of habitat lab
     \label{fig:4classes}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_full_labels.pdf}
         \caption{Distribution of labels in original dataset}
@@ -64,9 +65,6 @@ Another preprocessing step that was performed was the aggregation of habitat lab
         \caption{Distribution of labels in multi-label outputs}
         \label{fig:multilabeldistr}
     \end{minipage}
-\end{figure}
-
-\begin{figure}[H]
     \begin{minipage}{.47\linewidth}
         \includegraphics[width=\linewidth]{hist_simple_labels.pdf}
         \caption{Distribution of simplified labels in original dataset}

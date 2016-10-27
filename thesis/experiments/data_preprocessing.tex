@@ -24,7 +24,7 @@ As the purpose of using Dirichlet Multinomial Regression was to be able to model
 % \end{figure}
 
 \subsection{Simplifying labels}
-Another preprocessing step that was performed was the aggregation of habitat labels. The original training data contained 24 separate labels determined through an automated clustering procedure using Dirichlet Processes. Because of the uneven distribution of these labels (\Cref{fig:singlelabeldistr} and \Cref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only an approximation equivalent to observable human differences of an area's benthic map were required. Moreover, due to the unsupervised nature of the labeling, certain clusters were notably \textit{inconsistent} with the rest, for example when sea cucumbers became the identifying feature of one of the 24 labels.
+Another preprocessing step that was performed was the aggregation of habitat labels. The original training data contained 24 separate labels (\Cref{fig:24classes}), determined through an automated clustering procedure using Dirichlet Processes on the raw images collected. Because of the uneven distribution of these labels (\Cref{fig:singlelabeldistr} and \Cref{fig:multilabeldistr}), with the occurrence of some too insignificant for any machine learning algorithms to pick up, they were simplified in collaboration with ecological experts, who manually identified which of the 24 labels were in fact of the same class - for example, 5 separate classes of coral may have been indistinguishable to the average person, and were hence grouped into a single label. This allowed the near-non-occurring labels to be grouped together with more commonly occurring ones, whilst also allowing a different level of granularity in training models/forming predictions that could be used if only an approximation equivalent to observable human differences of an area's benthic map were required. This brought the number of labels in the simplified case from $24$ down to $4$ (\Cref{fig:4classes}). % Moreover, due to the unsupervised nature of the labeling, certain clusters were notably \textit{inconsistent} with the rest, for example when sea cucumbers became the identifying feature of one of the 24 labels.
 
 \begin{table}[H]
     \centering
@@ -47,9 +47,29 @@ Another preprocessing step that was performed was the aggregation of habitat lab
     \label{fig:24classes}
 \end{figure}
 
+% \begin{figure}
+%     \includegraphics[scale=0.17]{class_mosaic_5_classes.png}
+%     \caption{Samples of images from each of summarised 4 classes \todo{mark with the simplified labels adjacent to it}}
+%     \label{fig:4classes}
+% \end{figure}
+
 \begin{figure}
-    \includegraphics[scale=0.17]{class_mosaic_5_classes.png}
-    \caption{Samples of images from each of summarised 4 classes \todo{mark with the simplified labels adjacent to it}}
+    \begin{minipage}{.45\linewidth}
+        \includegraphics[width=\linewidth]{class_0_samples.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.45\linewidth}
+        \includegraphics[width=\linewidth]{class_1_samples.png}
+    \end{minipage}
+    \vfill
+    \begin{minipage}{.45\linewidth}
+        \includegraphics[width=\linewidth]{class_2_samples.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.45\linewidth}
+        \includegraphics[width=\linewidth]{class_3_samples.png}
+    \end{minipage}
+    \caption{Sample images from each of the four simplified classes \todo{(merge the 2 of 5 that are 1)}}
     \label{fig:4classes}
 \end{figure}
 
@@ -99,10 +119,6 @@ Note that from this point onwards, we will be working with the reduced feature s
 
 \subsection{Preprocessing and Feature Projection}
 To maximise performance of the algorithms used across the experiments, a number of preprocessing steps were taken to improve the predictions made. The features in the data were first scaled, where each feature was centred to the mean with unit variance), then normalised over each future such that they had unit length \todo{(include plots of the diff approaches across DM/GP/others, ref plots)}. To allow the algorithms tested to learn the data and its complexities better, projecting the data into higher dimensional space was required. Full quadratic projections ($x_0, x_1, x_2 \Rightarrow x_0^2 ,x_1^2 ,x_2 ,2x_0x_1 ,2x_0x_2 ,2x_1x_2$) and squared terms with a $1$ bias terms ($x_0, x_1, x_2 \Rightarrow x_0 + x_1 , x_2 ,x_0^2 ,x_1^2, x_2^2, 1$) were both tested. The latter was chosen, one of the reasons being that it resulted in an lower average error when performing 10-fold cross-validation using Dirichlet Multinomial Regression (\Cref{table:dmbasicresults}). It was also chosen to allow predictions to run faster, and for the Markov Chain Monte Carlo for Dirichlet Multinomial Regression later in this chapter, \textbf{significantly} reduce the number of dimensions that need to be traversed - considering the number of weights required is features $\times$ number of labels, this would correspond to the 4-label data needing $19*4=76$ vs $55*4=220$ weights, and the full 24-label case requiring $19*24=456$ vs $55*24=1320$ weights.
-
-\todo{(ref plots)}
-
-\todo{(show plots)}
 
 % The results from the Experiments detailed in Chapter 4 are listed below. The range of possible class values in some cases have been stretched beyond the existing class labels so that values align between different outputs to allow for easy, direct visual comparison \todo{(this hasn't actually happened yet)}. Note that the results to the above experiments will include those of both non-downsampled and downsampled results, as well as the full set of 24 labels as well as simplified ones.
 % 

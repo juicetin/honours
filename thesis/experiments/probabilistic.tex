@@ -9,36 +9,37 @@ While f-scores and accuracy are still assessed via $10$-fold cross validation wh
 Area Under The Receiver Operating Curve
 \todo{TODO}
 
-\todo{show more stratified results (not just even split) to show that even splits did better}
-
+\begin{table}[H]
+    \centering
 \begin{tabular}{|c|c|c|c|c|}
     \hline
-    Type of GP Classification & Accuracy & F-score & Labels used & AUROC \\\hline
-    Normal & \todo{TODO} & 0.75525 & 0.47921 & 4 labels \\
-    PoEGP & & & & \\
-    GPoEGP & & & & \\
-    BCM & & & & \\
+    AUROC & Accuracy & F-score & Labels used\\\hline
+    0.85 & 0.83 & 0.53 & 4 labels \\
+    & & & 24 labels \\
     \hline
 \end{tabular}
+    \caption{Gaussian proces 10-fold cross validation errors on full and simplified labels}
+    \label{table:gperrs}
+\end{table}
 
-\todo{May ditch this table}
-
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
-    \hline
-    No. points & Type of split & Type of GP & Number of runs & AUROC & Notes & F1-score \\\hline
-    500     & Even       & GP     &  10        & 0.86534    &                     &         \\
-    500     & Stratified & GP     &  10        & 0.80136    &                     &         \\
-    1000    & Even       & GP     &  1         & 0.87626    & Deterministic       & 0.56208 \\
-    1000    & Even       & PoEGP  &  5         & 0.80973    &                     & 0.47481 \\
-    1000    & Even       & PoEGP  &  200       & 0.80186    &                     & 0.47595 \\
-    1000    & Even       & GPoEGP &  5         & 0.80864    &                     & 0.51018 \\
-    1000    & Even       & GPoEGP &  200       & 0.80105    &                     & 0.47748 \\
-    1000    & Even       & BCM    &  5         & 0.80682    &                     & 0.48167 \\
-    1000    & Even       & BCM    &  200       & 0.80421    &                     & 0.48227 \\
-    1000    & Even       & GPy    &  1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
-    \hline
-\end{tabular}
-\todo{(look at AUROC/AUC and log probabilities as well)}
+% \todo{May ditch this table}
+% 
+% \begin{tabular}{|c|c|c|c|c|c|c|c|}
+%     \hline
+%     No. points & Type of split & Type of GP & Number of runs & AUROC & Notes & F1-score \\\hline
+%     500     & Even       & GP     &  10        & 0.86534    &                     &         \\
+%     500     & Stratified & GP     &  10        & 0.80136    &                     &         \\
+%     1000    & Even       & GP     &  1         & 0.87626    & Deterministic       & 0.56208 \\
+%     1000    & Even       & PoEGP  &  5         & 0.80973    &                     & 0.47481 \\
+%     1000    & Even       & PoEGP  &  200       & 0.80186    &                     & 0.47595 \\
+%     1000    & Even       & GPoEGP &  5         & 0.80864    &                     & 0.51018 \\
+%     1000    & Even       & GPoEGP &  200       & 0.80105    &                     & 0.47748 \\
+%     1000    & Even       & BCM    &  5         & 0.80682    &                     & 0.48167 \\
+%     1000    & Even       & BCM    &  200       & 0.80421    &                     & 0.48227 \\
+%     1000    & Even       & GPy    &  1         & 0.87638    & RBF, EP (default)   & 0.57013 \\
+%     \hline
+% \end{tabular}
+% \todo{(look at AUROC/AUC and log probabilities as well)}
 
 \todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
 
@@ -95,8 +96,8 @@ To illustrate the usefulness of these approximation methods, experiments were ru
     \begin{tabular}{|C{2cm}|c|c|c|c|}
         \hline
         Ensemble method & F-score & Accuracy & AUROC \\\hline
-        PoEGP & 0.31 & 0.76 & 0.66 \\
-        GPoGPE & 0.33 & 0.76 & 0.67\\
+        PoEGP & 0.35 & 0.76 & 0.71 \\
+        GPoGPE & 0.33 & 0.75 & 0.69\\
         BCM & & & \\
         rBCM & & & \\
         \hline

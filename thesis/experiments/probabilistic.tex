@@ -9,6 +9,9 @@ While f-scores and accuracy are still assessed via $10$-fold cross validation wh
 Area Under The Receiver Operating Curve
 \todo{TODO}
 
+\todo{This round's acc: 0.2822085889570552, f1: [ 0.          0.46153846  0.29787234  0.47368421  0.          0.15384615
+  0.34482759  0.05263158  0.22727273  0.4         0.28571429  0.28571429
+    0.33333333], f1 avg: 0.25511038180964307, auroc: 0.41135738361342433, auroc avg: 0.41135738361342433}
 \begin{table}[H]
     \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -58,9 +61,9 @@ Although Gaussian processes provide the benefit of the possible variance for eve
     \begin{tabular}{|c|c|C{3cm}|}
         \hline
         Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
-        1000 points, 4 labels & Model fitting & 00:01:09 \\
-        2000 points, 4 labels & Model fitting & 00:04:29 \\
-        3000 points, 4 labels & Model fitting & 00:09:02 \\
+        1000 points, 4 labels & Model fitting & 00:00:37 \\
+        2000 points, 4 labels & Model fitting & 00:06:12 \\
+        3000 points, 4 labels & Model fitting & 00:11:53 \\
         4000 points, 4 labels & Model fitting & \\
         5000 points, 4 labels & Model fitting & \\
         1000 points, 24 labels & Model fitting & \\
@@ -68,8 +71,9 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         3000 points, 24 labels & Model fitting & \\
         4000 points, 24 labels & Model fitting & \\
         5000 points, 24 labels & Model fitting & \\
-        500000 points, 4 labels (1000 training) & Predictions & 00:06:23 \\
-        500000 points, 4 labels (2000 training) & Predictions & 00:01:57 \\
+        500000 points, 4 labels (1000 training) & Predictions & 00:01:23 \\
+        500000 points, 4 labels (2000 training) & Predictions & 00:04:18 \\
+        500000 points, 4 labels (3000 training) & Predictions & 00:10:02 \\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
@@ -98,8 +102,6 @@ To illustrate the usefulness of these approximation methods, experiments were ru
         Ensemble method & F-score & Accuracy & AUROC \\\hline
         PoEGP & 0.35 & 0.76 & 0.71 \\
         GPoGPE & 0.33 & 0.75 & 0.69\\
-        BCM & & & \\
-        rBCM & & & \\
         \hline
     \end{tabular}
     \caption{Gaussian process approximation results for simplified (4) labels}
@@ -110,10 +112,8 @@ To illustrate the usefulness of these approximation methods, experiments were ru
     \begin{tabular}{|C{2cm}|c|c|c|c|}
         \hline
         Ensemble method & F-score & Accuracy & AUROC \\\hline
-        PoEGP & & & \\
-        GPoGPE & & & \\
-        BCM & & & \\
-        rBCM & & & \\
+        PoEGP & 0.17 & 0.18 & 0.34 \\
+        GPoGPE & 0.19 & 0.21 & 0.34 \\
         \hline
     \end{tabular}
     \caption{Gaussian process approximation results for full 24 labels}
@@ -130,10 +130,6 @@ To illustrate the usefulness of these approximation methods, experiments were ru
         PoE   & 24 &  00:00:37 \\
         GPoE  & 4   &  00:00:23 \\
         GPoE  & 24 &  00:00:40 \\
-        BCM   & 4   &  00:00:24 \\
-        BCM   & 24 &  00:00:39 \\
-        rBCM  & 4   &  00:00:24 \\
-        rBCM  & 24 &  00:00:41 \\
         \hline
     \end{tabular}
     \label{table:gpensemble-training}
@@ -149,10 +145,6 @@ To illustrate the usefulness of these approximation methods, experiments were ru
         PoE   & 24  & 01:54:47 \\
         GPoE  & 4   & 00:03:31 \\
         GPoE  & 24  & 01:53:30 \\
-        BCM   & 4   & 00:03:34 \\
-        BCM   & 24  & 01:52:49 \\
-        rBCM  & 4   & 00:03:38 \\
-        rBCM  & 24  & 01:52:03 \\
         \hline
     \end{tabular}
     \label{table:gpensemble-predictions}
@@ -173,6 +165,8 @@ To illustrate the usefulness of these approximation methods, experiments were ru
     \end{minipage}
 \end{figure}
 
-Given that random forests were able to best fit the training data in \Cref{chapsec:deterministic}, it is promising that the the simplified generalised product of Gaussian process expert predictions, whereby the label with the maximum probability at each point is taken to be the `absolute' truth, bears close resemblance. Of course, were such data to be used in practice, there is still the variance that can be used to make better use of the predictions. For example, by being able to generate a map of the entire Scott Reef in under 5 minutes for the basic case, an automated underwater vehicle on a surveying expedition could run processing in real-time to determine areas of lowest confidence to `fill in the gaps'.
+Given that random forests were able to best fit the training data in \Cref{chapsec:deterministic}, it is promising that the the simplified generalised product of Gaussian process expert predictions, whereby the label with the maximum probability at each point is taken to be the `absolute' truth, bears close a resemblance to it. If Gaussian processes were used in practice, there is still the variance that can be used to make better use of the predictions. 
 
-While the product of experts and its generalised counterpart appear to have the comparable performance measured on error alone, the former failed to predict labels $0$ through $2$ in the simple case, and the corresponding labels for the full $24$. The generalised product of experts however, performed quite well, identifying similar habitat regions to the Dirichlet multinomial, as shown in \Cref{chapsec:dm}. Even with these improvements to running time whilst retaining probabilistic information, there is still important functionality missing from these models - the counts of other labels at every point that was available in the original data. The methods explored thus far are not able to deal with such multi-output data, and other models must be used to do this.
+While the product of experts and its generalised counterpart appear to have the comparable performance measured on error alone, the former failed to predict labels $0$ through $2$ in the simple case, and the corresponding labels for the full $24$. The generalised product of experts however, performed quite well, identifying similar habitat regions to the Dirichlet multinomial, as shown in \Cref{chapsec:dm}. Even with these improvements to running time whilst retaining probabilistic information, there is still important functionality missing from these models - the counts of other labels at every point that was available in the original data. The methods explored thus far are not able to deal with such multi-output data, and other models must be used to do this. Moreover, the level of parallelisation used to speed up operations would only be available on server hardware that can become expensive if constantly relied upon. Although scaling Gaussian processes was possible here using hardware and approximation methods, sacrifices in correctness were made. 
+
+To use in live scenarios, such as an AUV with previous bathymetry data collecting new images, the time it would take to run approximations before being able to calculate a desired path would render the vehicle inactive for most of the time. The several minutes achieved by the ensemble methods on the simplified data above was a result of parallelising over $30$ cores and being able to utilise over $200$GB - not the sort of hardware that would be appropriate for a small deep sea vessel. Not to mention, the sort of post-processing required in simplifying labels requires human intervention, and would not be something that can be automated on an expedition into previously unexplored areas. Hence, different methods would be needed that can perform similar tasks that can provide measures of uncertainty in realtime, all while being able to run quickly on hardware with limited capabilities.

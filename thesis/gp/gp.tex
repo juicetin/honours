@@ -1,44 +1,45 @@
 \chapter{Probabilistic Habitat Mapping} \label{chap:gps}
 
-The methods of habitat mapping explored until now were mostly deterministic ones, where predictions were absolute, and as such did not provide a \textit{level of confidence} in the predictions made, or in other words, probabilistic output. The exception to this was logistic regression, but even then, as a parametric method, the complexity of the model must be defined beforehand, whereas a Gaussian Process in simple terms allows the data to 'speak for itself`. More formally, this refers to a Gaussian Process' non-parametric nature, meaning the data is incorporated directly into the model where new data can increase the confidence of the model.
+The methods of habitat mapping explored until now were mostly deterministic ones, where predictions were absolute, and as such did not provide a \textit{level of confidence} in the predictions made, or in other words, probabilistic output. The partial exception to this was logistic regression, though the probabilities provided by it are absolute, with no variance to indicate confidence. Regardless, as a parametric method, the complexity of a logistic regressor must be defined beforehand, whereas a Gaussian process in simple terms allows the data to 'speak for itself`. More formally, this refers to a Gaussian process' non-parametric nature, meaning the data is incorporated directly into the model where new data can increase the confidence of the model.
 
-In this chapter, we will look at Gaussian Processes as technique to generate predictive habitat maps. We begin by visting Gaussian Process Regression, and how a small extension/post-processing step extends it to allow Gaussian Process Classification. Of the different ways to train the hyperparameters of Gaussian Processes, the one selected was Leave-One-Out Cross Validation (LOO-CV). They also need to use a \textit{kernel} that defines the relationship between any two points, forming the full covariance matrix - the one chosen was the squared exponential kernel, explained in detail in the following sections. Note that detailed proofs and derivations are not covered here, and interested readers should consult Rasmussen and William's Gaussian Processes for machine Learning \cite{rasmussen06} for a definitive guide to all things Gaussian Process related. In particular, Chapters 2 and 5 are of the most relevance, as they detail Gaussian Process Regression, and Model Selection and Adaptation of Hyperparameters respectively.
+In this chapter, we will look at Gaussian processes as a technique to generate predictive habitat maps. We begin by going over the basics of Gaussian process regression, and how a small extension/post-processing step extends it to allow Gaussian process classification. To train the hyperparameters of a Gaussian process, leave-one-out cross validation (LOO-CV) was used. They also need to define a \textit{kernel} that governs the similarity between any two points, forming the full covariance matrix. The one chosen was the squared exponential kernel, one of the most commonly used for Gaussian processes. Note that detailed proofs and derivations are not covered here, and interested readers should consult Rasmussen and William's Gaussian Processes for Machine Learning book ~\citep{rasmussen06} for a definitive guide to all things Gaussian process related. In particular, Chapters 2 and 5 are of the most relevance, as they detail Gaussian process regression, and model selection and adaptation of hyperparameters respectively.
 
 % $\mathbf{f_*}$ - predictive function outputs corresponding to input data $X_*$
+ \section{Gaussian Process Regression}\label{chapsec:gpr}
 
-\section{Gaussian Process Regression}\label{chapsec:gpr}
+Compared to deterministic methods like linear regression\footnote{Strictly speaking, linear regression is a Gaussian process with a linear kernel - but due to its simplicity, and that Gaussian processes are not usually explained by weight coefficients but by their hyperparmeters, we are juxtaposing linear regression to Gaussian processes here as a simpler approach.} that explains data by optimising $\mathbf{y=X\beta} + \epsilon$, where $\mathbf{y}$ are the response variables, $\mathbf{X}$ are the input variables, and $\mathbf{\beta}$ are the regression coefficients, Gaussian process regression takes a Bayesian approach by adjusting probabilities when given more information (input data), and performs inference over functions.
 
-Compared to standard linear regression that explains data by optimising $\mathbf{y=X\beta} + \epsilon$, where $\mathbf{y}$ are the response variables, $\mathbf{X}$ are the input variables, and $\mathbf{\beta}$ are the regression coefficients, Gaussian process regression takes a Bayesian approach by adjusting probabilities when given more information (input data), and performs inference over functions.
-
-We define a Gaussian Process on input $\mathbf{x}$ to have mean ($m$) and covariance ($k$), where $\mathbf{x}$ and $\mathbf{x'}$ are the training and test inputs respectively:
+We define a Gaussian process on input $\mathbf{x}$ to have a mean function $m$ and covariance function $k$ (or in other words, the kernel), where $\mathbf{x}$ and $\mathbf{x'}$ are the training and test inputs respectively:
 \begin{equation}
 f(x) \sim GP(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x'}))
 \end{equation}
 
-The chosen kernel is the squared exponential (on the right hand side). The base covariance function between points $p, q$, where $\mathbf{x_p, x_q}$ are the vector of $n$ features at each point is thus given by:
+The chosen kernel is the squared exponential, represented by the covariance function between points $p, q$, where $\mathbf{x_p, x_q}$ are the vector of features at each point is thus given by:
 \begin{equation}\label{eq:simplegpcov}
     cov(f(\mathbf{x_p}), f(\mathbf{x_q)}) = k(\mathbf{x_p, x_q}) = \exp(-\frac{1}{2}|\mathbf{x_p}-\mathbf{x_q}|^2)
 \end{equation}
 
-From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ (as $\lim_{\mathbf{x_p=x_q}} exp(-\frac{1}{2}|\mathbf{x_p-x_q}^2| = 1$) - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian Process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
+The free parameters involved in the squared exponential kernel are the length scales $l$, signal variance $\sigma_f$ and noise variance $\sigma_n$, and need to be optimised to perform predictions on unseen data.
 \begin{equation}\label{eq:fullgpcov}
     k\mathbf{(x_p, x_q)} = \sigma^2_f \exp(-\frac{1}{2l^2} (\mathbf{x_p-x_q})^2) + \sigma^2_nI
 \end{equation}
-where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the variance of the Gaussian noise. \todo{clarify what's happening here}
+where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the variance of the Gaussian noise. The length scales $l$ are not a single variable as the equation may suggest, but a vector of length scales equal in length to the number of dimensions in the inputs $\mathbf{x}$. If $l$ was simply a vector of 1s, which would give every feature in the input space equal weighting, but it is not likely in a real world dataset for every feature to have equal importance. This is what the length scales account for - by tuning $l_i$ for each feature $i$, the model can learn during the fitting process which features are important, and which ones are not. 
+
+% From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ (as $\lim_{\mathbf{x_p=x_q}} exp(-\frac{1}{2}|\mathbf{x_p-x_q}^2| = 1$) - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
 
 To allow simplifications of notation in the following equations, we define some abbreviations related to \autoref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
-
-\todo{(lay out these abbreviations nicely)}
-To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
-To indicate the full covariance between training points and test points: $K_* = K(X, X_*)$
-To indicate the covariance between a single test point with all training points: $\mathbf{k_*} = \mathbf{k(x_*}, X)$
-
-By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points \todo{(EXPAND. Possibly include non-abberviated version first for clarity)}:
-\begin{equation}
-    \mathbf{f_*} | \mathbf{x_*}, X, \mathbf{f} \sim \mathcal{N}( \mathbf{k_*} K^{-1} \mathbf{f},  
-    k(\mathbf{x_*, x_*}) - \mathbf{k_*} K^{-1} K_*)
-\end{equation}
-
+ 
+ \todo{(lay out these abbreviations nicely)}
+ To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
+ To indicate the full covariance between training points and test points: $K_* = K(X, X_*)$
+ To indicate the covariance between a single test point with all training points: $\mathbf{k_*} = \mathbf{k(x_*}, X)$
+ 
+% By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points \todo{(EXPAND. Possibly include non-abberviated version first for clarity)}:
+% \begin{equation}
+%     \mathbf{f_*} | \mathbf{x_*}, X, \mathbf{f} \sim \mathcal{N}( \mathbf{k_*} K^{-1} \mathbf{f},  
+%     k(\mathbf{x_*, x_*}) - \mathbf{k_*} K^{-1} K_*)
+% \end{equation}
+% 
 Taking the first part of the Gaussian Distribution, the mean, and the second, the variance, we obtain our predictions and variance on a single test point:
 \begin{equation}
     \bar{f_*} = \mathbf{k_*}^T(K+\sigma_n^2)^{-1} \mathbf{y}
@@ -46,25 +47,25 @@ Taking the first part of the Gaussian Distribution, the mean, and the second, th
 \begin{equation}
     \mathbb{V}[f_*] = K(\mathbf{x_*},\mathbf{x_*}) - \mathbf{k_*}^T (K+\sigma^2_n)^{-1}\mathbf{k_*}
 \end{equation}
-
-In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved. These equations are used on the basis that all their parameters have already been determined - the most common process for doing this and the one used in this study is to maximise the log marginal likelihood. Although optimising the log marginal likelihood is required to use the above equations, its representation requires notation defined above, and as such formalising this aspect has been withheld until this point. However, because a slightly customised log likelihood function is used in Leave-ont-out Cross Validation (LOO-CV) below, we will only cover the standard marginal likelihood used by Gaussian Processes briefly here.
-
-The marginal likelihood for this model can be obtained by integrating the likelihood times the prior with respect to function values $\mathbf{f}$:
-\begin{equation}
-    p(\mathbf{y}|X) = \int p(\mathbf{y|f}, X)p(\mathbf{y}|X)d\mathbf{f}
-\end{equation}
-
-Taking the log of this then gives:
-\begin{equation}
-    \log p(\mathbf{f}|X) = -\frac{1}{2} \mathbf{f}^T K^{-1} \mathbf{f} - \frac{1}{2} \log|K| - \frac{n}{2} \log 2\pi
-\end{equation}
-
-As this equation has an analytical first derivative which can be used to speed up optimisation so long as a software package is used where the optimisation algorithms allows a derivative (also known as a Jacobian), we wish to also know its derivative:
-\begin{equation}
-    \frac{\partial}{\partial\theta_j} \log p(\mathbf{y}|X,\mathbf{\theta}) = \frac{1}{2} \text{tr}((\mathbf{\alpha\alpha}^T - K^{-1}) \frac{\partial K}{\partial \theta_j}) \text{ where } \mathbf{\alpha} = K^{-1}\mathbf{y}
-\end{equation}
-
-Keeping in mind that $K$ initially contains a number of initially unknown parameters ($\sigma_n, \sigma_f, l$), we can then optimise over this log marginal likelihood function as a whole using its derivative to search the multi-dimensional space. However, a variant of this will be used, as explained in the following section.
+% 
+% In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved. These equations are used on the basis that all their parameters have already been determined - the most common process for doing this and the one used in this study is to maximise the log marginal likelihood. Although optimising the log marginal likelihood is required to use the above equations, its representation requires notation defined above, and as such formalising this aspect has been withheld until this point. However, because a slightly customised log likelihood function is used in Leave-ont-out Cross Validation (LOO-CV) below, we will only cover the standard marginal likelihood used by Gaussian processes briefly here.
+% 
+% The marginal likelihood for this model can be obtained by integrating the likelihood times the prior with respect to function values $\mathbf{f}$:
+% \begin{equation}
+%     p(\mathbf{y}|X) = \int p(\mathbf{y|f}, X)p(\mathbf{y}|X)d\mathbf{f}
+% \end{equation}
+% 
+% Taking the log of this then gives:
+% \begin{equation}
+%     \log p(\mathbf{f}|X) = -\frac{1}{2} \mathbf{f}^T K^{-1} \mathbf{f} - \frac{1}{2} \log|K| - \frac{n}{2} \log 2\pi
+% \end{equation}
+% 
+% As this equation has an analytical first derivative which can be used to speed up optimisation so long as a software package is used where the optimisation algorithms allows a derivative (also known as a Jacobian), we wish to also know its derivative:
+% \begin{equation}
+%     \frac{\partial}{\partial\theta_j} \log p(\mathbf{y}|X,\mathbf{\theta}) = \frac{1}{2} \text{tr}((\mathbf{\alpha\alpha}^T - K^{-1}) \frac{\partial K}{\partial \theta_j}) \text{ where } \mathbf{\alpha} = K^{-1}\mathbf{y}
+% \end{equation}
+% 
+% Keeping in mind that $K$ initially contains a number of initially unknown parameters ($\sigma_n, \sigma_f, l$), we can then optimise over this log marginal likelihood function as a whole using its derivative to search the multi-dimensional space. However, a variant of this will be used, as explained in the following section.
 
 % * distribution over functions
 % \begin{equation}
@@ -79,6 +80,8 @@ Keeping in mind that $K$ initially contains a number of initially unknown parame
 % 
 % To simplify following notation, we make the following abbreviations:
 % $K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
+
+A few illustrative plots have been included below, with a Gaussian process performing inference on several data points but with different hyperparamters each time, to highlight the effect that they have on its predictive ability.
 
 \section{Leave-One-Out Cross Validation}
 
@@ -104,7 +107,7 @@ where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{
 
 \section{Gaussian Process Classification} \label{chapsec:gpc}
 
-To perform Gaussian Process Classification, multiple Gaussian Process Regressors are used for each possible label using a one-vs-all approach as in Example \autoref{ex:one-vs-all}, and every label at each data point is assigned both a probability and variance. To ensure the predictions at each point for each label is propertly constrained to be in the range $[0,1]$, we again pass predictions through the logistic sigmoid function (\autoref{eq:logistic}).
+To perform Gaussian process classification, multiple Gaussian process Regressors are used for each possible label using a one-vs-all approach as in Example \autoref{ex:one-vs-all}, and every label at each data point is assigned both a probability and variance. To ensure the predictions at each point for each label is propertly constrained to be in the range $[0,1]$, we again pass predictions through the logistic sigmoid function (\autoref{eq:logistic}).
 
 \todo{(expand)}
 
@@ -115,7 +118,7 @@ To perform Gaussian Process Classification, multiple Gaussian Process Regressors
 
 \section{Gaussian Process Approximation} \label{chapsec:gp-approx}
 
-However, significant limitations exist in terms of the number of training datapoints used when using a single Gaussian Process Classifier. To counter this, there are approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second are \textit{ensemble} methods - combining the results of several independent Gaussian Processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
+However, significant limitations exist in terms of the number of training datapoints used when using a single Gaussian process classifier. To counter this, there are approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second are \textit{ensemble} methods - combining the results of several independent Gaussian processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
 
 \subsection{Product of Experts and Variations}
 \todo{(EXPAND explanations in this section)}
@@ -135,7 +138,7 @@ Generalised Product of GP Experts
 \begin{equation}
     (\sigma_*^{gpoe})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*})
 \end{equation}
-The value of each $\beta_k$ is flexible, but as scaling Gaussian Processes to large datasets isn't the primary focus of this study, we simply set each $\beta_k$ to $\frac{1}{M}$, where $M$ is the number of experts, as suggested in \citep{deisenroth15} to maintain reasonable margins of error.
+The value of each $\beta_k$ is flexible, but as scaling Gaussian processes to large datasets isn't the primary focus of this study, we simply set each $\beta_k$ to $\frac{1}{M}$, where $M$ is the number of experts, as suggested in \citep{deisenroth15} to maintain reasonable margins of error.
 
 \subsection{Bayesian Committee Machines and Variations}
 
@@ -159,3 +162,8 @@ where each $\beta_k$ follows the same rules as for the Product of Experts and it
 
 \citep{deisenroth15}
 
+\todo{(gaussian mixture model paper - compares GMMs with other models such as CTs, SVMs, and entropy of predictions)}
+
+\section{Summary}
+
+In this section, we explored the probabilistic capabilities of Gaussian processes regression, and how this translates into Gaussian process classification. As these presented very restrictive limits on the size of data that can be worked with, methods to estimate them by breaking down the algorithm into emabarrasingly parallelisable chunks were explored, along with how they compare in terms of performance. It would amiss at this point not to address the existence of multi-output Gaussian processes that can work with correlated data (as the data in benthic habitat mapping would be - the habitats that co-eixst do not do so in isolation and no relation to each other), as explored in works such as \todo{(cite a few works)}. However, the multi-output that they deal with is over arbitrary ranges. Because in this particular domain, normalised predictions per point must sum to $1$ (or the original total label count at a point, in the case of training data), multi-output Gaussian processes do not enforce this constraint, and as such, their use was not explored in this study. Without a way to correctly model the multi-output data using Gaussian processes, other methods that are able to need to be explored.

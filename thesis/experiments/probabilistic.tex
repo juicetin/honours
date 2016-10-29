@@ -71,30 +71,37 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         \hline
         Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
         1000 points, 4 labels & Model fitting & 00:00:37 \\
-        2000 points, 4 labels & Model fitting & 00:06:12 \\
+        2000 points, 4 labels & Model fitting & 00:02:12 \\
         3000 points, 4 labels & Model fitting & 00:11:53 \\
         4000 points, 4 labels & Model fitting & 00:33:26 \\
-        5000 points, 4 labels & Model fitting & \\
-        1000 points, 24 labels & Model fitting & 00:00:47 \\
-        2000 points, 24 labels & Model fitting & 00:52:45 \\
-        3000 points, 24 labels & Model fitting & 00:05:54 \\
-        4000 points, 24 labels & Model fitting & \\
-        5000 points, 24 labels & Model fitting & \\
+        4700 points, 4 labels & Model fitting & 01:15:41 \\
+        1000 points, 24 labels & Model fitting & 00:00:54 \\
+        2000 points, 24 labels & Model fitting & 00:07:03 \\
+        3000 points, 24 labels & Model fitting & 00:23:42 \\
+        4000 points, 24 labels & Model fitting & 00:39:43 \\
+        4700 points, 24 labels & Model fitting & 10:47:20 (sequential)\\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
     \caption{Gaussian process model fitting runtimes}
 \end{table}
 
+
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|C{3cm}|}
         \hline
         Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
-        4 labels (1000 training) & Predictions & 00:01:23 \\
+        4 labels (1000 training) & Predictions & 00:01:23 \\ % (00:49:57??) 
         4 labels (2000 training) & Predictions & 00:04:18 \\
         4 labels (3000 training) & Predictions & 00:10:02 \\
         4 labels (4000 training) & Predictions & 00:17:35 \\
+        4 labels (4700 training) & Predictions & 00:32:41 \\
+        24 labels (1000 training) & Predictions &  \\
+        24 labels (2000 training) & Predictions &  \\
+        24 labels (3000 training) & Predictions &  \\
+        24 labels (4000 training) & Predictions &  \\
+        24 labels (4700 training) & Predictions &  \\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}

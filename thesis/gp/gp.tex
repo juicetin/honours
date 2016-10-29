@@ -41,36 +41,81 @@ where $K = K(X, X)$ is the covariance matrix over all training points, and $\mat
 %  To indicate the full covariance between training points and test points: $$K_* = K(X, X_*)$$
 %  To indicate the covariance between a single test point with all training points: $$\mathbf{k_*} = \mathbf{k(x_*}, X)$$
 
-
 A few illustrative plots have been included below, with a Gaussian process performing inference on several data points but with different hyperparamters each time, to highlight the effect that they have on its predictive ability.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.53\linewidth}
+        \includegraphics[width=\linewidth]{gp_with_variance_plot3.pdf}
+        \caption*{(1) $\sigma_f = 2.13$, $l = 1.27$, $\sigma_n = 0.17$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.47\linewidth}
+        \includegraphics[width=\linewidth]{gp_with_variance_plot1.pdf}
+        \caption*{(2) $\sigma_f = 1$, $l = 1.7$, $\sigma_n = 0.1$}
+    \end{minipage}
+    \begin{minipage}{0.47\linewidth}
+        \includegraphics[width=\linewidth]{gp_with_variance_plot2.pdf}
+        \caption*{(3) $\sigma_f = 1$, $l = 0.3$, $\sigma_n = 0.001$}
+    \end{minipage}
+    \label{fig:gptoyplots}
+    \caption{A set of synthetic plots were created to illustrate a Gaussian process's behaviour when different hyperparameters (as shown below each plot) are used to perform regression. The key things to observe in these 2D examples are that the noise and length scale govern the complexity of the model - both a low length length scale and error are required to create a Gaussian process that attempts to adhere to points as closely as possible, though this can result in `overfitting' of the data, seems to be the case in plot 3.}
+\end{figure}
 
 \section{Leave-One-Out Cross Validation}
 
-\todo{(expand section)}
+To determine the hyperparameters of the training data, cross-validation for model training is used, with the number of folds used, $k$, equal to the number of datapoints, only excluding one data point per round - hence the name. By optimising over the sum of cross-valiated log likelihoods, it is no longer strictly only assessing the log marginal likelihood, instead acting as more of a pseudo-likelihood. Directly optimising over the marginal likelihood provides the probability of observed data \textit{given model assumptions}, whereas the cross-validation approach provides the log predictive probability estimates independent of the fufilment of said model assumptions. \citep{wahba90} states in Chapter 4 that Gaussian cross validation methods are more robust to misspecification, including problems such as non-Gaussian errors. Cross-validation was chosen for this reason, as the intrinsic properties of the data were not studied in detail prior to performing experiments as a part of this study, and nor were biological experts consulted for the duration of the study to provide advice on the quality and soundness of predictive maps.
 
-To train our data, we chose the extreme case of of cross-validation for model training, where the number of folds used, $k$, is equal to the number of datapoints. By optimising over the sum of cross-valiated log likelihoods, it is no longer strictly only assessing the log marginal likelihood, instead acting as more of a pseudo-likelihood. Directly optimising over the marginal likelihood provides the probability of observed data \textit{given model assumptions}, whereas the cross-validation approach provides the log predictive probability estimates independent of the fufilment of said model assumptions. The latter case is preferrable here as biological experts were not consulted for the duration of the study, meaning some assumptions could have been tuned more accurately if external help was available.
+The log probability of the data ommitting training case $i$ from the $n$ input data points is:
 
-The log probability ommitting training case $i$
+$$\log p(y_i|X, \mathbf{y_{-i}}, \theta) = -\frac{1}{2}\log\sigma^2_i - \frac{(y_i - \mu_i)^2}{2 \sigma^2_i} - \frac{1}{2}\log2\pi$$
 
-$$\log p(y_i|X, \mathbf{y_i}, \theta) = -\frac{1}{2}\log\sigma^2_i - \frac{(y_i - \mu_i)^2}{2 \sigma^2_i} - \frac{1}{2}\log2\pi$$
+for input data $X$, the $i-th$ response variable $y$, predictive mean $\mu$, and predictive variance $\sigma^2$. The total log probability across all $n$ subsets of the data of size $n-1$ is then:
 
-$$ L_{LOO}(X, y, \theta) = \sigma^n_{i=1} \log p(y_i, X, \mathbf{y_i}, \mathbf{\theta})$$
+$$ L_{LOO}(X, y, \theta) = \sum^n_{i=1} \log p(y_i, X, \mathbf{y_{-i}}, \mathbf{\theta})$$
 
-LOO-CV predictive mean and variance
-$$\mu_i= y_i - [K^{-1}\mathbf{y}]_i / [K^{-1}]_{ii} \text{ and } \sigma_i^2 = 1/[K^{-1}]_{ii}$$
+The LOO-CV predictive mean and variance can then be derived, and represented in terms of covariance matrix $K$, as calculated using \Cref{eq:simplegpcov} and \Cref{eq:fullgpcov}.
+$$\mu_i= y_i - \frac{[K^{-1}\mathbf{y}]_i}{[K^{-1}]_{ii}} \text{ and } \sigma_i^2 = \frac{1}{[K^{-1}]_{ii}}$$
 
-partial derivatives with respect to the hyperparameters
+To be able to optimise hyperparemeters over the feature dimensions more efficiently, the partial derivates over \textit{each} is also needed:
 $$\frac{\partial{u_i}}{\partial{\theta_j}} = \frac{[Z_j \alpha]}{[K^{-1}]_{ii}} - \frac{\alpha_i[Z_j K^{-1}_{ii}]_{ii}}{[K^{-1}]^2_{ii}}$$
 $$\frac{\partial{\sigma_i^2}}{\partial{\theta_j}} = \frac{[Z_jK^{-1}]_{ii}}{[K^{-1}]^2_{ii}}$$
 
-where $\alpha = K^{-1}\mathbf{y}$ and $Z_j = K^{-1} \frac{\partial{K}}{\partial{\theta_j}}$
+$$ \text{where } \alpha = K^{-1}\mathbf{y} \text{ and } Z_j = K^{-1} \frac{\partial{K}}{\partial{\theta_j}} $$
 
+With the means to perform Gaussian process regression by determining the hyperparameters of the kernel using leave-one-out cross-validation, the next step would be to apply this to Gaussian process classification.
 
 \section{Gaussian Process Classification} \label{chapsec:gpc}
 
-To perform Gaussian process classification, multiple Gaussian process Regressors are used for each possible label using a one-vs-all approach as in Example \autoref{ex:one-vs-all}, and every label at each data point is assigned both a probability and variance. To ensure the predictions at each point for each label is propertly constrained to be in the range $[0,1]$, we again pass predictions through the logistic sigmoid function (\autoref{eq:logistic}).
+As benthic habitat mapping requires the prediction of discrete labels and not continuous values, Gaussian process regression is not directly applicable to the problem domain. Just as logistic regression can be formulated by post-processing of the results of a linear regressor, Gaussian process classification can be performed by using multiple Gaussian process regressors as its underlying model. The one-vs-all approach is taken in this case, requiring $k$ separate Gaussian process regressors.
 
-\todo{(expand)}
+For example in \Cref{fig:ova-example}, when fitting a regressor for the green \textit{class 1}, the labels at coordinates corresponding to label $1$ are set to $1$, and all other points to $0$. For \textit{blue} label $2$, the labels of all the blue points are set to $1$, and the rest $0$, and so on so forth - this is applicable to any number of classes $k$, where the complexity increases linearly for each class that exists in the data.
+
+\begin{figure}
+    \includegraphics[scale=0.5]{ova_example.pdf}
+    \caption{Simple example of data being split up to perform one-vs-all classification. The coloured lines corresponding to the label colours indicate the separation of clusters when performing each round of one-vs-all regression rounds. For class $3$, everything below the red line is taken to be the `positive label', and everything above, the `negative label'. This is only illustrative, and the labels will just as easily be wrangled if they were interspersed instead of segregated like they are here.}
+    \label{fig:ova-example}
+\end{figure}
+
+When forming predictions, each of these separate Gaussian process regressors provide a different set of results as they consider separate one-vs-all cases as previously trained. For the $k$ labels, and each regressor $GP_k$, where $i=1,2...,k$:
+
+\begin{equation}
+    \mathbf{\bar{f_*}_{all}} = \begin{bmatrix}
+        \mathbf{\bar{f_*}_{GP_1}} \\
+        \mathbf{\bar{f_*}_{GP_2}} \\
+        \ldots \\
+        \mathbf{\bar{f_*}_{GP_{k-1}}} \\
+        \mathbf{\bar{f_*}_{GP_k}} \\
+    \end{bmatrix}, \mathbf{\mathbb{V}[f_*]_{all}} = \begin{bmatrix}
+        \mathbf{\mathbb{V}[f_*]_{GP_1}} \\
+        \mathbf{\mathbb{V}[f_*]_{GP_2}} \\
+        \ldots \\
+        \mathbf{\mathbb{V}[f_*]_{GP_{k-1}}} \\
+        \mathbf{\mathbb{V}[f_*]_{GP_k}} \\
+    \end{bmatrix}
+\end{equation}
+
+As the original labels were changed to be constrained in the range $[0, 1]$, the same is done to the predictive means, by passing it through the logistic sigmoid function (\Cref{eq:logistic}). The resulting matrix of predictive means and variances for any $k > 1$ provides a vector of $k$ predictions for each input rather than the single label that classification would require. To simplify the probabilistic results per label at each point, the value with the highest probability (i.e. the argmax) would be taken, along with the matching variance containing the confidence intervals. As the $O(n^3)$ operations required for the matrix inversions for performing Gaussian process regression must be performed $k$ times in total (once per label), the time required for anything more than several thousand points would make it impractical to use, requiring methods to sufficiently bring down the running time.
 
 % \section{Subsampling for Gaussian Process experiments}
 % \todo{(may need to take this section out - GPy wrapper deals with thousands of points no problem, no longer need to subsample with only 4000 after downsampling the data)}
@@ -79,51 +124,62 @@ To perform Gaussian process classification, multiple Gaussian process Regressors
 
 \section{Gaussian Process Approximation} \label{chapsec:gp-approx}
 
-However, significant limitations exist in terms of the number of training datapoints used when using a single Gaussian process classifier. To counter this, there are approximation methods which allow more points to be used whilst not expending more time. There are two common ways to do this, the first being using inducing inputs, where approximations are made such that neither extra time or computational power is needed to encapsulate the information of more points. The second are \textit{ensemble} methods - combining the results of several independent Gaussian processes trained in parallel (at the expense of more computational power), and was the one tested as a part of this study.
+To be able to use Gaussian processes on larger data sets, approximations can be made to avoid paying the full cost of performing expensive operations, approximations can be made. The method of approximation that will be used in this study is ensemble methods. In the context of Gaussian processes, this involves breaking up the data into small chunks, where each `expert' performs regression seperately, before taking the product of all the experts' results to give the approximation for the full dataset. The property that these ensemble methods have in common are that any given expert's decisions are weighted by their precision (inverse of variance - so a low variance would result in a high precision), such that experts that are more `confident' in their results provide great input to the final weightings, whereas experts with low precision, or predictions that have a high variance, are unsure of their results, and hence provide comparably less input to the summarised predictions. The component that differs between the two approximations below (and these ensemble methods in general) is how the precision of each expert is used to weight their predictions.
 
-\subsection{Product of Experts and Variations}
-\todo{(EXPAND explanations in this section)}
+\paragraph{Product of Gaussian Process Experts}
+The product of experts algorithm is a the simplest of Gaussian process ensemble methods, as the predictive variance of expert is directly used as-is to weight that particular expert's predictions, as shown in the equations below. The \textit{product} of experts described above is proportional to a single Gaussian process with the following product of expert (PoE) predictive mean and variance:
 
-Product of GP Experts
 \begin{equation}
     \mu_*^{poe} = (\sigma_*^{poe})^2 \sum_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:poe-precision}
     (\sigma_*^{poe})^{-2} = \sum_k \sigma_k^{-2} (\mathbf{x_*})
 \end{equation}
+where $\sigma_k^{-2}(\mathbf{x_*})$ are the predictive Gaussian precisions (inverse of Gaussian variances), and $\mu_k(\mathbf{x_*})$ are the predictive Gaussian means. \Cref{eq:poe-precision} describes the precision of the product of experts model in its entirety, by summing up the Gaussian precisions of all of the experts. For each point, this means that its PoE variance will be low if every expert calculates a low predictive variance, whereas if a sufficient number of them end up predicting a high variance for a given point, the overall PoE variance for that point will likely be high. This high variance is then applied to the PoE predictive means at every point, where the the product of each \textit{individual} expert's Gaussian precisions and Gaussian means are taken, and summed with all the other experts' at the same point, giving a higher precision ($\sigma_k^{-2}(\mathbf{x_*})$) a higher weight.
 
-Generalised Product of GP Experts
+\paragraph{Generalised Product of Gaussian Process Experts}
 \begin{equation}
     \mu_*^{gpoe} = (\sigma_*^{gpoe})^2 \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
 \end{equation}
 \begin{equation}
     (\sigma_*^{gpoe})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*})
 \end{equation}
-The value of each $\beta_k$ is flexible, but as scaling Gaussian processes to large datasets isn't the primary focus of this study, we simply set each $\beta_k$ to $\frac{1}{M}$, where $M$ is the number of experts, as suggested in \citep{deisenroth15} to maintain reasonable margins of error.
 
-\subsection{Bayesian Committee Machines and Variations}
+The only difference in generalised product of Gaussian experts (GPoE) is the use of $\mathbf{\beta}$, where its purpose is to allow the explicit weighting of experts based on the circumstances. The value of each $\beta_k$ is flexible, but as scaling Gaussian processes to large datasets isn't the primary focus of this study, we simply set each $\beta_k$ to $\frac{1}{M}$, where $M$ is the number of experts, as suggested in \citep{deisenroth15} to be able to maintain reasonable margins of error. To show how they perform, below is a performance comparison between these two ensemble methods on a simple dataset:
+\begin{figure}[H]
+    \begin{minipage}{0.49\linewidth}
+        \includegraphics[width=\linewidth]{gp_poe_with_variance_plot.pdf}
+        \caption*{Product of Experts}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.49\linewidth}
+        \includegraphics[width=\linewidth]{gp_gpoe_with_variance_plot.pdf}
+        \caption*{Generalised Product of Experts}
+    \end{minipage}
+    \caption{\scriptsize{Examples of Gaussian process ensemble methods. As a result of the $\beta$ in the GPoE scaling the variances, they no longer cancel each other out when summed together, explaining the comparatively larger variance in the GPoE compared to the PoE, even when predictions are very close to the correct values. While these conservative (wide) variances can be a negative aspect as mentioned in \citep{deisenroth15}, it may also prove to be beneficial, as the experiments later show.}}
+\end{figure}
 
-Bayesian Committee Machine
-\begin{equation}
-    \mu_*^{bcm} = (\sigma_*^{bcm})^2 \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
-\end{equation}
-\begin{equation}
-    (\sigma_*^{bcm})^{-2} = \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) + (1-M)\sigma_{**}^{-2}
-\end{equation}
-where $\sigma_{**}^{-2}$ is the prior precision of $p(f_*)$, which itself is the inverse of the prior variances.
+% \subsection{Bayesian Committee Machine}
+% \begin{equation}
+%     \mu_*^{bcm} = (\sigma_*^{bcm})^2 \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+% \end{equation}
+% \begin{equation}
+%     (\sigma_*^{bcm})^{-2} = \sum_{k=1}^M \sigma_k^{-2} (\mathbf{x_*}) + (1-M)\sigma_{**}^{-2}
+% \end{equation}
+% where $\sigma_{**}^{-2}$ is the prior precision of $p(f_*)$, which itself is the inverse of the prior variances.
+% 
+% \subsection{Robust Bayesian Committee Machine}
+% \begin{equation}
+%     \mu_*^{rbcm} = (\sigma_*^{rbcm})^2 \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
+% \end{equation}
+% \begin{equation}
+%     (\sigma_*^{rbcm})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) + (1-\sum_{k=1}^M \beta_k) \sigma_{**}^{-2}
+% \end{equation}
+% where each $\beta_k$ follows the same rules as for the Product of Experts and its variations.
 
-Robust Bayesian Committee Machine
-\begin{equation}
-    \mu_*^{rbcm} = (\sigma_*^{rbcm})^2 \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) \mu_k (\mathbf{x_*})
-\end{equation}
-\begin{equation}
-    (\sigma_*^{rbcm})^{-2} = \sum_k \beta_k \sigma_k^{-2} (\mathbf{x_*}) + (1-\sum_{k=1}^M \beta_k) \sigma_{**}^{-2}
-\end{equation}
-where each $\beta_k$ follows the same rules as for the Product of Experts and its variations.
+% \citep{deisenroth15}
 
-\citep{deisenroth15}
-
-\todo{(gaussian mixture model paper - compares GMMs with other models such as CTs, SVMs, and entropy of predictions)}
+% \todo{(gaussian mixture model paper - compares GMMs with other models such as CTs, SVMs, and entropy of predictions)}
 
 \section{Summary}
 

@@ -25,61 +25,22 @@ The free parameters involved in the squared exponential kernel are the length sc
 \end{equation}
 where $\sigma_f$ is the variance in the training data, and $\sigma_n$ is the variance of the Gaussian noise. The length scales $l$ are not a single variable as the equation may suggest, but a vector of length scales equal in length to the number of dimensions in the inputs $\mathbf{x}$. If $l$ was simply a vector of 1s, which would give every feature in the input space equal weighting, but it is not likely in a real world dataset for every feature to have equal importance. This is what the length scales account for - by tuning $l_i$ for each feature $i$, the model can learn during the fitting process which features are important, and which ones are not. 
 
-% From the above equation, it is evident that points that are very close together in the $n$-dimensional input space would have a covariance of $1$ (as $\lim_{\mathbf{x_p=x_q}} exp(-\frac{1}{2}|\mathbf{x_p-x_q}^2| = 1$) - when assuming all features are equally important and correlated when assessing their distance. Because logic would define that such an assumption is unlikely to hold with real world data, a \textit{lengthscale} needs to be applied to each dimension to give important features more weight, and reduce the impact of less significant features on the covariance between two points. The vector of lengthscales would then be optimised along with the other parameters when training the Gaussian process model. Should \ref{eq:simplegpcov} prove to be the optimal setup, the length scale vector would then simply comprimse of $1$s after training. The updated covariance function $k$ would then be:
-
-To allow simplifications of notation in the following equations, we define some abbreviations related to \autoref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
- 
- \todo{(lay out these abbreviations nicely)}
- To indicate the full covariance matrix over training points: $K = K(X, X)$ \\
- To indicate the full covariance between training points and test points: $K_* = K(X, X_*)$
- To indicate the covariance between a single test point with all training points: $\mathbf{k_*} = \mathbf{k(x_*}, X)$
- 
-% By conditioning the joint Gaussian prior distribution on the observed data, we obtain our predictions at test points \todo{(EXPAND. Possibly include non-abberviated version first for clarity)}:
-% \begin{equation}
-%     \mathbf{f_*} | \mathbf{x_*}, X, \mathbf{f} \sim \mathcal{N}( \mathbf{k_*} K^{-1} \mathbf{f},  
-%     k(\mathbf{x_*, x_*}) - \mathbf{k_*} K^{-1} K_*)
-% \end{equation}
-% 
-Taking the first part of the Gaussian Distribution, the mean, and the second, the variance, we obtain our predictions and variance on a single test point:
+ The equations for the predictive means and variances then incorporate the covariance function, and hence the hyperparameters, as follows:
 \begin{equation}
     \bar{f_*} = \mathbf{k_*}^T(K+\sigma_n^2)^{-1} \mathbf{y}
 \end{equation}
 \begin{equation}
-    \mathbb{V}[f_*] = K(\mathbf{x_*},\mathbf{x_*}) - \mathbf{k_*}^T (K+\sigma^2_n)^{-1}\mathbf{k_*}
+    \mathbb{V}[f_*] = k(\mathbf{x_*},\mathbf{x_*}) - \mathbf{k_*}^T (K+\sigma^2_n)^{-1}\mathbf{k_*}
 \end{equation}
-% 
-% In practice, a test dataset would not be calculated one test point at a time as the above equation suggests, but all at once - to do so simply requires taking the covariance between all test points and training points whenever covariance of only a single test point with all training points is involved. These equations are used on the basis that all their parameters have already been determined - the most common process for doing this and the one used in this study is to maximise the log marginal likelihood. Although optimising the log marginal likelihood is required to use the above equations, its representation requires notation defined above, and as such formalising this aspect has been withheld until this point. However, because a slightly customised log likelihood function is used in Leave-ont-out Cross Validation (LOO-CV) below, we will only cover the standard marginal likelihood used by Gaussian processes briefly here.
-% 
-% The marginal likelihood for this model can be obtained by integrating the likelihood times the prior with respect to function values $\mathbf{f}$:
-% \begin{equation}
-%     p(\mathbf{y}|X) = \int p(\mathbf{y|f}, X)p(\mathbf{y}|X)d\mathbf{f}
-% \end{equation}
-% 
-% Taking the log of this then gives:
-% \begin{equation}
-%     \log p(\mathbf{f}|X) = -\frac{1}{2} \mathbf{f}^T K^{-1} \mathbf{f} - \frac{1}{2} \log|K| - \frac{n}{2} \log 2\pi
-% \end{equation}
-% 
-% As this equation has an analytical first derivative which can be used to speed up optimisation so long as a software package is used where the optimisation algorithms allows a derivative (also known as a Jacobian), we wish to also know its derivative:
-% \begin{equation}
-%     \frac{\partial}{\partial\theta_j} \log p(\mathbf{y}|X,\mathbf{\theta}) = \frac{1}{2} \text{tr}((\mathbf{\alpha\alpha}^T - K^{-1}) \frac{\partial K}{\partial \theta_j}) \text{ where } \mathbf{\alpha} = K^{-1}\mathbf{y}
-% \end{equation}
-% 
-% Keeping in mind that $K$ initially contains a number of initially unknown parameters ($\sigma_n, \sigma_f, l$), we can then optimise over this log marginal likelihood function as a whole using its derivative to search the multi-dimensional space. However, a variant of this will be used, as explained in the following section.
+where $K = K(X, X)$ is the covariance matrix over all training points, and $\mathbf{k_*} = \mathbf{k(x_*}, X)$ is the covariance between a single test point with all training points.
 
-% * distribution over functions
-% \begin{equation}
-% \mathbf{f_*} | X, \mathbf{y}, X* \sim \mathcal{N}(\mathbf{\bar{f_*}}, \text{cov}(\mathbf{f_*})) \text{, where}
-% \end{equation}
-% \begin{equation}
-% \mathbf{\bar{f_*}} \triangleq E[f_*|X,\mathbf{y},X_*] = K(X_*, X)[K(X,X) + \sigma^2_n]^{-1}\mathbf{y}
-% \end{equation}
-% \begin{equation}
-%     cov(\mathbf{f_*}) = K(X_*,X_*) - K(X_*, X)[K(X,X) + \sigma_n^2]^{-1}K(X,X_*)
-% \end{equation}
-% 
-% To simplify following notation, we make the following abbreviations:
-% $K = K(X, X)$, $K_* = K(X, X_*)$ for full covariances over training and test points, and $k(X, x_*) = k_*$ for the covariance between a single test point and all training points.
+% To allow simplifications of notation in the following equations, we define some abbreviations related to \autoref{eq:fullgpcov} depending on what data is involved in the covariance matrix. 
+%  
+%  \todo{(lay out these abbreviations nicely)}
+%  To indicate the full covariance matrix over training points: $$K = K(X, X)$$
+%  To indicate the full covariance between training points and test points: $$K_* = K(X, X_*)$$
+%  To indicate the covariance between a single test point with all training points: $$\mathbf{k_*} = \mathbf{k(x_*}, X)$$
+
 
 A few illustrative plots have been included below, with a Gaussian process performing inference on several data points but with different hyperparamters each time, to highlight the effect that they have on its predictive ability.
 

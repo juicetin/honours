@@ -66,7 +66,7 @@ Area Under The Receiver Operating Curve
 Although Gaussian processes provide the benefit of the possible variance for every prediction, the matrix inversion steps required and their $O(n^3)$ complexity prevents scaling of fitting the model beyond several thousand points (that even on high-end consumer hardware is impractically time-consuming), and predictions an order of magnitude above that. Using the naive Gaussian process, model fitting on the aggregated $4$-label data with $5000$ data points took over a day\todo{(double check this again!)}, with the predictions of the $500,000$ training points taking another day. It would be helpful to note that the formulation of Gaussian process classification used in this study (binary one-vs-all classifiers per label) means the complexity not only scales with number of points, but also in the number of possible labels, with each label requiring another underlying Gaussian process to account for it - for example, data containing $24$ labels would require 24 separate binary Gaussian processes. Due to hardware constraints, the $24$-label cases were not run to completion using the naive approach. As a point of reference, model fitting and predictions were timed for the basic Gaussian process, but only for a subset of the data, as shown below.
 
 \begin{table}[H]
-    \parbox{.85\linewidth}{
+    \parbox{\linewidth}{
     \centering
     \begin{tabular}{|c|c|C{3cm}|}
         \hline
@@ -75,7 +75,7 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         2000 & 4  &  00:02:12 \\
         3000 & 4  &  00:11:53 \\
         4000 & 4  &  00:33:26 \\
-        4700 & 4  &  01:15:41 \\
+        4700 & 4  &  00:47:41 \\
         1000 & 24  & 00:00:54 \\
         2000 & 24  & 00:07:03 \\
         3000 & 24  & 00:23:42 \\
@@ -84,11 +84,11 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
-    \caption{Gaussian process model fitting runtimes, using gradually increasing number of points for both simplified and full-label cases}
+    \caption{Gaussian process model fitting runtimes, using gradually increasing number of points for both simplified and full-label cases.\protect\footnotemark\label{fn:gp-time}}
 }
 \end{table}
 \begin{table}[H]
-    \parbox{.85\linewidth}{
+    \parbox{\linewidth}{
     \centering
     \begin{tabular}{|C{2cm}|c|C{3cm}|}
         \hline
@@ -98,7 +98,7 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         3000 &  4 &  00:10:02 \\
         4000 &  4 &  00:17:35 \\
         4700 &  4 &  00:32:41 \\
-        1000 & 24 &  \\
+        1000 & 24 &  18:45:52 (s) \\
         2000 & 24 &  \\
         3000 & 24 &  \\
         4000 & 24 &  \\
@@ -106,9 +106,11 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
-    \caption{Gaussian process predictoin runtimes, using gradually increasing number of points for both simplified and full-label cases}
+    \caption{Gaussian process prediction runtimes, using gradually increasing number of points for both simplified and full-label cases.}
 }
 \end{table}
+
+\footnotetext{Note that in these two tables, the time required in the $4$ label cases vs the $24$ ones appears to scale better than linearly. The only reason for this is the use of a $32$-core processor, allowing parallelisation to hide the actual `computing hours' involved  in the computations. A more accurate representation of the time needed independent of multiprocessing would be to multiply the number of labels used by the time taken for each operation (minus some, for the overhead of inter-process communication between Python's process Pools.}
 
 On the other hand, the benefits of Gaussian processes need not be sacrificed on account of this disadvantage of Gaussian processes, as approximations exist to break the original dataset into smaller chunks, allowing parallelisation and model fitting per smaller set of data that is only limited by the available hardware. As seen in \Cref{chapsec:gp-approx}, one such method is to use ensembles of Gaussian processes that allow trivial parallelisation. These experiments were carried out on \textbf{d2.8xlarge} Elastic Container (EC2) instances from Amazon, with the following specifications:
 \begin{table}[H]

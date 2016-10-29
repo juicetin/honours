@@ -6,7 +6,7 @@ Dirichlet multinomial regression, as the name suggestions, combines dirichlet an
 % \todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
 
 \section{Multinomial Distribution}
-Multinomial distributions are the generalisation of binomial distributions that describe the probability of, for example, getting a heads or tails when flipping a two-sided coin. Generalising beyond $2$ categories, the multinomial does the same, but for any integer $n$ number of categories, like throwing an $n$-sided weighted die (weighted for the problem at hand). The relevance to the multi-label habitat data is then quite apparent, given that each data point needs to be mapped to any number of $k$ categories and sum to some number of samples stated. Draws from a multinomial distribution can be represented using a histogram such as that in \Cref{fig:exhist}. However, this particular histogram encapsulates the label distributions for the entirety of Scott Reef instead of what we actually want - a single coordinate.
+Multinomial distributions are the generalisation of binomial distributions that describe the probability of, for example, getting a heads or tails when flipping a two-sided coin. Generalising beyond $2$ categories, the multinomial does the same, but for any integer $n$ number of categories, like throwing an $n$-sided weighted die (weighted for the problem at hand). The relevance to the multi-label habitat data is then quite apparent, given that each data point needs to be mapped to any number of $K$ categories and sum to some number of samples stated. Draws from a multinomial distribution can be represented using a histogram such as that in \Cref{fig:exhist}. However, this particular histogram encapsulates the label distributions for the entirety of Scott Reef instead of what we actually want - a single coordinate.
 
 \begin{figure}
     \includegraphics[width=\linewidth]{hist_full_multi_labels.pdf}
@@ -15,7 +15,7 @@ Multinomial distributions are the generalisation of binomial distributions that 
 \end{figure}
 
 \section{Dirichlet Distribution}\label{chapsec:dirichlet}
-To be able to perform predictions on individual points, it would seem that draws from a multinomial distribution need to be doable for a specific coordinate alone - but there does not exist the information to do so using the multinomial distribution alone, as a single vector of counts/draws as present in the multi-label data would be vastly insufficient. This is where the Dirichlet distribution comes in, placing a prior over the possible multinomial distributions. Parameters of the multinomial distribution can then be drawn from a Dirichlet given $\alpha$, the concentration parameters that govern the distribution of multinomial coefficients that can be drawn. The actual representation of a Dirichlet are $k$-dimensional vectors where $k$ is the number of possible categories where $\sum \mathbf{x} = 1$ for any vector $\mathbf{x}$, representing the distribution of $k$ labels that form the exhaustive set of possibilities, and hence sums to $1$. When working in $3$ dimensions, this can be represented visually on a triangle anchored at the unit coordinates along each of the $x, y, z$ axis (\Cref{fig:simplex}).
+To be able to perform predictions on individual points, it would seem that draws from a multinomial distribution need to be doable for a specific coordinate alone - but there does not exist the information to do so using the multinomial distribution alone, as a single vector of counts/draws as present in the multi-label data would be vastly insufficient. This is where the Dirichlet distribution comes in, placing a prior over the possible multinomial distributions. Parameters of the multinomial distribution can then be drawn from a Dirichlet given $\alpha$, the concentration parameters that govern the distribution of multinomial coefficients that can be drawn. The actual representation of a Dirichlet are $K$-dimensional vectors where $K$ is the number of possible categories where $\sum \mathbf{x} = 1$ for any vector $\mathbf{x}$, representing the distribution of $K$ labels that form the exhaustive set of possibilities, and hence sums to $1$. When working in $3$ dimensions, this can be represented visually on a triangle anchored at the unit coordinates along each of the $x, y, z$ axis (\Cref{fig:simplex}).
 
 \begin{figure}
     \begin{minipage}{\linewidth}
@@ -62,17 +62,20 @@ Equipped with some basic knowledge about the Dirichlet and multinomial distribut
 \end{equation}
 where $C$ are the category counts, $\alpha$ are the Dirichlet parameters as described in \Cref{chapsec:dirichlet}, and $M = \sum_k c_k$
 
-The crucial part that has not yet been explained is how $\alpha$ is obtained/tuned to fit any training data available. In this study, the activation function chosen to calculate the $\alpha$ values was the softmax, also referred to as the `normalised exponential', in that it has better numerical stability than the exponential function. \todo{(plot example if time allows)}
-
-For the regressor, the two activation functions that were considered were exponential and softmax, where the former often provided better mapping predictions, but the latter is preferable in the general case due to its better numerical stability \todo {include graphs of exponential and softmax here} The softmax generalises the logistic function to $k$-dimensional data like that being used in this study:
+The crucial part that has not yet been explained is how $\alpha$ is obtained/tuned to fit any training data available. In this study, the activation function chosen to calculate the $\alpha$ values was the softmax, also referred to as the `normalised exponential', in that it has better numerical stability than the exponential function \todo{(plot example if time allows)}. The softmax generalises the logistic function to $K$-dimensional data like that being used in this study:
 \begin{equation}
     \alpha_k = \softmax{\mathbf{X}^T \mathbf{w_k}}
 \end{equation}
 where \begin{equation}
-    \softmax(\mathbf{x})_i = \frac{e^{x_i}}{\sum_{j=1}^k e^{x_j}} \text{ for } i = 1, \ldots, k
+    \softmax(\mathbf{x})_i = \frac{e^{x_i}}{\sum_{j=1}^k e^{x_j}} \text{ for } i = 1, \ldots, K
 \end{equation}
 
-The weights $w$ here are in fact a matrix of weights with dimensions $(K \times D)$, where $K$ is the number of possible labels across the dataset, and $D$ is the dimensionality of the dataset. Muliplying the dirichlet multinomial prior by the likelihood then then gives the posterior over which to optimise to obtain the weights required to predict the normalised label counts at any given point.
+The weights $w$ here are in fact a matrix of weights with dimensions $(K \times D)$, where $K$ is the number of possible labels across the dataset, and $D$ is the dimensionality of the dataset. Muliplying the dirichlet multinomial prior by the Guassian likelihood over weights then then gives the posterior that needs to be optimised to obtain the weights required to predict the normalised label counts at any given point:
+
+\begin{equation}
+    \Pi_{n=1}^N \dirmul (c_n | \alpha(x_n)) \times \Pi_{n=1}^k \sim \mathcal{N}(w_k | 0, \phi I)
+\end{equation}
+where $\phi$ is a regulariser that determines 
 
 This gives the joint-log-likelihood over both the dirichlet and multinomial distributions:
 \begin{multline}

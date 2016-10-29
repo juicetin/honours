@@ -66,46 +66,48 @@ Area Under The Receiver Operating Curve
 Although Gaussian processes provide the benefit of the possible variance for every prediction, the matrix inversion steps required and their $O(n^3)$ complexity prevents scaling of fitting the model beyond several thousand points (that even on high-end consumer hardware is impractically time-consuming), and predictions an order of magnitude above that. Using the naive Gaussian process, model fitting on the aggregated $4$-label data with $5000$ data points took over a day\todo{(double check this again!)}, with the predictions of the $500,000$ training points taking another day. It would be helpful to note that the formulation of Gaussian process classification used in this study (binary one-vs-all classifiers per label) means the complexity not only scales with number of points, but also in the number of possible labels, with each label requiring another underlying Gaussian process to account for it - for example, data containing $24$ labels would require 24 separate binary Gaussian processes. Due to hardware constraints, the $24$-label cases were not run to completion using the naive approach. As a point of reference, model fitting and predictions were timed for the basic Gaussian process, but only for a subset of the data, as shown below.
 
 \begin{table}[H]
+    \parbox{.85\linewidth}{
     \centering
     \begin{tabular}{|c|c|C{3cm}|}
         \hline
-        Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
-        1000 points, 4 labels & Model fitting & 00:00:37 \\
-        2000 points, 4 labels & Model fitting & 00:02:12 \\
-        3000 points, 4 labels & Model fitting & 00:11:53 \\
-        4000 points, 4 labels & Model fitting & 00:33:26 \\
-        4700 points, 4 labels & Model fitting & 01:15:41 \\
-        1000 points, 24 labels & Model fitting & 00:00:54 \\
-        2000 points, 24 labels & Model fitting & 00:07:03 \\
-        3000 points, 24 labels & Model fitting & 00:23:42 \\
-        4000 points, 24 labels & Model fitting & 00:39:43 \\
-        4700 points, 24 labels & Model fitting & 10:47:20 (sequential)\\
+        Points & Labels & Time Taken (hh:mm:ss) \\\hline
+        1000 & 4  &  00:00:37 \\
+        2000 & 4  &  00:02:12 \\
+        3000 & 4  &  00:11:53 \\
+        4000 & 4  &  00:33:26 \\
+        4700 & 4  &  01:15:41 \\
+        1000 & 24  & 00:00:54 \\
+        2000 & 24  & 00:07:03 \\
+        3000 & 24  & 00:23:42 \\
+        4000 & 24  & 00:39:43 \\
+        4700 & 24  & 01:07:15 \\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
-    \caption{Gaussian process model fitting runtimes}
+    \caption{Gaussian process model fitting runtimes, using gradually increasing number of points for both simplified and full-label cases}
+}
 \end{table}
-
-
 \begin{table}[H]
+    \parbox{.85\linewidth}{
     \centering
-    \begin{tabular}{|c|c|C{3cm}|}
+    \begin{tabular}{|C{2cm}|c|C{3cm}|}
         \hline
-        Data tested & Operation performed & Time Taken (hh:mm:ss) \\\hline
-        4 labels (1000 training) & Predictions & 00:01:23 \\ % (00:49:57??) 
-        4 labels (2000 training) & Predictions & 00:04:18 \\
-        4 labels (3000 training) & Predictions & 00:10:02 \\
-        4 labels (4000 training) & Predictions & 00:17:35 \\
-        4 labels (4700 training) & Predictions & 00:32:41 \\
-        24 labels (1000 training) & Predictions &  \\
-        24 labels (2000 training) & Predictions &  \\
-        24 labels (3000 training) & Predictions &  \\
-        24 labels (4000 training) & Predictions &  \\
-        24 labels (4700 training) & Predictions &  \\
+        Training points used & Labels & Time Taken (hh:mm:ss) \\\hline
+        1000 &  4 &  00:01:23 \\ % (00:49:57??) 
+        2000 &  4 &  00:04:18 \\
+        3000 &  4 &  00:10:02 \\
+        4000 &  4 &  00:17:35 \\
+        4700 &  4 &  00:32:41 \\
+        1000 & 24 &  \\
+        2000 & 24 &  \\
+        3000 & 24 &  \\
+        4000 & 24 &  \\
+        4700 & 24 &  \\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
-    \caption{Gaussian process prediction runtimes on full downsampled query data}
+    \caption{Gaussian process predictoin runtimes, using gradually increasing number of points for both simplified and full-label cases}
+}
 \end{table}
 
 On the other hand, the benefits of Gaussian processes need not be sacrificed on account of this disadvantage of Gaussian processes, as approximations exist to break the original dataset into smaller chunks, allowing parallelisation and model fitting per smaller set of data that is only limited by the available hardware. As seen in \Cref{chapsec:gp-approx}, one such method is to use ensembles of Gaussian processes that allow trivial parallelisation. These experiments were carried out on \textbf{d2.8xlarge} Elastic Container (EC2) instances from Amazon, with the following specifications:
@@ -122,7 +124,7 @@ On the other hand, the benefits of Gaussian processes need not be sacrificed on 
 
 To illustrate the usefulness of these approximation methods, experiments were run to measure their accuracy and f-scores, but also the time needed to run them particularly compared to naive Gaussian processes and usefulness of the maps - providing a point of reference when looking at Dirichlet multinomials in the next chapter. The abbreviations of the ensemble methods will be used in the following tables: product of experts (PoE), generalised product of experts (GPoE), Bayesian committee machines (BCM), robust Bayesian committee machines (rBCM).
 
-\begin{table}[h]
+\begin{table}[H]
     \parbox{.45\linewidth}{
         \centering
     \begin{tabular}{|C{2cm}|c|c|c|c|}
@@ -146,9 +148,6 @@ To illustrate the usefulness of these approximation methods, experiments were ru
     \end{tabular}
     \caption{Gaussian process approximation results for full 24 labels}
 }
-\end{table}
-
-\begin{table}[H]
     \parbox{.45\linewidth}{
         \centering
     \begin{tabular}{|C{2cm}|C{2cm}|C{2cm}|}
@@ -163,7 +162,7 @@ To illustrate the usefulness of these approximation methods, experiments were ru
     \label{table:gpensemble-training}
     \caption{Gaussian process ensemble training runtimes for all $5000$ Training points}
 }
-\hfill
+    \hfill
     \parbox{.45\linewidth}{
         \centering
     \begin{tabular}{|C{2cm}|C{2cm}|C{2cm}|}
@@ -180,17 +179,16 @@ To illustrate the usefulness of these approximation methods, experiments were ru
 }
 \end{table}
 
-\begin{figure}[H]
-    \begin{minipage}{\linewidth}
-    \includegraphics[scale=0.7]{gpogpe4_allpreds.pdf}
+\begin{figure}
+    \includegraphics[scale=0.64]{gpogpe4_allpreds.pdf}
     \caption{Argmax map of generalised product of Gaussian process experts for simplified labels}
     \label{fig:gpogpe4}
-    \end{minipage}
-    \begin{minipage}{\linewidth}
+\end{figure}
+
+\begin{figure}
     \includegraphics[scale=0.7]{gpogpe23_allpreds.pdf}
     \caption{Argmax map of generalised product of Gaussian process experts for full 23 labels \todo{match colours better}}
     \label{fig:gpogpe23}
-    \end{minipage}
 \end{figure}
 
 Given that random forests were able to best fit the training data in \Cref{chapsec:deterministic}, it is promising that the the simplified generalised product of Gaussian process expert predictions, whereby the label with the maximum probability at each point is taken to be the `absolute' truth, bears close a resemblance to it. If Gaussian processes were used in practice, there is still the variance that can be used to make better use of the predictions. 
@@ -198,3 +196,5 @@ Given that random forests were able to best fit the training data in \Cref{chaps
 While the product of experts and its generalised counterpart appear to have the comparable performance measured on error alone, the former failed to predict labels $0$ through $2$ in the simple case, and the corresponding labels for the full $24$. The generalised product of experts however, performed quite well, identifying similar habitat regions to the Dirichlet multinomial, as shown in \Cref{chapsec:dm}. Even with these improvements to running time whilst retaining probabilistic information, there is still important functionality missing from these models - the counts of other labels at every point that was available in the original data. The methods explored thus far are not able to deal with such multi-output data, and other models must be used to do this. Moreover, the level of parallelisation used to speed up operations would only be available on server hardware that can become expensive if constantly relied upon. Although scaling Gaussian processes was possible here using hardware and approximation methods, sacrifices in correctness were made. 
 
 To use in live scenarios, such as an AUV with previous bathymetry data collecting new images, the time it would take to run approximations before being able to calculate a desired path would render the vehicle inactive for most of the time. The several minutes achieved by the ensemble methods on the simplified data above was a result of parallelising over $30$ cores and being able to utilise over $200$GB - not the sort of hardware that would be appropriate for a small deep sea vessel. Not to mention, the sort of post-processing required in simplifying labels requires human intervention, and would not be something that can be automated on an expedition into previously unexplored areas. Hence, different methods would be needed that can perform similar tasks that can provide measures of uncertainty in realtime, all while being able to run quickly on hardware with limited capabilities.
+
+\pagebreak

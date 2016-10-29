@@ -14,7 +14,7 @@ Multinomial distributions are the generalisation of binomial distributions that 
     \label{fig:exhist}
 \end{figure}
 
-\section{Dirichlet Distribution}
+\section{Dirichlet Distribution}\label{chapsec:dirichlet}
 To be able to perform predictions on individual points, it would seem that draws from a multinomial distribution need to be doable for a specific coordinate alone - but there does not exist the information to do so using the multinomial distribution alone, as a single vector of counts/draws as present in the multi-label data would be vastly insufficient. This is where the Dirichlet distribution comes in, placing a prior over the possible multinomial distributions. Parameters of the multinomial distribution can then be drawn from a Dirichlet given $\alpha$, the concentration parameters that govern the distribution of multinomial coefficients that can be drawn. The actual representation of a Dirichlet are $k$-dimensional vectors where $k$ is the number of possible categories where $\sum \mathbf{x} = 1$ for any vector $\mathbf{x}$, representing the distribution of $k$ labels that form the exhaustive set of possibilities, and hence sums to $1$. When working in $3$ dimensions, this can be represented visually on a triangle anchored at the unit coordinates along each of the $x, y, z$ axis (\Cref{fig:simplex}).
 
 \begin{figure}
@@ -55,15 +55,22 @@ This would produce an entropy value for every vector of normalised category coun
 % $$\frac{1}{\beta(\alpha)} = \frac{\Gamma(\alpha_0)}{\Gamma(\alpha_i) ... \Gamma(\alpha_n)}, \alpha_0 = \sum_{i=1}^n \alpha_i \text{ generalised beta function}$$
 
 \section{Dirichlet Multinomial Regression}
+Equipped with some basic knowledge about the Dirichlet and multinomial distributions, the steps involved in Dirichlet multinomial regression can be explained in context. The previous two sections looked at the two distributions in isolation - the aim now is to combine them in the Dirichlet multinomial, then optimise the parameters to be able to predict normalised category counts given training data, as previously described. The following formula is the joint prior distribution:
 
-\todo{descriptions}
+\begin{equation}
+    \dirmul(C|\alpha) = \frac{M!}{\Pi_k C_k!} \frac{\Gamma(\sum_k \alpha_k)}{\Gamma(\sum_k c_k + \alpha_k)} \Pi_{k=1}^k \frac{\Gamma(C_k + \alpha_k)}{\Gamma(\alpha_k)}
+\end{equation}
+where $C$ are the category counts, $\alpha$ are the Dirichlet parameters as described in \Cref{chapsec:dirichlet}, and $M = \sum_k c_k$
 
-$$DM(C|\alpha) = \frac{M!}{\Pi_k C_k!} \frac{\Gamma(\sum_k \alpha_k)}{\Gamma(\sum_k c_k + \alpha_k)} \Pi_{k=1}^k \frac{\Gamma(C_k + \alpha_k)}{\Gamma(\alpha_k)}$$
-$$ M = \sum_k c_k $$
+The crucial part that has not yet been explained is how $\alpha$ is obtained/tuned to fit any training data available. In this study, the activation function chosen to calculate the $\alpha$ values was the softmax, also referred to as the `normalised exponential', in that it has better numerical stability than the exponential function. \todo{(plot example if time allows)}
 
-For the regressor, the two activation functions that were considered were exponential and softmax, where the former often provided better mapping predictions, but the latter is preferable in the general case due to its better numerical stability \todo {include graphs of exponential and softmax here}.
-$$\alpha_k = \exp\{x^T w_k\}$$
-$$\alpha_k = \text{softmax}\{x^T w_k\}$$
+For the regressor, the two activation functions that were considered were exponential and softmax, where the former often provided better mapping predictions, but the latter is preferable in the general case due to its better numerical stability \todo {include graphs of exponential and softmax here} The softmax generalises the logistic function to $k$-dimensional data like that being used in this study:
+\begin{equation}
+    \alpha_k = \softmax{\mathbf{X}^T \mathbf{w_k}}
+\end{equation}
+where \begin{equation}
+    \softmax(\mathbf{x})_i = \frac{e^{x_i}}{\sum_{j=1}^k e^{x_j}} \text{ for } i = 1, \ldots, k
+\end{equation}
 
 The weights $w$ here are in fact a matrix of weights with dimensions $(K \times D)$, where $K$ is the number of possible labels across the dataset, and $D$ is the dimensionality of the dataset. Muliplying the dirichlet multinomial prior by the likelihood then then gives the posterior over which to optimise to obtain the weights required to predict the normalised label counts at any given point.
 

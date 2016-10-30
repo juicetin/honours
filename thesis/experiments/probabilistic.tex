@@ -4,7 +4,7 @@ In this section, we will add an extra layer of information to our models' output
 
 \subsection{Gaussian Process Classification}
 
-While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian process classification, we introduce another metric, area under the receiver operating curve, to make use of the fact that the one-vs-all Gaussian process classifier provides a \textit{likelihood} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. 
+While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian process classification, we introduce another metric, area under the receiver operating curve, to make use of the fact that the one-vs-all Gaussian process classifier provides a \textit{probability} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. To visualise the predictions, the most likely label at each point is taken to be the true label. In addition to the information behind these labels being probabilistic, we can use the variance to quantify the uncertainty of a particular probability. For example, given the probabilities for class membership for a particular label in the range $[0,1]$ $0.74 \pm 0.5$ and $0.74 \pm 0.08$, both would result in an positive result ($1.0$), but the latter is considerably more \textit{confident} than the former.
 
 \todo{TODO} \textbf{Area Under The Receiver Operating Curve}
 
@@ -52,11 +52,30 @@ While f-scores and accuracy are still assessed via $10$-fold cross validation wh
     \label{gp4_allpreds}
 \end{figure}
 
-\todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
+% \todo{highlight areas with low/high certainty, etc. NOTE - investigate the areas with visually even splits of two labels - e.g. right-side arms of label 1,2, and smaller patches in the bottom left corner of label 0,3 - show that uncertainty about whether those areas are label 1 or 2, 0 or 3 respectively, is (should) be high, and that taking argmax for the sake of visual representation within a single image hides this information}
 
-\todo{(talk about variance and extra probabilistic info to be gained)}
+While taking the most probable per label per point gives an approximation on how the predictions over the query space look like, using it in conjunction with the original probabilities as well as the variance at these locations can provide further insight that allows the different information available in a Gaussian process to be used to their full extent. Starting with \Cref{fig:gp4_probs}, the underlying probabilities of the predictions reveals that a majority of the points being predicted only state a probability of $0.624 \sim 0.632$, and none above $\approx 0.670$. This is quite revealing, as it would prevent any absolute statements from being made about any portion of the predictions over Scott Reef, but allow them to be made stating the level of confidence. This highlights the advantage over the derministic methods previously explored - with only accuracy and f-scores to go by, the lack of any probabilistic information makes it difficult to make decisions when dealing engaging in tasks as important as the management of Earth's oceans.
 
-Predictions on the original labels were not performed, as fitting $24$ separate Gaussian processes to each of the labels for all the $4700$ training datapoints, then perform predictions across all $500,000$ points required extensive computational resources that were not available for the duration of this study.
+\begin{figure}
+    \centerline{\includegraphics[width=.95\linewidth, trim={0 1cm 0 0.2cm}]{gp4_max_probs.pdf}}
+    \caption{The largest probabilities at each point over the $4$ possible labels}
+    \label{fig:gp4_probs}
+\end{figure}
+
+The predictive variance of a Gaussian process can provide further information about the predictions on top of confidence. Although the observed maximum probability of predicting any one point was $0.7$, this was not yet taking into account the \textit{variance} over each of these probabilities. \Cref{fig:gp4_vars} reveals that large swaths of the predictions vary by more than $\pm 0.5$, with only limited, scattered areas in the $0.34 \sim 0.44$ range, and only a few isolated areas below $0.28$. 
+
+\begin{figure}
+    \centerline{\includegraphics[width=.95\linewidth, trim={0 1cm 0 0.2cm}]{gp4_max_std.pdf}}
+    \caption{Standard deviations for the largest probabilities (irrespective of label) for each point in the query space}
+    \label{fig:gp4_vars}
+\end{figure}
+
+% \begin{figure}
+%     \includegraphics[scale=0.8]{gp4_avg_vars.pdf}
+%     \caption{stuff}
+% \end{figure}
+
+Predictions on the original labels were not performed, as fitting $24$ separate Gaussian processes to each of the labels for all the $4700$ training datapoints, then performing predictions across all $500,000$ points required extensive computational resources that were not available for the duration of this study.
 
 \subsection{Ensemble Gaussian Process Approximations}
 
@@ -64,7 +83,7 @@ Although Gaussian processes provide the benefit of the possible variance for eve
 
 \begin{table}[H]
     \parbox{\linewidth}{
-    \centering
+        \centering
     \begin{tabular}{|c|c|C{3cm}|}
         \hline
         Points & Labels & Time Taken (hh:mm:ss) \\\hline
@@ -86,7 +105,7 @@ Although Gaussian processes provide the benefit of the possible variance for eve
 \end{table}
 \begin{table}[H]
     \parbox{\linewidth}{
-    \centering
+        \centering
     \begin{tabular}{|C{2cm}|c|C{3cm}|}
         \hline
         Training points used & Labels & Time Taken (hh:mm:ss) \\\hline
@@ -181,17 +200,17 @@ To illustrate the usefulness of these approximation methods, experiments were ru
 
 \begin{figure}
     \begin{minipage}{\linewidth}
-    \includegraphics[scale=0.7]{gpogpe4_allpreds.pdf}
-    \caption{Argmax map of generalised product of Gaussian process experts for simplified labels}
-    \label{fig:gpogpe4}
+        \includegraphics[scale=0.7]{gpogpe4_allpreds.pdf}
+        \caption{Argmax map of generalised product of Gaussian process experts for simplified labels}
+        \label{fig:gpogpe4}
     \end{minipage}
 
     \begin{minipage}{\linewidth}
-    \includegraphics[scale=0.7]{gpogpe23_allpreds.pdf}
-    \caption{Argmax map of generalised product of Gaussian process experts for full 23 labels \todo{todo: match colours better, fix colourbars}}
-    \label{fig:gpogpe23}
+        \includegraphics[scale=0.7]{gpogpe23_allpreds.pdf}
+        \caption{Argmax map of generalised product of Gaussian process experts for full 23 labels \todo{todo: match colours better, fix colourbars}}
+        \label{fig:gpogpe23}
     \end{minipage}
-    
+
     \caption{herp}
 \end{figure}
 

@@ -101,7 +101,7 @@ To optimise this equation, the partial derivative of the above over the weights 
 Given the log posterior and its partial derivatives over every weight, the MAP can then be calculated using parameter optimisation algorithms available in machine learning libraries \todo{(introduce this briefly the first time it comes up, in the GP section, then just to refer to that here.)}.
 
 \subsection{Using Markov Chain Monte Carlo to Sample Weights}
-Given the distribution of possible values of the weights $\mathbf{W}$ described, taking only the MAP for these values would be discarding other information in the distribution that may prove of use. While the MAP allows a single set of weights to be determined that allows performance to be assessed in addition to plotting maps to visualise the distribution of each habitat class in separate heatmaps, the `correctness' of the MAP estimation can further be assessed by generating maps created from weights from throughout the posterior distribution as they are drawn, then observing how consistent certain areas of the map remain when doing so.
+Given the distribution of possible values of the weights $\mathbf{W}$ described, taking only the MAP for these values would be discarding other information in the distribution that also describes the data. While the MAP allows a single set of weights to be determined that allows performance to be assessed in addition to plotting maps to visualise the distribution of each habitat class in separate heatmaps, the `correctness' of the MAP estimation can further be assessed by generating maps created from weights from throughout the posterior distribution as they are drawn, then observing how consistent certain areas of the map remain when doing so.
 
 To draw weights from the posterior distribution, Markov Chain Monte Carlo (MCMC) can be used. MCMC involves `random walks' through multiple dimensional space when using the Metropolis Hastings algorithm, where every step in $n$ dimensional space has a chance to be rejected or accepted. To account for the randomness in these walks (that provide \textit{chains} of parameters that the posterior is concerned with), Gelman-Rubin's r-hat statistic can be used to measure convergence when multiple MCMC instances are run for the same posterior. For multi-dimensional data, we will simply calculate the r-hat value for each dimension (each $w_{ij} in \mathbf{W} \text{ for } i=1,\ldots,K, j=1,\ldots,D$), and take their average.
 
@@ -206,12 +206,14 @@ The results in \Cref{table:toy_gm_vs_gp} were taken from an average of $20$ runs
 
 \begin{figure}
     \begin{minipage}{\textwidth}
-        \includegraphics[scale=0.75]{toy_scattermap_gppreds.pdf}
+        \includegraphics[scale=0.75]{toy_scattermap_testgp_expected.pdf}
+        \caption*{Expected labels from taking the most probable label per point}
     \end{minipage}
     \begin{minipage}{\textwidth}
-        \includegraphics[scale=0.75]{toy_scattermap_testgp_expected.pdf}
+        \includegraphics[scale=0.75]{toy_scattermap_gppreds.pdf}
+        \caption*{Gaussian process predictions after taking the most probable label oer data point.}
     \end{minipage}
-    \caption{Gaussian process predictions after taking the argmax over the label distributions.}
+    \caption{Gaussian process expected and predicted scatter maps}
 \end{figure}
 
 

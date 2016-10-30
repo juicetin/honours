@@ -1,35 +1,79 @@
 \pagebreak
 \section{Biodiversity}
 
-Another beneficial aspect of Dirichlet Multinomial Regression it inherently provides information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without requiring extra post-processing steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. Locate certain co-existence of species would involve searching over the space of predictions for the desired distributions of habitats. An alternative route to take, if no specific cohabitation in particular is being searched for, would be to isolate areas with the lowest entropy as explained in the previous section, then observe any evidence of biodiversity at these locations containing predictions that the model is confident about.
+Another beneficial aspect of Dirichlet Multinomial Regression is that it inherently provides information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without extra steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. Locating the co-existence of certain species would involve searching over the space of predictions for the desired distribution of habitats. 
 
-In contrast to Gaussian processes where the uncertainty  was generally high when there were mixes of labels in a particular area \todo{(don't know this yet! waiting for predictions to run)}, it is expected that the DM would be comparitively more confident that an even mix of labels exist in these areas. To obtain a sufficiently large area/number of points where two of the simplified four labels had a fairly even occurrence rate (with the other two labels only having trace amounts, if at all), sets of labels were repeatedly sampled with the variable condition that both their distributions lie within a certain range (for example, $[0.4, 0.5]$, or $[0.2, 0.3]$), until a segments were found that contained non-trivial amounts of at least two labels in the same area.
+As the 4-label case already aggregated similar classes from $24$ down to $4$, there was minimial biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity. To give a qualitative visual representation of the distribution of labels over the query space when using all $24$ labels, the predictive heatmaps for each of them is shown in \Cref{fig:dm24_0-7}, \Cref{fig:dm24_8-15}, and \Cref{fig:dm24_16-23}. The numbers in brackets next to each title indicate the simplified label they correspond to.
 
-Because the 4-label case already aggregated similar classes from the original $24$ down to $4$, there was limited biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity. To give a qualitative visual representation of the distribution of labels over the query space when using all $24$ labels, the predictive heatmaps for each of them is shown in \Cref{fig:dm24_0-7}, \Cref{fig:dm24_8-15}, and \Cref{fig:dm24_16-23} below.
-
-\begin{figure}[H]
+\begin{figure}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_0-3.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_4-7.pdf}
     \caption{\todo{(need to redo these to show more colour @\_@)}}
     \label{fig:dm24_0-7}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_8-11.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_12-15.pdf}
     \caption{\todo{(need to redo these to show more colour @\_@)}}
     \label{fig:dm24_8-15}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_16-19.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_20-23.pdf}
     \caption{\todo{(need to redo these to show more colour @\_@)}}
     \label{fig:dm24_16-23}
 \end{figure}
 
-Given the multi-label distribution predictions, there are any number of ways to either quantatively or qualitatively measure biodiversity. To attempt a combination of the two, experiments were run to identify areas where $2, 3, 4,...$ etc. labels co-occurred. Depending on the context in which the data is used, the definition of co-occurence is also entirely flexible. The formulation taken here is that for any given point (and by extension, region, where this pattern occurs frequently enough that the number of points fitting the criteria are dense enough to described as a cluster), $n$ number of labels are said to co-occur if \todo{need a definition here}
+Given the multi-label distribution predictions, there are any number of ways to either quantatively or qualitatively measure biodiversity. As an instance of the former, strict numerical conditions are used to define biodiversity for the example below. Depending on the aim of a particular environmental study or survey though, the definition of biodiversity is entirely flexible - it may refer to the co-existence of a specific few species or habitats ignoring all others, or it may be general biodiversity that defines cohabitation between any habitats. We take the latter of these formulations to show the power provided by the Dirichlet multinomial. For any given point (and by extension, region, where this pattern occurs frequently enough that the number of points fitting the criteria are dense enough to described as a cluster), $n$ number of labels are said to co-occur if for a given data point, the relevant area of benthos corresponding to a coordinate contains more than $n$ labels (number of `co-existing' habitats) that occur at a rate of at least $e$, where $0 < e \leq 1$. Given this specific `version' of biodiversity, $e$ would naturally need to decrease as $n$ increases - while it is possible to have large areas where at least two labels occur at a higher rate than $0.15$, this is of course not possible for seven points, for example ($7\times0.15=1.05$).
 
 % \todo{[PLACEHOLDER]}
 % We can visually observe that labels $7, 8, 10$ (variants of sand) occur in the same regions, with the following occupancy rates, beyond areas containing only negliglble traces ($\equiv0.00-0.02$) $7$ at a $\approx0.12$ occpuance rate, $8$ at $\approx0.18-0.20$, and $10$ at $\approx.17$.
 
+\begin{figure}
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_2habs_143902points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_3habs_151814points.pdf}
+    }
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_4habs_144647points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_5habs_134044points.pdf}
+    }
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_6habs_123520points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_7habs_110622points.pdf}
+    }
+    \caption{Cohabitation for the stated occupancy threshold for the label of each plot, from $2-7$.}
+\end{figure}
+
+\begin{figure}
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_8habs_78805points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_9habs_57530points.pdf}
+    }
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_10habs_42303points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_11habs_27102points.pdf}
+    }
+    \makebox[\textwidth]{
+        \includegraphics[scale=0.5]{dm24_cohab_map_12habs_17774points.pdf}
+        \includegraphics[scale=0.5]{dm24_cohab_map_13habs_9711points.pdf}
+    }
+    \caption{Cohabitation for the stated occupancy threshold for the label of each plot, from $8-13$.}
+\end{figure}
+
+For the definition of biodiversity taken in the above plots, it is easy to observe the biodiversity over the 24 labels in general, with a general trend that biodiveristy between an increasing number of habitats, even with the decreasing threshold, results in a lower density of biodiverse areas. The initial threshold when considering $2$ labels was $0.15$, dropping by $10\%$ (or $0.9$ of the previous value) for each additional label considered. For these particular parameters, any signs of visibly continuous areas of biodiversity disappear when considering more than $13$ labels.
+
+This approach can be easily modified to target the tracking of specific habitats - for example, if data is collected periodically in any area where coral bleaching is suspected to occur, predictive maps can be generated at the same intervals, allowing the \textit{changes} in biodiversity to be observed. Although such a task can be more generally achieved even using deterministic methods by simply taking a count of labels over the query space to see positive/negative trends, this is quite coarse in comparison, and specifying with accuracy the regions where change occurred involves extra work - for example, to assess if an area that was previously unbleached coral had become bleached through automated means, an individual working with the data may have to define an algorithm that checks the area around points up to a certain distance, then observe any potential changes in predictions generated from newly collected data, requiring considerably more effort in designing a method that allows analysis to be done efficiently. In contrast - performing the checks for general biodiversity using the above biodiversity across all 24 labels only took $11$ seconds, with checks for individual labels take less than $1$ second.
+
+% \includegraphics{dm24_cohab_map_14habs_6928points.pdf}
+% \includegraphics{dm24_cohab_map_15habs_3452points.pdf}
+% \includegraphics{dm24_cohab_map_16habs_1646points.pdf}
+% \includegraphics{dm24_cohab_map_17habs_1561points.pdf}
+% \includegraphics{dm24_cohab_map_18habs_1893points.pdf}
+% \includegraphics{dm24_cohab_map_19habs_2208points.pdf}
+% \includegraphics{dm24_cohab_map_20habs_1869points.pdf}
+% \includegraphics{dm24_cohab_map_21habs_703points.pdf}
+% \includegraphics{dm24_cohab_map_22habs_569points.pdf}
+% \includegraphics{dm24_cohab_map_23habs_156points.pdf}

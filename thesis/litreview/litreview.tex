@@ -42,95 +42,108 @@ The final step is map creation, where the labelled truthing data is combined wit
 
 The other approach is to first collect and cluster the truthing data before modeling its relationship with the acoustic data, where we apply this relationship to the areas without truthing data to create the habitat map. The latter approach is the one taken in this study, and the basis upon which the following review of techniques used for benthic habitat methods is based upon.
 
-\todo{(example of a simple mapping effort on a synthesised dataset here!)}
+\todo{(example of a simple mapping effort on a synthesised dataset here - not too sure what to include independent of the next image though)}
 
-%%%%%%%%%%%%%%% Non-ML Habitat Mapping %%%%%%%%%%%%%%%
-\section{Non-Machine Learning Methods}
-\todo{this section should be part of the previous one (Map Creation)} While the majority of modern papers in benthic habitat mapping employ machine learning techniques for map creation, this doesn't exclude those that do not from providing useful information and insight. An important study was undertaken in 2001 that employs relatively basic statistical analysis, employing different forms of variance as its main tool of analysis. ~\citep{kostylev01}, at the time (and in fact, even now) integrated more sources of data together than most other studies undertaken - multibeam bathymetric data, geoscientific data, seafloor photographs, habitat complexity, and relative current strength. Rather than using a single model to fit and train data as is more traditionally done in machine learning, multiple statistical tools are used in a peacemeal manner including One-way analysis of variance (ANOVA), Student-Newman-Keuls (SNK) tests, and Analysis of Covariance (ANCOVA). 
+% %%%%%%%%%%%%%%% Non-ML Habitat Mapping %%%%%%%%%%%%%%%
+% \section{Non-Machine Learning Methods}
+
+While the majority of modern papers in benthic habitat mapping employ machine learning techniques for map creation, this doesn't exclude those that do not from providing useful information and insight. An important study was undertaken in 2001 that employs relatively basic statistical analysis, employing different forms of variance as its main tool of analysis. ~\citep{kostylev01}, at the time (and in fact, even now) integrated more sources of data together than most other studies undertaken - multibeam bathymetric data, geoscientific data, seafloor photographs, habitat complexity, and relative current strength. Rather than using a single model to fit and train data as is more traditionally done in machine learning, multiple statistical tools are used in a peacemeal manner including One-way analysis of variance (ANOVA), Student-Newman-Keuls (SNK) tests, and Analysis of Covariance (ANCOVA). 
 
 Although little is done to address and verify accuracy of the actual results/map in this paper, it provides value through the analysis of variance and covariance performed on and between different benthic/marine properties, establishing relationships typically taken for granted or ignored. For example, it is established that while sediment type contributed heavily to a higher taxonomic\footnote{Taxonomy in a biological context is the categorisation of different organisms based on shared characteristics.} group count, there was little relationship between sediment type and depth. However, this only indicates that there is no linear relationship between the two, and doesn't necessarily preclude a non-linear relationship between them, perhaps with the inclusion of other parameters as well. In particular, Kostylev establishes that gravel subrates are more abundant with varying taxonomic groups than their sand counterparts.
 
 % Certain organisations, government bodies/etc. will also provide guidelines outlining the classification proess. For example, the European Nature Information System website and the Australian Government's 'Interim Marine and Coastal Regionalisation for Australia'\footnote{Unesco.org. (2016). Water column correction techniques. [online] Available at: http://www.unesco.org/csi/pub/source/rs10.htm} both provide classification schemes for people creating habitat maps or other similar efforts.
 
-Such findings provide useful insights for future studies that will allow a better assessment of data, or to be able to apply initial assumptions in obtaining better results. However, constantly seeking a deeper understanding through a proportionally increasing amount of sampling creeps towards 'exploring' the entire Earth's oceans manually. To obtain economically feasible yet reliable predictions from the limited data that we have, we need to employ machine learning techniques to further utilise the information that we gather.
+Such findings provide useful insights for future studies that will allow a better assessment of data, or to be able to apply initial assumptions in obtaining better results. However, constantly seeking a deeper understanding through a proportionally increasing amount of sampling creeps towards 'exploring' the entire Earth's oceans manually. To obtain economically feasible yet reliable predictions from the limited data that we have, we need to formally employ machine learning techniques to further utilise the information that we gather.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Evolution of Map Creation Methods %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Deterministic Machine Learning Algorithms in Benthic Habitat Mapping}
-As benthic habitat mapping covers a diverse range of discplines, namely "marine biology, ecology, geology, hydrography, oceanography and geophysics"~\citep{cjbrown11} in addition to statistics and machine learning, it is logical that it would take considerable effort and vast resources to give each relevant discpline an equal, and large amount of attention within any single study. Thus, different studies can rely on the collective findings of others to launch their own research and look further into particular lines of inquiry, start new ones altogether, or evaluate effectiveness of methods used in the field/etc. Within benthic habitat mapping, one prevalent line of inquiry is how to create more accurate, higher quality maps by employing machine learning techniques. For the remainder of this review, we will be looking at common deterministic machine learning techniques and their performance when used to generate habitat maps. A deterministic algorithm gives a single output or outcome given some input, while a probabilistic one will give a possible \textit{distribution} of outputs and a measure of the likelihood of occurrence over this distribution. Some mathematical background will be given where relevant in the following algorithms, as their application will be revisited in \Cref{chap:experiments}.
+As benthic habitat mapping covers a diverse range of discplines, namely "marine biology, ecology, geology, hydrography, oceanography and geophysics"~\citep{cjbrown11} in addition to statistics and machine learning, it is logical that it would take considerable effort and vast resources to give each relevant discpline an equal, and large amount of attention within any single study. Thus, different studies can rely on the collective findings of others to launch their own research and look further into particular lines of inquiry, start new ones altogether, or evaluate effectiveness of methods used in the field/etc. Within benthic habitat mapping, one prevalent line of inquiry is how to create more accurate, higher quality maps by employing machine learning techniques. For the remainder of this review, we will be looking at common deterministic machine learning techniques and their performance when used to generate habitat maps. A deterministic algorithm gives a single output or outcome given some input, while a probabilistic one will give a possible \textit{distribution} of outputs and a measure of the likelihood of occurrence over this distribution. 
 
-\subsection{Multiple Multinomial Logistic Regression}
-The underlying function of logistic regression is that used in linear regression, so a brief overview of linear regression will first be given. The motivation for linear regression is that given some input data $\mathbf{X}$, corresponding response values (or output) $\mathbf{y}$, and a set of weights $\mathbf{\beta}$ are defined to best define the relationship between the two variables as below. Note that the intercept term has not been included in this basic explanation, as it can be included by augmenting the inputs $\mathbf{X}$ with a bias term $1$ which would have its own corresponding weight $\beta_i$ as well.
+Some of the most commonly used classification algorithms in benthic habitat mapping are also commonly used across domains involving classifying data in general. These include support vector machines (SVMs), random forests, k-Nearest neighbour classifiers, and logistic regression. Although these are more traiditional, more well known methods, they are still used in new research, for example in \citet{wahidin15}, where all of the aforementioned algorithms were tested. Although empirical studies have been performed on these methods to compare their performance across many domains such as in \citet{caruana06}, their effectiveness in benthic habitat mapping varies from study to study, depending on the benthic location that can affect variables such as the sort of habitats present and hence the overall physical properties a particular benthic region, how quickly habitats transition from one to another, or the level of biodiversity/mixing of habitats.
 
-\begin{equation}
-\begin{split}
-    \mathbf{y} = \mathbf{\beta X} \\
-    y_i = \beta_i x_i,         i = 1,...,n
-\end{split}
-\end{equation}
+Multinomial logistic regression builds upon linear regression, a staple of machine learning algorithms. Its basic formulation only allows two classes to be predicted at a time - multiple logistic regressors are required to train one class against the rest to generalise beyond only $2$ classes. Though it was ranked towards the bottom of Caruana's average performance rankings, it has had some limited success in less complex binary problems where it was able to distinguish between hard-rock bottoms at the benthos with those that were not with 70\% accuracy \citep{dunn09}. In other instances, however, it was only able to get as low as $23\%$ above a random guess\citep{belander}, suggesting its unsuitability with the data that was available.
 
-To find these set of weights, we need to optimise this equation with respect to weights $\mathbf{\beta}$ such that $\mathbf{\beta x}$ is as close to $\mathbf{y}$ as possible. In other words, we wish to minimise the errors, or residuals. Once they have been found, the weights are then applied to any future inputs with unknown response values \todo{(extra details on optimisation here)}. The restriction of this only finding linear relationships can be lifted by projecting inputs into higher dimensions, which allows `linear' regression to then model more complex data.
+As the overall $2$-nd ranked machine learning algorithm in Caruana's empircal study across 11 different problems, it is no surprise that Random Forests appears in many studies (~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}), providing good results in contrast to logistic regression whilst being low in complexity. However, ~\citet{lucieer13} found that while random forest classifiers were most able to classify substratum and rugosity, K-nearest neighbour classifiers most accurately classified sponge structure classes, pointing to the need to do a more systematic comparison of different methods in benthic habitat mapping. This highlights the fact that even models that are considered state of the art can be suboptimal without necessarily being subject to extreme conditions. A further advantage to using random forests as pointed out in ~\citep{hasan14} is that it can provide insight into which features were more important than others, which can aid future studies to be more successful and efficient by focusing more efforts towards collecting the most influential data. The success met with using random forests make it a good benchmark to compare against for future work that aim to develop methods to create more accurate benthic habitat maps than has been done before.
 
-To then perform multiple multinomial logistic regression, we need to first manipulate the multi-class label data into binary labels, such that for some set of $n$ discrete labels $1, 2,...$, we consider $n$ cases where for the $i-$th case, $i$ takes on the value $1$, whilst all others becomes $0$ (see Example \autoref{ex:one-vs-all} for an example). This is needed as logistic regression only allows predictions of binary labels - this corresponds to a one-vs-all logistic regressor. However, this doesn't guarantee that predictions that each underlying linear regressor will fall within the $[0, 1]$ boundary. To ensure this, we use the logistic function (\autoref{fig:logistic}) to `clamp' all response variables back between $0$ and $1$, where $\alpha$ is a single prediction, or a vector of them:
+\todo{(need to add to this section of lit review)}
+            
+            % In contrast to logistic regression, random forests were shown in ~\citet{caruana06} to be state of the art, only just falling short of boosted decision trees after callibration. Random forests are an ensemble method, meaning that it uses a collection of estimators, before aggregating their results to obtain some sort of average. The aim of this is to minimise the variance and hence error that any single one of these estimators would otherwise result in. 
 
-\begin{ex} \label{ex:one-vs-all}
-    $$1, 1, 1, 2, 2, 2, 3, 3, 3$$
-    $$1\text{-vs-all: }1, 1, 1, 0, 0, 0, 0, 0, 0$$ 
-    $$2\text{-vs-all: }0, 0, 0, 1, 1, 1, 0, 0, 0$$ 
-    $$3\text{-vs-all: }0, 0, 0, 0, 0, 0, 1, 1, 1$$
-\end{ex}
+            % From the initial dataset, some number $B$ is chosen which represents the \textit{number} of trees to build (as a part of our random forest), after which, $B$ random, unique subsamples of the full dataset are taken. Within each decision tree in our random forest, some constant number $m$ of features is taken at each node of the tree, such that the split at each node only takes into account the $m$ randomly chosen features. Each of the decision trees in our forest will hence have a 'result' (that may be a class or some continuous value). Typically, the final decision of the random forest will be made by a vote count for classification, and an average of each decision tree's result in regression problems.
 
-\begin{equation} \label{eq:logistic}
-    \logistic(p) = \frac{1}{1+exp(-\alpha)}
-\end{equation}
-
-\begin{figure}
-    \includegraphics[scale=0.6]{sigmoid.png}
-    \caption{Logistic Function}
-    \label{fig:logistic}
-\end{figure}
-
-This will then provide a vector of predictions with the same length as the test inputs for \textit{each} label, representing a probability that that particular data point is of that label. To simplify this into a set of output labels as desired, one would simply need to take the argmax of predictions per label. For example, given these raw predictions for a dataset with 4 possible output labels, $1, 2, 3, 4$:
-
-\[
-\begin{bmatrix}
-    0.005 &  0.370 &  0.314 &  0.150 &  0.559 &  0.512\\
-    0.492 &  0.236 &  0.911 &  0.540 &  0.539 &  0.383\\
-    0.536 &  0.435 &  0.647 &  0.154 &  0.511 &  0.737\\
-    0.684 &  0.773 &  0.670 &  0.667 &  0.990 &  0.944\\
-\end{bmatrix}
-\]
-
-The max values per column are: $0.559 0.911 0.737 0.990$, corresponding to the labels $3, 3, 1, 3, 3, 3$.
-
-Multiple Logistical Regression is one of the more basic machine learning algorithms that can be used to predict habitat classes. Regression, broadly, involves the estimation of relationships between variables, and logistic regression involves the prediction of likelihood of class membership given a number of variables (that are assumed to have low collinearity\footnote{Collinearity between two variables refers to how correlated they are - a contrived example would be measurements of depth taken in centimetres and metres.}). This only applies to domains with two classes, however - to use this technique for classification where we have an unbounded  number of classes (though usually still relatively low), we need to use multinomial logistic regression, which is able to account for more than two distinct, unordered (i.e., sand vs. mud has no relative ordering) classes, where class membership is predicted using maximum likelihood estimation (MLE), similarly to logistic regression. However, the difference is that whereas logistic regression only requiring a single logit function as the variable being predicted is a binary one, multinomial logistic regression requires comparison between $k-1$ (where $k$ is the number of possible dependent variables) logit functions. 
-
-Even though ~\citet{caruana06} show that logistic regression methods achieve on average worse results than most other approaches available, it recognises that in certain cases the models that perform most poorly on average still display exceptional performance, and as such, this method is still worth exploration and experimentation. In particular, ~\citet{belanger12} used multinomial logistic regression across temperature, salinity, and productivity to correctly predict class membership by a margin of 23-84\% more than by pure chance. This is equivalent to an improvement of 1-2x compared to a random guess, which taken at face value would suggest that logistic regression is an undesirable choice of algorithm for this problem domain.
-
-\subsection{Random Forests}
-In contrast to logistic regression, random forests were shown in ~\citet{caruana06} to be state of the art, only just falling short of boosted decision trees after callibration. Random forests are an ensemble method, meaning that it uses a collection of estimators, before aggregating their results to obtain some sort of average. The aim of this is to minimise the variance and hence error that any single one of these estimators would otherwise result in. 
-
-From the initial dataset, some number $B$ is chosen which represents the \textit{number} of trees to build (as a part of our random forest), after which, $B$ random, unique subsamples of the full dataset are taken. Within each decision tree in our random forest, some constant number $m$ of features is taken at each node of the tree, such that the split at each node only takes into account the $m$ randomly chosen features. Each of the decision trees in our forest will hence have a 'result' (that may be a class or some continuous value). Typically, the final decision of the random forest will be made by a vote count for classification, and an average of each decision tree's result in regression problems.
-
-As random forests are a method that is low in complexity but provides very good results on average, we can see that it is used in quite a few studies (~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}), where the random forest classifier provided the best results over other methods relating to at least a significant subset of the explored data. However, ~\citet{lucieer13} found that while random forest classifiers were most able to classify substratum and rugosity, K-nearest neighbour classifiers most accurately classified sponge structure classes, pointing to the need to do a more systematic comparison of different methods in benthic habitat mapping. A further advantage to using random forests as pointed out in ~\citep{hasan14} is that it can provide insight into which features were more important than others, which can aid future studies to be more successful and efficient by focusing more efforts towards collecting the most influential data. The success met with using random forests make it a good benchmark to compare against for future work that aim to develop methods to create more accurate benthic habitat maps than has been done before.
-
-\subsection{Multi-class Support Vector Machines}
-
-Multi-class support vector machines require similar additional steps to those required by logistic regression to be able to do multiple (multi-class) multiple logistic regression. SVMs also only inherently support two classes when used for classification.
-
-\begin{figure}
-    \includegraphics[scale=0.3]{svm.png}
-    \caption{Basic example of an SVM}
-    \label{fig:svm}
-\end{figure}
-
-In \autoref{fig:svm}, we see an SVM find a plane (or line, in the 2D case) that maximises the distance to the closest point of each of the other two classes. To generalise this to any number of classes greater than $2$, one option is to consider a one-vs-one approach in contrast to the one-vs-all one in Example \autoref{ex:one-vs-all}. In this case, an SVM is build for all pairs of labels, meaning that for $c$ unique labels, $\frac{c(c-1)}{2}$ separate SVMs are needed. When performing predictions, a tally is kept for each input data row counting how many of each class they were predicted to be by all the SVMs, with the highest count being the final prediction.
-
-Although support vector machines fell outside the top three overall supervised learning algorithms in terms of accuracy in \citet{caruana06}'s work, their non-parametricity could potentially be of benefit given that our knowledge of the complex relationships between elements of benthic habitats are limited. Moreover, despite SVMs not being used often in the field, they are "acknowledged to be very competitive descriminative classifiers in machine learning literature"~\citep{ahsan11}. 
-
-Multi-class SVMs were used in ~\citet{ahsan11}, using the one vs. one approach as per their use of LibSVM~\citep{chang11}, outperforming classification trees on certain datasets, and in limited cases (but not overall), Gaussian Mixture Models as well. Again, the mixed results would suggest that under certain conditions (such as size of the dataset and various properties of the data itself, some of which are not known before testing), use of a multi-class SVM could provide a useful benchmark to some extent.
+% \subsection{Multiple Multinomial Logistic Regression}
+% The underlying function of logistic regression is that used in linear regression, so a brief overview of linear regression will first be given. The motivation for linear regression is that given some input data $\mathbf{X}$, corresponding response values (or output) $\mathbf{y}$, and a set of weights $\mathbf{\beta}$ are defined to best define the relationship between the two variables as below. Note that the intercept term has not been included in this basic explanation, as it can be included by augmenting the inputs $\mathbf{X}$ with a bias term $1$ which would have its own corresponding weight $\beta_i$ as well.
+% 
+% \begin{equation}
+% \begin{split}
+%     \mathbf{y} = \mathbf{\beta X} \\
+%     y_i = \beta_i x_i,         i = 1,...,n
+% \end{split}
+% \end{equation}
+% 
+% To find these set of weights, we need to optimise this equation with respect to weights $\mathbf{\beta}$ such that $\mathbf{\beta x}$ is as close to $\mathbf{y}$ as possible. In other words, we wish to minimise the errors, or residuals. Once they have been found, the weights are then applied to any future inputs with unknown response values \todo{(extra details on optimisation here)}. The restriction of this only finding linear relationships can be lifted by projecting inputs into higher dimensions, which allows `linear' regression to then model more complex data.
+% 
+% To then perform multiple multinomial logistic regression, we need to first manipulate the multi-class label data into binary labels, such that for some set of $n$ discrete labels $1, 2,...$, we consider $n$ cases where for the $i-$th case, $i$ takes on the value $1$, whilst all others becomes $0$ (see Example \autoref{ex:one-vs-all} for an example). This is needed as logistic regression only allows predictions of binary labels - this corresponds to a one-vs-all logistic regressor. However, this doesn't guarantee that predictions that each underlying linear regressor will fall within the $[0, 1]$ boundary. To ensure this, we use the logistic function (\autoref{fig:logistic}) to `clamp' all response variables back between $0$ and $1$, where $\alpha$ is a single prediction, or a vector of them:
+% 
+% \begin{ex} \label{ex:one-vs-all}
+%     $$1, 1, 1, 2, 2, 2, 3, 3, 3$$
+%     $$1\text{-vs-all: }1, 1, 1, 0, 0, 0, 0, 0, 0$$ 
+%     $$2\text{-vs-all: }0, 0, 0, 1, 1, 1, 0, 0, 0$$ 
+%     $$3\text{-vs-all: }0, 0, 0, 0, 0, 0, 1, 1, 1$$
+% \end{ex}
+% 
+% \begin{equation} \label{eq:logistic}
+%     \logistic(p) = \frac{1}{1+exp(-\alpha)}
+% \end{equation}
+% 
+% \begin{figure}
+%     \includegraphics[scale=0.6]{sigmoid.png}
+%     \caption{Logistic Function}
+%     \label{fig:logistic}
+% \end{figure}
+% 
+% This will then provide a vector of predictions with the same length as the test inputs for \textit{each} label, representing a probability that that particular data point is of that label. To simplify this into a set of output labels as desired, one would simply need to take the argmax of predictions per label. For example, given these raw predictions for a dataset with 4 possible output labels, $1, 2, 3, 4$:
+% 
+% \[
+% \begin{bmatrix}
+%     0.005 &  0.370 &  0.314 &  0.150 &  0.559 &  0.512\\
+%     0.492 &  0.236 &  0.911 &  0.540 &  0.539 &  0.383\\
+%     0.536 &  0.435 &  0.647 &  0.154 &  0.511 &  0.737\\
+%     0.684 &  0.773 &  0.670 &  0.667 &  0.990 &  0.944\\
+% \end{bmatrix}
+% \]
+% 
+% The max values per column are: $0.559 0.911 0.737 0.990$, corresponding to the labels $3, 3, 1, 3, 3, 3$.
+% 
+% Multiple Logistical Regression is one of the more basic machine learning algorithms that can be used to predict habitat classes. Regression, broadly, involves the estimation of relationships between variables, and logistic regression involves the prediction of likelihood of class membership given a number of variables (that are assumed to have low collinearity\footnote{Collinearity between two variables refers to how correlated they are - a contrived example would be measurements of depth taken in centimetres and metres.}). This only applies to domains with two classes, however - to use this technique for classification where we have an unbounded  number of classes (though usually still relatively low), we need to use multinomial logistic regression, which is able to account for more than two distinct, unordered (i.e., sand vs. mud has no relative ordering) classes, where class membership is predicted using maximum likelihood estimation (MLE), similarly to logistic regression. However, the difference is that whereas logistic regression only requiring a single logit function as the variable being predicted is a binary one, multinomial logistic regression requires comparison between $k-1$ (where $k$ is the number of possible dependent variables) logit functions. 
+% 
+% Even though ~\citet{caruana06} show that logistic regression methods achieve on average worse results than most other approaches available, it recognises that in certain cases the models that perform most poorly on average still display exceptional performance, and as such, this method is still worth exploration and experimentation. In particular, ~\citet{belanger12} used multinomial logistic regression across temperature, salinity, and productivity to correctly predict class membership by a margin of 23-84\% more than by pure chance. This is equivalent to an improvement of 1-2x compared to a random guess, which taken at face value would suggest that logistic regression is an undesirable choice of algorithm for this problem domain.
+% 
+% \subsection{Random Forests}
+% In contrast to logistic regression, random forests were shown in ~\citet{caruana06} to be state of the art, only just falling short of boosted decision trees after callibration. Random forests are an ensemble method, meaning that it uses a collection of estimators, before aggregating their results to obtain some sort of average. The aim of this is to minimise the variance and hence error that any single one of these estimators would otherwise result in. 
+% 
+% From the initial dataset, some number $B$ is chosen which represents the \textit{number} of trees to build (as a part of our random forest), after which, $B$ random, unique subsamples of the full dataset are taken. Within each decision tree in our random forest, some constant number $m$ of features is taken at each node of the tree, such that the split at each node only takes into account the $m$ randomly chosen features. Each of the decision trees in our forest will hence have a 'result' (that may be a class or some continuous value). Typically, the final decision of the random forest will be made by a vote count for classification, and an average of each decision tree's result in regression problems.
+% 
+% As random forests are a method that is low in complexity but provides very good results on average, we can see that it is used in quite a few studies (~\citet{lucieer13}, ~\citet{seiler12}, ~\citet{hasan14}), where the random forest classifier provided the best results over other methods relating to at least a significant subset of the explored data. However, ~\citet{lucieer13} found that while random forest classifiers were most able to classify substratum and rugosity, K-nearest neighbour classifiers most accurately classified sponge structure classes, pointing to the need to do a more systematic comparison of different methods in benthic habitat mapping. A further advantage to using random forests as pointed out in ~\citep{hasan14} is that it can provide insight into which features were more important than others, which can aid future studies to be more successful and efficient by focusing more efforts towards collecting the most influential data. The success met with using random forests make it a good benchmark to compare against for future work that aim to develop methods to create more accurate benthic habitat maps than has been done before.
+% 
+% \subsection{Multi-class Support Vector Machines}
+% 
+% Multi-class support vector machines require similar additional steps to those required by logistic regression to be able to do multiple (multi-class) multiple logistic regression. SVMs also only inherently support two classes when used for classification.
+% 
+% \begin{figure}
+%     \includegraphics[scale=0.3]{svm.png}
+%     \caption{Basic example of an SVM}
+%     \label{fig:svm}
+% \end{figure}
+% 
+% In \autoref{fig:svm}, we see an SVM find a plane (or line, in the 2D case) that maximises the distance to the closest point of each of the other two classes. To generalise this to any number of classes greater than $2$, one option is to consider a one-vs-one approach in contrast to the one-vs-all one in Example \autoref{ex:one-vs-all}. In this case, an SVM is build for all pairs of labels, meaning that for $c$ unique labels, $\frac{c(c-1)}{2}$ separate SVMs are needed. When performing predictions, a tally is kept for each input data row counting how many of each class they were predicted to be by all the SVMs, with the highest count being the final prediction.
+% 
+% Although support vector machines fell outside the top three overall supervised learning algorithms in terms of accuracy in \citet{caruana06}'s work, their non-parametricity could potentially be of benefit given that our knowledge of the complex relationships between elements of benthic habitats are limited. Moreover, despite SVMs not being used often in the field, they are "acknowledged to be very competitive descriminative classifiers in machine learning literature"~\citep{ahsan11}. 
+% 
+% Multi-class SVMs were used in ~\citet{ahsan11}, using the one vs. one approach as per their use of LibSVM~\citep{chang11}, outperforming classification trees on certain datasets, and in limited cases (but not overall), Gaussian Mixture Models as well. Again, the mixed results would suggest that under certain conditions (such as size of the dataset and various properties of the data itself, some of which are not known before testing), use of a multi-class SVM could provide a useful benchmark to some extent.
 
 \section{Summary}
-In this chapter, we briefly looked at how the data used in benthic habitat mapping is collected, followed by a review of deterministic methods that have been used in existing studies. It is evident that due to the varying and even unknown nature of the intricacies of the benthos, there isn't any single stand-out method that can be labelled as the `best' option when choosing how to create predictive habitat maps. Given that the purpose of these maps are to be able to economically map out what large swaths of the ocean look like so that better decisions can be made to conserve and protect them, the need for probabilistic mapping methods become apparent. Such methods are still able to generate labels for input data as we have seen so far, but also provides a level confidence per prediction, meaning that a statement such as `this area of benthos is 75\% sand and 25\% coral', for example, could instead be more informative - `this area is on average 83\% likely to be 75\% coral, and 74\% to be 25\% coral' (with the remaining probable distributions excluded for simplicity). Being able to estimate this uncertainty prior to taking any actions is essential to be able to calculate any inherent risk associated with it.
+In this chapter, we briefly looked at how the data used in benthic habitat mapping is collected, followed by a review of deterministic methods that have been used in existing studies. It is evident that due to the varying and even unknown nature of the intricacies of the benthos, there is not any single stand-out method that can be labelled as the `best' option when choosing how to create predictive habitat maps. Given that the purpose of these maps are to be able to economically map out what large swaths of the ocean look like so that better decisions can be made to conserve and protect them, the need for probabilistic mapping methods become apparent. Such methods are still able to generate labels for input data as we have seen so far, but also provides a level confidence per prediction, meaning that a statement such as `this area of benthos is 75\% sand and 25\% coral', for example, could instead be more informative - `this area is on average 83\% likely to be 75\% sand, and 74\% to be 25\% coral' (with the remaining probable distributions excluded for simplicity). Being able to estimate this uncertainty prior to taking any actions is essential to be able to calculate any inherent risk associated with it.
 
 %%%%%%%%%%%%%%% Probabilistic Methods %%%%%%%%%%%%%%%
 % \todo{EVERYTHING FROM HERE LIT REVIEW SHOULD BE REMOVED}

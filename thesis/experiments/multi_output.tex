@@ -147,21 +147,21 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
     \hfill
 \end{figure}
 
-For the simplified labels, we can see some similarities with the models generated using random forests and Gaussian processes (\Cref{fig:det4preds}, \Cref{fig:gpogpe}),  with certain regions matching up to different predictions. For example, all predictions were able to agree on the general dominance of label 3 throughout the reef, but due to the single-output nature of the previous methods, this dominance also meant it was the \textit{only} label to appear in a majority of the predictive maps. Using this model, the actual occupancy rate of label 3 can be determined, instead of only being able to see `all sand'.The ability to quantify the presence of certain habitats also becomes quite trivial, as a single line of Python code can provide information such as label 3 occurring at a rate of more than $0.5$ in $73\%$ of the predicted query space, whereas labels $0$, $1$, and $2$ only occur at a similar rate $4.7\%$, $9.9\%$, and $2.3\%$ of the time.
+For the simplified labels, we can see some similarities with the models generated using random forests and Gaussian processes (\Cref{fig:det4maps}, \Cref{fig:gpogpe4}), with certain regions matching up to different predictions. For example, all predictions were able to agree on the general dominance of label 3 throughout the reef, but due to the single-output nature of the previous methods, this dominance also meant it was the \textit{only} label to appear in a majority of the predictive maps. Using this model, the actual occupancy rate of label 3 can be determined, instead of only being able to see `all sand'.The ability to quantify the presence of certain habitats also becomes quite trivial, as a single line of Python code can provide information such as label 3 occurring at a rate of more than $0.5$ in $73\%$ of the predicted query space, whereas labels $0$, $1$, and $2$ only occur at a similar rate $4.7\%$, $9.9\%$, and $2.3\%$ of the time.
 
-Using the Dirichlet multinomial that makes full use of the original multi-label data, more detailed observations can also be made regarding the confidence of the multi-output predictions made, by observing the entropy of the Dirichlet distribution using the $\alpha$ parameter \todo{(cite equation)}. Low entropy areas indicate a low variance in the data and hence a confidence in the predictions made in that area, with the reverse being true for high-entropy areas. \Cref{fig:dm4_entropy} shows some key regions (in dark blue) that are very low entropy, with large regions of moderate entropy (cyan) predictions spread out over the query space. Of note is the fact that the noticable areas of co-habitation between labels $1$ and $3$ where they are close to an even $50:50$ split are very low entropy, highlighting the Dirichlet multinomial's ability to detect when a subset of labels within multi-output data correlate with one another with confidence.
+% Using the Dirichlet multinomial that makes full use of the original multi-label data, more detailed observations can also be made regarding the confidence of the multi-output predictions made, 
+By observing the entropy of the Dirichlet distribution using the $\alpha$ parameter \todo{(cite equation)}, observations about the confidence of predictions in different regions can be made. Low entropy areas indicate a low variance in the data and hence a confidence in the predictions made in that area, with the reverse being true for high-entropy areas. \Cref{fig:dm4_entropy} shows some key regions (in dark blue) that are very low entropy, with large regions of moderate entropy (cyan) predictions spread out over the query space. Of note is the fact that the noticable areas of co-habitation between labels $1$ and $3$ where they are close to an even $50:50$ split are very low entropy, highlighting the Dirichlet multinomial's ability to detect when a subset of labels within multi-output data correlate with one another with confidence.
 
-\begin{figure}[H]
+\begin{figure}
     \begin{minipage}{\linewidth}
         \centerline{\includegraphics[scale=0.9]{dm4_entropy_map.pdf}}
-        \caption{Entropy plot over all query points for the simplified labels}
+        \caption{Entropy plot over all query points for the simplified labels. }
         \label{fig:dm4_entropy}
     \end{minipage}
     \hfill
 \end{figure}
 
-\todo{(does this go here?)}
-What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, the GP is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
+In \Cref{fig:dm4_entropy} the dark-blue low-entropy region on the right hand side of the map, as well as the large area on the left, contain comparatively denser low entropy regions than the remaining points. Referring back to the per-label predictive distributions, these are also areas with noticable cohabitation between labels $0, 1, 3$. What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, compared to the GP from earlier that is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
 
 % \todo{summarise and plot the variances here}
 \subsection{Dirichlet Multinomial Predictive Map Variance}
@@ -186,14 +186,26 @@ To calculate convergence using the Gelman-Rubin r-hat statistic, $3$ MCMC chains
 % np.save('data/W_2m_1444290', chains[1444290])
 
 \begin{figure}[H]
-    \centerline{\includegraphics{dm4_9m_0_mcmc_weight_hist.pdf}}
-    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
-    \label{fig:4l-mcmc_weights}
+    \centerline{\includegraphics{dm4_mcmc_weight_hists_1.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case (weights $1-40$ of $76$)}
+    \label{fig:4l-mcmc_weights-1}
 \end{figure}
 
+With the exception of the $15$-th weight that has two peaks, it appears that the likelihood of all others is aggregated all at specific value with moderately sharp peaks. Considering the less standard likelihood of the $15$-th weight, a comparison with other chains reveals that this one in particular did not converge in terms of the r-hat statistic.
+
+As the $24$-label case has over $400$ weights, with a little over half converging, the $456$ separate distributions have not been included here, but can be found in the appendix \todo{(not included yet. not sure if worth including in appendix though actually)}.
+
 \begin{figure}[H]
-    \centerline{\includegraphics{dm24_950k_0_mcmc_weight_hist.pdf}}
-    \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
-    \label{fig:24l-mcmc_weights}
+    \centerline{\includegraphics{dm4_mcmc_weight_hists_2.pdf}}
+    \caption{MCMC weights for 4-label, 19-dimension data case (weights $41-76$ of $76$)}
+    \label{fig:4l-mcmc_weights-2}
 \end{figure}
+
+Seeing as the r-hat scores suggest that the weights of the Dirichlet multinomial have converged for the simplified label case, observing the maps that can be generated by every one of the draws of weights can similarly provide visual confirmation that the predictive maps are mostly consistent. To condense the information contained in the $K$ dimensions of predictions, the most likely label is instead taken to be a `single' label, similar to how the probabilities of a GP per label are `squashed' down to one value.
+
+% \begin{figure}[H]
+%     \centerline{\includegraphics{dm24_950k_0_mcmc_weight_hist.pdf}}
+%     \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
+%     \label{fig:24l-mcmc_weights}
+% \end{figure}
 

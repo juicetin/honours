@@ -1,5 +1,17 @@
 \chapter{Evaluation and Discussion} \label{chap:evaluation}
 
+This chapter will assess some of the problems with the results from the experiments in \Cref{chap:experiments}, the implications they may have, and possible courses of action to resolve such issues. Limitations in general with different aspects of the study are also highlighted as appropriate.
+
+\section{Data Limitations}
+
+\textbf{Spread of habitat labels} - There were a number of properties regarding the data collected that likely had a negative effect on the experimental results, detracting from the figures surrounding accuracy scores, but not from the broader observations about qualitative use of predictions themselves. There is a significant class imbalance in the training data (\Cref{fig:multilabeldistr}), with each of the labels $1, 16, 18-21, 23, 24$ in particular having a total count of less than $10\%$ of the average label counts. Whilst habitat mapping is not inherently a class-imbalance problem, the models explored do not account for this, becoming most notable when assessing f-scores, even when considering the simplified labels.
+
+\begin{table}[H]
+    \caption{F-scores over labels}
+\end{table}
+
+\textbf{Image Clusters} - For any unsupervised algorithm that clusters images based on any number of properties from the image alone, any necessary pre-processing or normalisation of them needs to be done beforehand, to prevent unintended features such as discrepancies in lighting or saturation from misleading the clustering process. This was not the case here, however, as the lighting was at times quite variable at least in between clusters, and in one particular case, resulted in pitch-black photos. It appears that photos were taken during both the day and night, causing at least part of the difference, a problem that can be resolve with relative ease by restricting data collection to either day or night time. Of course, interferences can come from external sources independent of the time of day, so it would be ideal to pre-process all images to begin with. 
+
 \subsection{Limitations}
 
 \begin{itemize}

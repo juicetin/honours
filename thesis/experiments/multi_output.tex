@@ -139,8 +139,8 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
 
 \begin{figure}
     \begin{minipage}{\linewidth}
-        \centerline{\includegraphics[scale=0.85]{dm_standalone_colorbar.pdf}}
-        \centerline{\includegraphics[scale=0.85]{dm_simplelabel_heatmaps.pdf}}
+        \centerline{\includegraphics[scale=0.85]{dm4_heatmaps_colourbar.pdf}}
+        \centerline{\includegraphics[scale=0.85]{dm4_heatmaps.pdf}}
         \caption{Distribution heatmaps over each label (in the simple 4-label case) for Dirichlet Multinomial Regressor output on query points}
         \label{fig:dm_4label_heatmap}
     \end{minipage}
@@ -150,7 +150,7 @@ To assess initial performance, the weights and hence the $\alpha$ parameter was 
 For the simplified labels, we can see some similarities with the models generated using random forests and Gaussian processes (\Cref{fig:det4maps}, \Cref{fig:gpogpe4}), with certain regions matching up to different predictions. For example, all predictions were able to agree on the general dominance of label 3 throughout the reef, but due to the single-output nature of the previous methods, this dominance also meant it was the \textit{only} label to appear in a majority of the predictive maps. Using this model, the actual occupancy rate of label 3 can be determined, instead of only being able to see `all sand'.The ability to quantify the presence of certain habitats also becomes quite trivial, as a single line of Python code can provide information such as label 3 occurring at a rate of more than $0.5$ in $73\%$ of the predicted query space, whereas labels $0$, $1$, and $2$ only occur at a similar rate $4.7\%$, $9.9\%$, and $2.3\%$ of the time.
 
 % Using the Dirichlet multinomial that makes full use of the original multi-label data, more detailed observations can also be made regarding the confidence of the multi-output predictions made, 
-By observing the entropy of the Dirichlet distribution using the $\alpha$ parameter \todo{(cite equation)}, observations about the confidence of predictions in different regions can be made. Low entropy areas indicate a low variance in the data and hence a confidence in the predictions made in that area, with the reverse being true for high-entropy areas. \Cref{fig:dm4_entropy} shows some key regions (in dark blue) that are very low entropy, with large regions of moderate entropy (cyan) predictions spread out over the query space. Of note is the fact that the noticable areas of co-habitation between labels $1$ and $3$ where they are close to an even $50:50$ split are very low entropy, highlighting the Dirichlet multinomial's ability to detect when a subset of labels within multi-output data correlate with one another with confidence.
+By observing the entropy of the Dirichlet distribution using the $\alpha$ parameter \todo{(cite equation)}, observations about the confidence of predictions in different regions can be made. Low entropy areas indicate a low variance in the data and hence a confidence in the predictions made in that area, with the reverse being true for high-entropy areas. \Cref{fig:dm4_entropy} shows some key regions that are very low entropy, with large regions of moderate entropy predictions spread out over the query space. Of note is the fact that the noticable areas of co-habitation between labels $0$ and $3$ are very low entropy, highlighting the Dirichlet multinomial's ability to detect when a subset of labels within multi-output data correlate with one another with confidence.
 
 \begin{figure}
     \begin{minipage}{\linewidth}
@@ -161,14 +161,14 @@ By observing the entropy of the Dirichlet distribution using the $\alpha$ parame
     \hfill
 \end{figure}
 
-In \Cref{fig:dm4_entropy} the dark-blue low-entropy region on the right hand side of the map, as well as the large area on the left, contain comparatively denser low entropy regions than the remaining points. Referring back to the per-label predictive distributions, these are also areas with noticable cohabitation between labels $0, 1, 3$. What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, compared to the GP from earlier that is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. For example, in an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area, but have a high noise factor.
+The scattered sections of low entropy in the arms of the reef also contain smaller but still observable amounts of co-habitation between the labels. However, the Dirichlet multinomial is equally as capable dealing with dominant labels, such as the bottom-left most portion of Scott Reef predicted to be predominantly label 1, a region with low entropy as well. What becomes apparent is that in the areas where the DM is confident of a mix of certain set of predominant labels, compared to the GP from earlier that is instead equally uncertain of each of them with a considerably higher variance, which is misleading information when taken at face value. For example, this sort of uncertainty may be taken into consideration purposes, where autonomous vehicles are used to collect data, or in making decisions with regards to conservation efforts. In the first scenario, resources are being wasted on areas where models such as the DM can be confident of a particular distribution of labels, whereas in the second, important conservation actions may be withheld if the \textit{certainty} of information is brought into question. In an area that contains a particular mix of coral and bleached coral, a DM has the potential to make a confident prediction of their coexistence, whereas a GP would make predictions where their respective probabilities in a one-vs-all classifier may be close to their distribution in the area ($\sim 0.5, \sim 0.5$), but have a high noise factor.
 
 % \todo{summarise and plot the variances here}
 \subsection{Dirichlet Multinomial Predictive Map Variance}
 
 As the above results from Dirichlet multinomial regressoin above were obtained using the Maximum a Posteriori (MAP) estimate of the parameters underlying the Dirichlet distributions $\alpha$ values, only the single set of optimal parameters were used, with none of those within the rest of the posterior distribution tested. To confirm that the maps generated via optimisation using MAP, Markov Chain Monte Carlo (MCMC) was used to obtain draws of weights from the posterior distribution. The purpose of this was to be able to obtain chains that had reasonably converged, and then observe whether the habitat maps created using all these weights would generally agree on the presence and distribution of habitats. 
 
-To calculate convergence using the Gelman-Rubin r-hat statistic, $3$ MCMC chains were run simultaneously for both the simplified ($4$) labels and the full set of labels ($24$). The former required $4*19=76$ weights (number of labels $\times$ number of features), and the latter $24*19=456$ weights. Due to the large number of dimensions being explored by the MCMC, the $3$ chains in both cases were not able to fully converge to $1.0$. The weights for the simplified labels were close to convergence, with an r-hat score of $1.065$, although $4$ of the $76$ weights were above $1.2$ ($1.45, 3.53, 1.43, 1.21$). The weights for the full $24$ labels fared considerably worse, with an r-hat score of $1.429$, with only $243$ of the $456$ weights being below $1.1$.
+To calculate convergence using the Gelman-Rubin r-hat statistic, $3$ MCMC chains were run simultaneously for both the simplified ($4$) labels and the full set of labels ($24$). The former required $4*19=76$ weights (number of labels $\times$ number of features), and the latter $24*19=456$ weights. Due to the large number of dimensions being explored by the MCMC, the $3$ chains in both cases were not able to fully converge to $1.0$. The weights for the simplified labels were close to convergence, with an r-hat score of $1.065$, although $4$ of the $76$ weights were above $1.2$ ($1.45, 3.53, 1.43, 1.21$). The weights for the full $24$ labels fared considerably worse, with an r-hat score of $1.429$, with only $243$ of the $456$ weights being below $1.1$, the threshold for `convergence'.
 
 % To select an optimal set of parameters for the dirichlet multinomial, Markov Chain Monte Carlo (MCMC) was used to draw samples from the posterior distribution \todo{(refer to equation?)} over $3,000,000$ runs, with the maximum a posteriori estimate used as the starting value for the weights. To select the single best set of weights from the sequence of chains, every single one was evaluated by being used to do Dirichlet Multinomial regression, where the weights that resulted in the lowest predictive variance (average over all variances) was considered to be the best set of parameters. The weights that corresponded to the lowest average variance also corresponded to the lowest average error compared to the original normalised weights. After the $3,000,000$ runs, the MCMC in both cases (the simplified 24 labels, as well as the full set) was considered to have converged, as the Gelman and Rubin ($\hat{r}$) convergence statistics were calculated to be \todo{(? and ?)}, both very close to the ideal value of $1.0$, Furthermore, for the \todo{24-label case}
 
@@ -191,9 +191,6 @@ To calculate convergence using the Gelman-Rubin r-hat statistic, $3$ MCMC chains
     \label{fig:4l-mcmc_weights-1}
 \end{figure}
 
-With the exception of the $15$-th weight that has two peaks, it appears that the likelihood of all others is aggregated all at specific value with moderately sharp peaks. Considering the less standard likelihood of the $15$-th weight, a comparison with other chains reveals that this one in particular did not converge in terms of the r-hat statistic.
-
-As the $24$-label case has over $400$ weights, with a little over half converging, the $456$ separate distributions have not been included here, but can be found in the appendix \todo{(not included yet. not sure if worth including in appendix though actually)}.
 
 \begin{figure}[H]
     \centerline{\includegraphics{dm4_mcmc_weight_hists_2.pdf}}
@@ -201,11 +198,35 @@ As the $24$-label case has over $400$ weights, with a little over half convergin
     \label{fig:4l-mcmc_weights-2}
 \end{figure}
 
-Seeing as the r-hat scores suggest that the weights of the Dirichlet multinomial have converged for the simplified label case, observing the maps that can be generated by every one of the draws of weights can similarly provide visual confirmation that the predictive maps are mostly consistent. To condense the information contained in the $K$ dimensions of predictions, the most likely label is instead taken to be a `single' label, similar to how the probabilities of a GP per label are `squashed' down to one value.
+As the $24$-label case has over $400$ weights, with a little over half converging, the $456$ separate distributions have not been included here, but can be found in the appendix \todo{(not included yet. not sure if worth including in appendix though actually)}. An alternative method to determining the quality of the weights drawn from the $24x19$ dimensions without direclty calculating the r-hat scores would be to use the weights to actually form predictions, and plot their habitat maps - a domain specific approach that most problems would not have the benefit of using. 
+
+As comparing the per-label distributions for $24$ separate classes and appropriately summarising the visual likeliness across all of them would prove to be challenging, the proposed alternative is to take the label with the highest occurence ratio at each point, similar to the way a Gaussian process classifier simplifies its per-label probabilistic output by taking the most likely one. For the $750,000$ MCMC chains generated for the $24$-label data, over $3400$ predictions on the full query data were made - over $1000$ from the starting points of the $100,000$-th, $300,000$-th, and $500,000$-th chains, skipping 10 each time. To allow for easy visual comparison between all the images, they were compiled into a single GIF file. The sequence of images has been provided via an online video hosting service\footnote{The video runs at 10 frames per second, for a little over 4 minutes, and can be found on video host vid.me: \url{https://vid.me/UY22}}, with a few samples individual maps that varied more than average shown below. Despite the non-convergence of the MCMC chains, the maps generated using the weights drawn from the posterior distribution reveal that they are generally in agreeance on what the major clusters of certain habitats are, keeping in mind that certain labels are in the same category as others (\Cref{table:labelmappings}).
+% \includemedia[
+%     activate=onclick,
+%     height=200pt,
+%     width=0.75\textwidth
+% ]{\includegraphics{dm24_argmax_8.pdf}}{dm24_chainmaps.mp4}
+
+\begin{figure}[H]
+    \centering{\includegraphics[scale=0.77, trim={0 1.5cm 0 0.3cm}]{dm24_argmax_1967.pdf}}
+    \caption{Most-frequent label Dirichlet multinomial habitat maps for an MCMC chain}
+\end{figure}
+
+\begin{figure}[H]
+    \centering{\includegraphics[scale=0.77]{dm24_argmax_3406.pdf}}
+    \centering{\includegraphics[scale=0.77, trim={0 1cm 0 1cm}]{dm24_argmax_8.pdf}}
+    \caption{Most-frequent label Dirichlet multinomial habitat maps for two MCMC chains}
+\end{figure}
+
+% Seeing as the r-hat scores suggest that the weights of the Dirichlet multinomial have converged for the simplified label case, observing the maps that can be generated by every one of the draws of weights can similarly provide visual confirmation that the predictive maps are mostly consistent. To condense the information contained in the $K$ dimensions of predictions, the most likely label is instead taken to be a `single' label, similar to how the probabilities of a GP per label are `squashed' down to one value.
+
+% \includemedia[
+%     activate=pageopen,
+%     width=20cm, height=15cm,
+% ]{}{combined.swf}
 
 % \begin{figure}[H]
 %     \centerline{\includegraphics{dm24_950k_0_mcmc_weight_hist.pdf}}
 %     \caption{MCMC weights for 4-label, 19-dimension data case \todo{(need to separate this into separate images, possibly remove axis ticks)}}
 %     \label{fig:24l-mcmc_weights}
 % \end{figure}
-

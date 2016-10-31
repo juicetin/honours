@@ -3,26 +3,29 @@
 
 Another beneficial aspect of Dirichlet Multinomial Regression is that it inherently provides information about the distribution of different habitats in a given region, allowing observations on biodiversity to be made without extra steps such as clustering, which can be prohibitively expensive on datasets with millions of datapoints and tens (or more) of dimensions. Locating the co-existence of certain species would involve searching over the space of predictions for the desired distribution of habitats. 
 
-As the 4-label case already aggregated similar classes from $24$ down to $4$, there was minimial biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity. To give a qualitative visual representation of the distribution of labels over the query space when using all $24$ labels, the predictive heatmaps for each of them is shown in \Cref{fig:dm24_0-7}, \Cref{fig:dm24_8-15}, and \Cref{fig:dm24_16-23}. The numbers in brackets next to each title indicate the simplified label they correspond to.
+As the 4-label case already aggregated similar classes from $24$ down to $4$, there was minimial biodiversity to observe over the query space, requiring us to perform predictions over the full $24$ labels to be able to find more abundant occurrences of biodiversity. To give a qualitative visual representation of the distribution of labels over the query space when using all $24$ labels, the predictive heatmaps for each of them is shown in \Cref{fig:dm24_0-7}, \Cref{fig:dm24_8-15}, and \Cref{fig:dm24_16-23}, where the numbers in brackets next to each title indicate the simplified label they correspond to. Because of the greater spread of labels, the majority of values are close to $0$, despite the possible range still being $[0,1]$ - this would result in a very uniformly purple plot if following the same colour scheme as previous plots. To allow for the subtle changes in predictions in the region close to $0$ to actually be visible, the log normal has been applied to all predictions so that the colours change rapidly for lower-valued predictions. Due to the minimumvalue threshold chosen, some points have been `ommitted' from the plots where there is white space - this indicates that their occurence rates were even lower than the lowest observable ones represented by dark purple.
 
 \begin{figure}
+    \includegraphics[clip, width=0.9\columnwidth, trim={0, 0.8cm, 0, 0.8cm}]{dm24_heatmaps_colourbar.pdf}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_0-3.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_4-7.pdf}
-    \caption{\todo{(need to redo these to show more colour @\_@)}}
+    \caption{Log-normalised predictions for labels $0-7$}
     \label{fig:dm24_0-7}
 \end{figure}
 
 \begin{figure}
+    \includegraphics[clip, width=0.9\columnwidth, trim={0, 0.8cm, 0, 0.8cm}]{dm24_heatmaps_colourbar.pdf}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_8-11.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_12-15.pdf}
-    \caption{\todo{(need to redo these to show more colour @\_@)}}
+    \caption{Log-normalised predictions for labels $8-15$}
     \label{fig:dm24_8-15}
 \end{figure}
 
 \begin{figure}
+    \includegraphics[clip, width=0.9\columnwidth, trim={0, 0.8cm, 0, 0.8cm}]{dm24_heatmaps_colourbar.pdf}
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_16-19.pdf}\\
     \includegraphics[clip, width=\columnwidth]{dm24_heatmaps_20-23.pdf}
-    \caption{\todo{(need to redo these to show more colour @\_@)}}
+    \caption{Log-normalised predictions for labels $16-23$}
     \label{fig:dm24_16-23}
 \end{figure}
 

@@ -66,7 +66,7 @@ The crucial part that has not yet been explained is how $\alpha$ is obtained/tun
 \begin{equation}
     \alpha_k = \softmax{\mathbf{X}^T \mathbf{w_k}}
 \end{equation}
-where \begin{equation}
+where \begin{equation}\label{eq:softmax}
     \softmax(\mathbf{x})_i = \frac{e^{x_i}}{\sum_{j=1}^k e^{x_j}} \text{ for } i = 1, \ldots, K
 \end{equation}
 

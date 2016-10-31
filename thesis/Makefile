@@ -5,10 +5,10 @@ PROJ = thesis
 all: pdf
 
 pdf:
-	pdflatex $(PROJ)
+	pdflatex $(PROJ) -shell-escape
 	bibtex $(PROJ)
-	pdflatex $(PROJ)
-	pdflatex $(PROJ)
+	pdflatex $(PROJ) -shell-escape
+	pdflatex $(PROJ) -shell-escape
 
 wc:
 	wc `find . -name "*.tex"`

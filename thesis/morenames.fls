@@ -1,0 +1,5 @@
+PWD /home/jtin2945/programming/jt-honours/thesis
+INPUT /usr/share/texmf-dist/web2c/texmf.cnf
+INPUT /var/lib/texmf/web2c/pdftex/latex.fmt
+INPUT morenames.tex
+OUTPUT morenames.log

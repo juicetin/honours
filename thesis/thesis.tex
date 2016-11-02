@@ -120,8 +120,8 @@
 \phantomsection
 \input{abstract/abstract.tex}
 \cleardoublepage
-\phantomsection
-\input{thanks/thanks.tex}
+% \phantomsection
+% \input{thanks/thanks.tex}
 
 % tables
 \cleardoublepage
@@ -146,13 +146,13 @@
 \renewcommand{\thepage}{\arabic{page}}	
 \setupParagraphs
 
-\todo{maybe put a notation section?}
 \input{introduction/introduction.tex}
 \input{litreview/litreview.tex}
+% \input{mathbg/mathbg.tex}
 \input{gp/gp.tex}
 \input{dm/dm.tex}
 \input{experiments/experiments.tex}
-\input{evaluation/evaluation.tex}
+% \input{evaluation/evaluation.tex}
 \input{conclusion/conclusion.tex}
 
 
@@ -169,10 +169,9 @@
 }
 
 %%%% Appendices
-\appendix
-addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
-% \input{appendix}
-\input{appendix/appendix.tex}
+% \appendix
+% \addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+% \input{appendix/appendix.tex}
 % input{wikifeats/wikifeats.tex}
 % input{candcner/candcner.tex}
 % input{comparedata/comparedata.tex}

@@ -1,12 +1,17 @@
-\chapter{Multi-output Habitat Mapping} \label{chap:dms}
-On top of being able to produce probabilistic outputs, it would be of further advantage if preditions could be performed on multi-output data as well, to fully utilise the fact that many areas of the benthos will contain more than one label at any given time, where the simplifcation of these multi-labels to a single one thus far causes a considerable loss of information from the original data before the model fitting even begins. This is the motivation for us to explore Dirichlet multinomial distributions that have the ability to perform predictions over category counts, a perfect fit for the original data collected in this study.
+\chapter{Multi-Output Modeling} \label{chap:dms}
+While being able to produce probabilistic outputs is of great use, it would be a disadvantage to do so while not using all the available data for a given problem. Benthic habitat mapping studies will often collect a combination of bathymetry and image truthing data similar to the example in \Cref{fig:bathy_tour_ex}, which naturally contains counts of multiple labels for each bathymetry data point. This corresponds to each 'label' in fact being a tally of possible labels at each point (or a distribution of them that sums to $1$). To properly model this data and hence fully utilise all the available information, multi-output models are needed. The machine learning technique that is used in this study to model such data is Dirichlet multinomial regression.
 
-Dirichlet multinomial regression, as the name suggestions, combines dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationship in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. To appreciate the Dirichlet Multinomial distribution as a whole, we briefly and describe the multinomial and Dirichlet distributions and the relationship, before delving into the equations needed to perform Dirichlet mulitnomial regression.
+Dirichlet multinomial regression, as the name suggestions, combines Dirichlet and multinomial distributions to achieve the combined model. In particular, we are interested in modeling a distribution over category counts, as there exists relationships in our data such that every bathmetry point corresponds to a certain count of each possible label in the relevant area of benthos. To appreciate the Dirichlet Multinomial distribution as a whole, we briefly describe the multinomial and Dirichlet distributions and the relationship, before delving into the equations needed to perform Dirichlet mulitnomial regression.
+
+Below is a list of symbols and corresponding machine learning equations relevant to this section:
+$$\psi - \text{Psi function}$$
+$$\digamma - \text{Digamma function}$$
+$$\gamma - \text{Gamma function}$$
 
 % \todo{explain why we should first revisit dirichlet, multinomial distributions separately before looking at dirichlet multinomial regression}
 
 \section{Multinomial Distribution}
-Multinomial distributions are the generalisation of binomial distributions that describe the probability of, for example, getting a heads or tails when flipping a two-sided coin. Generalising beyond $2$ categories, the multinomial does the same, but for any integer $n$ number of categories, like throwing an $n$-sided weighted die (weighted for the problem at hand). The relevance to the multi-label habitat data is then quite apparent, given that each data point needs to be mapped to any number of $K$ categories and sum to some number of samples stated. Draws from a multinomial distribution can be represented using a histogram such as that in \Cref{fig:exhist}. However, this particular histogram encapsulates the label distributions for the entirety of Scott Reef instead of what we actually want - a single coordinate.
+Multinomial distributions are the generalisation of binomial distributions that describe the probability of, for example, getting a heads or tails when flipping a two-sided coin. Generalising beyond $2$ categories, the multinomial does the same, but for any integer $n$ number of categories, like throwing an $n$-sided weighted die. The relevance to the multi-label habitat data is then quite apparent, given that each data point needs to be mapped to any number of $K$ categories and sum to some number of samples stated. Draws from a multinomial distribution can be represented using a histogram such as that in \Cref{fig:exhist}. However, this particular histogram encapsulates the label distributions for the entirety of Scott Reef instead of what we actually want - a single coordinate.
 
 \begin{figure}
     \includegraphics[width=\linewidth]{hist_full_multi_labels.pdf}
@@ -62,7 +67,7 @@ Equipped with some basic knowledge about the Dirichlet and multinomial distribut
 \end{equation}
 where $C$ are the category counts, $\alpha$ are the Dirichlet parameters as described in \Cref{chapsec:dirichlet}, and $M = \sum_k c_k$
 
-The crucial part that has not yet been explained is how $\alpha$ is obtained/tuned to fit any training data available. In this study, the activation function chosen to calculate the $\alpha$ values was the softmax, also referred to as the `normalised exponential', in that it has better numerical stability than the exponential function \todo{(plot example if time allows)}. The softmax generalises the logistic function to $K$-dimensional data like that being used in this study:
+The crucial part that has not yet been explained is how $\alpha$ is obtained/tuned to fit any training data available. In this study, the activation function chosen to calculate the $\alpha$ values was the softmax, also referred to as the `normalised exponential', in that it has better numerical stability than the exponential function. The softmax generalises the logistic function to $K$-dimensional data like that being used in this study:
 \begin{equation}
     \alpha_k = \softmax{\mathbf{X}^T \mathbf{w_k}}
 \end{equation}
@@ -98,14 +103,14 @@ To optimise this equation, the partial derivative of the above over the weights 
 
 % \todo {explain all the symbols here}
 
-Given the log posterior and its partial derivatives over every weight, the MAP can then be calculated using parameter optimisation algorithms available in machine learning libraries \todo{(introduce this briefly the first time it comes up, in the GP section, then just to refer to that here.)}.
+Given the log posterior and its partial derivatives over every weight, the MAP can then be calculated by optimising over the parameters in the posterior distribution.
 
 \subsection{Using Markov Chain Monte Carlo to Sample Weights}
 Given the distribution of possible values of the weights $\mathbf{W}$ described, taking only the MAP for these values would be discarding other information in the distribution that also describes the data. While the MAP allows a single set of weights to be determined that allows performance to be assessed in addition to plotting maps to visualise the distribution of each habitat class in separate heatmaps, the `correctness' of the MAP estimation can further be assessed by generating maps created from weights from throughout the posterior distribution as they are drawn, then observing how consistent certain areas of the map remain when doing so.
 
-To draw weights from the posterior distribution, Markov Chain Monte Carlo (MCMC) can be used. MCMC involves `random walks' through multiple dimensional space when using the Metropolis Hastings algorithm, where every step in $n$ dimensional space has a chance to be rejected or accepted. To account for the randomness in these walks (that provide \textit{chains} of parameters that the posterior is concerned with), Gelman-Rubin's r-hat statistic can be used to measure convergence when multiple MCMC instances are run for the same posterior. For multi-dimensional data, we will simply calculate the r-hat value for each dimension (each $w_{ij} in \mathbf{W} \text{ for } i=1,\ldots,K, j=1,\ldots,D$), and take their average.
+To draw weights from the posterior distribution, Markov Chain Monte Carlo (MCMC) can be used. MCMC involves `random walks' through multiple dimensional space when using the Metropolis Hastings algorithm, where every step in $n$ dimensional space has a chance to be rejected or accepted. To account for the randomness in these walks (that provide \textit{chains} of parameters that the posterior is concerned with), Gelman-Rubin's r-hat statistic can be used to measure convergence when multiple MCMC instances are run for the same posterior. For multi-dimensional data, the r-hat value was calculated seperately for each dimension (every $w_{ij} in \mathbf{W} \text{ for } i=1,\ldots,K, j=1,\ldots,D$), with the average across all the individualr-hat scores taken to be the overall score. An alternative to this is the Gelman-Brooks multivariate r-hat extension, but the extra computation involved was even labelled by Gelman as `sometimes overkill'~\citep{gelman11}, and doing it per dimension is sufficient~\citep{gelman14}.
 
-\todo{(may need to explain MCMC and rhat in at least a little more detail here. at least include equation for r-hat statistic used})
+% \todo{(may need to explain MCMC and rhat in at least a little more detail here. at least include equation for r-hat statistic used})
 
 % Using the MAP for optimisation, while a valid option, ignores all the possible weights in the given posterior distribution where they could also be drawn from. To create more certainty that the weights drawn from the distribution are in agreeance about the actual maps generated, MCMC would need to be used. By applying weights from the MCMC chains back to predictions and visually comparing differences, visual confirmation can be had on whether the maps remain reasonably consistent using weights drawn from the posterior.
 
@@ -116,7 +121,7 @@ The differences between a Gaussian Process that provides the probability distrib
 % \todo{generate toy example with a mixed label A,B region and separate regions of mostly A, mostly B respectively}
 
 \begin{figure}[H]
-    \centerline{\includegraphics[scale=0.9]{toy_scattermap_clusters.pdf}}
+    \centerline{\includegraphics[scale=0.8]{toy_scattermap_clusters.pdf}}
     \caption{Plot of the synthesised data used. Only the {(x,y)} coordinates of the points are shown here, with actual label distributions shown below.}
     \label{fig:dm_toyplot}
 \end{figure}
@@ -139,30 +144,6 @@ The differences between a Gaussian Process that provides the probability distrib
     \end{minipage}
 \end{figure}
 
-% \begin{figure}[H]
-%     \includegraphics[trim={0 2cm 0 2cm}]{toyplot_hist_distr_legend.pdf}
-%     \caption{Legend/axes for the following histogram plots showing distribution of labels at each point}
-%     \label{fig:toyplothist_legend}
-% \end{figure}
-
-% \begin{figure}[H]
-%     \begin{minipage}{.49\linewidth}
-%         \includegraphics[width=\linewidth]{toy_clusterA_distr.pdf}
-%         \caption{Label distribution of cluster A}
-%         \label{fig:toyclusterA}
-%     \end{minipage}
-%     \hfill
-%     \begin{minipage}{.49\linewidth}
-%         \includegraphics[width=\linewidth]{toy_clusterB_distr.pdf}
-%         \caption{Label distribution of cluster B}
-%         \label{fig:toyclusterB}
-%     \end{minipage}
-%     \begin{minipage}{.49\linewidth}
-%         \includegraphics[width=\linewidth]{toy_clusterC_distr.pdf}
-%         \caption{Label distribution of cluster C}
-%         \label{fig:toyclusterC}
-%     \end{minipage}
-% \end{figure}
 
 In this example, the GP and DM models were each trained on half of each cluster, and made to predict the other half. However, as a standard GPC can only have single label inputs and outputs, a approximation/simplification was made for the purpose of calculating average error, whereby the label was simply taken to be the most frequently occurring label at any given point. While this is a reasonable simplification for clusters A, B as the dominant label has majority share, this is not the case for C, as the split between the two labels per point in the cluster is exactly even. 
 
@@ -247,14 +228,16 @@ The results in \Cref{table:toy_gm_vs_gp} were taken from an average of $20$ runs
         \includegraphics[scale=0.52]{toy_scattermap_dm_entropy.pdf}
         \includegraphics[scale=0.52]{toy_scattermap_gp_vars.pdf}
     }
-    \caption{On the \textbf{left} are the plots of the \textbf{Dirichlet multinomial entropies} in clusters A, B, and C as indicated by the legend, and the same thing on the \textbf{right} for the \textbf{Gaussian process variances} (for simplicity, the the average of the two variances over each of the classes was taken). It is immediately noticable that while clusters A, B had low variance most of the time, cluster C's variance constantly remained unreasonably high. In comparison, the trend of the entropies in cluster C is higer than in A and B, but only by a small amount, and not remotely to the extent of the Gaussian proceses' variances.\todo{(fix - should be looking at std not var)}}
+    \caption{On the \textbf{left} are the plots of the \textbf{Dirichlet multinomial entropies} in clusters A, B, and C as indicated by the legend, and the same thing on the \textbf{right} for the \textbf{Gaussian process standard deviation} (for simplicity, the the average of the two variances over each of the classes was taken). It is immediately noticable that while clusters A, B had low variance most of the time, cluster C's variance constantly remained unreasonably high. In comparison, the trend of the entropies in cluster C is higer than in A and B, but only by a small amount, and not remotely to the extent of the Gaussian proceses' variances.}
     \label{fig:dm-entr_vs_gp-vars}
 \end{figure}
 
-The Gaussian process' variance in the third cluster reinforces this fact - whereas the average variances in clusters A, B were only $0.076$ and $0.077$ respectively, it was $0.522$ in cluster C. On the other hand, the DM's confidence of a mixture of labels remains relatively stable (with a slight increase in entropy, however, with the average entropies in each cluster being $92, 87,$ and $101$ respectively.
-
-
+The Gaussian process' deviation in the third cluster reinforces this fact - whereas the average variances in clusters A, B were only $0.068$ and $0.019$ respectively, it was $0.5034$ in cluster C. On the other hand, the DM's confidence of a mixture of labels remains relatively stable (with a slight increase in entropy, however, with the average entropies in each cluster being $71, 62,$ and $82$ respectively.
 
 % As we can see, the DM performed notably better than the GP, with the predictions in each cluster staying true to the original distributions. The GP, despite the $\sim 0.26$ error rate, can be seen to follow a consistent trend in the test data instead of adjusting to the two different classes. Most importantly, for both label 0, 1, the DM identifies that the portion of either label in cluster C is 0.5, due to its ability to learn and predict distributions at a point. As GPs are not designed to and cannot model this, it instead finds that neither label has a high probability, whilst also having a very high variance (beyond the $[0, 1]$ bound which again, the DM enforces but is not a property of a GP).
 
 From this basic example, it is apparent that in the area where there is an even mix of labels A, B, the Gaussian Process' predictions are both noisy and very uncertain about their predictions, where human intervention would be required to observe the fact that it is in fact a consistent mix of both. In contrast, the dirichlet multinomial regressor is able to remain relatively confident of the fact that an area does in fact have a mix of labels.
+
+\section{Summary}
+
+In this section, we applied a multi-output distribution, the Dirichlet multinomial, to be able to perform regression in a context where each input data row corresponded to multiple outputs. This allows a rich set of predictions that facilitates the full utilisation of any data that has more than one output - for example, the combination of bathymetry data and images collected courtesy of Falkor and Sirius. While the Dirichlet distribution does not inherently provide measurements of uncertainty in the same way that Gaussian processes do, it instead does so using entropy specific to the Dirichlet that accounts for the fact that outputs are vectors drawn from a multinomial distribution. Using the entropy calculated per point, it is possible to observe for any given predictions performed on data which areas are low entropy, indicating a confidence by the Dirichlet distribution for those particular points. This is advantageous  for generating predictive habitat maps using the data described in \Cref{chap:experiments}, where we will be able to provide visual representations in 2D-coordinate space of lower vs. higher entropy regions.

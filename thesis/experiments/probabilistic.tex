@@ -4,9 +4,12 @@ In this section, we will add an extra layer of information to our models' output
 
 \subsection{Gaussian Process Classification}
 
-While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian process classification, we introduce another metric, area under the receiver operating curve, to make use of the fact that the one-vs-all Gaussian process classifier provides a \textit{probability} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. To visualise the predictions, the most likely label at each point is taken to be the true label. In addition to the information behind these labels being probabilistic, we can use the variance to quantify the uncertainty of a particular probability. For example, given the probabilities for class membership for a particular label in the range $[0,1]$ $0.74 \pm 0.5$ and $0.74 \pm 0.08$, both would result in an positive result ($1.0$), but the latter is considerably more \textit{confident} than the former.
+While f-scores and accuracy are still assessed via $10$-fold cross validation whilst using Gaussian process classification, we introduce another metric, area under the receiver operating curve (), to make use of the fact that the one-vs-all Gaussian process classifier provides a \textit{probability} of each label's membership at each datapoint. This encapsulates that at any given point, predictions will (almost) never be 100\% certain - every single possible label, however unlikely, will have a probability assigned to it. To visualise the predictions, the most likely label at each point is taken to be the true label. In addition to the information behind these labels being probabilistic, we can use the variance to quantify the uncertainty of a particular probability. For example, given the probabilities for class membership for a particular label in the range $[0,1]$ $0.74 \pm 0.5$ and $0.74 \pm 0.08$, both would result in an positive result ($1.0$), but the latter is considerably more \textit{confident} than the former.
 
-\todo{TODO} \textbf{Area Under The Receiver Operating Curve}
+\begin{figure}
+    \centerline{\includegraphics[scale=0.7]{auroc_example.png}}
+    \caption{Example of an area under the (receceiver operating) curve from Scikit-learn's documentation. It plots false positives against false negatives, where the $x=y$ line represents the predictions of a `random guess'.}
+\end{figure}
 
 % \todo{This round's acc: 0.2822085889570552, f1: [ 0.          0.46153846  0.29787234  0.47368421  0.          0.15384615
 %   0.34482759  0.05263158  0.22727273  0.4         0.28571429  0.28571429
@@ -16,14 +19,14 @@ While f-scores and accuracy are still assessed via $10$-fold cross validation wh
 %     0.33333333  0.52173913  0.          0.85714286], f1 avg: 0.31753214883402126, auroc: 0.5498975366846471, auroc avg: 0.5498975366846471}
 \begin{table}[H]
     \centering
-\begin{tabular}{|c|c|c|c|c|}
-    \hline
-    AUROC & Accuracy & F-score & Labels used\\\hline
-    0.85 & 0.83 & 0.53 & 4 labels \\
-    0.55 & 0.39 & 0.32 & 24 labels \\
-    \hline
-\end{tabular}
-    \caption{Gaussian proces 10-fold cross validation errors on full and simplified labels}
+    \caption{Gaussian proces 10-fold cross validation errors on full and simplified labels. The average of the AUROC values and unweighted f1-scores taken to provide this summary of results.}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        AUROC & Accuracy & F-score & Labels used\\\hline
+        0.85 & 0.83 & 0.53 & 4 labels \\
+        0.55 & 0.39 & 0.32 & 24 labels \\
+        \hline
+    \end{tabular}
     \label{table:gperrs}
 \end{table}
 
@@ -79,7 +82,7 @@ Predictions on the original labels were not performed, as fitting $24$ separate 
 
 \subsection{Ensemble Gaussian Process Approximations}
 
-Although Gaussian processes provide the benefit of the possible variance for every prediction, the matrix inversion steps required and their $O(n^3)$ complexity prevents scaling of fitting the model beyond several thousand points (that even on high-end consumer hardware is impractically time-consuming), and predictions an order of magnitude above that. Using the naive Gaussian process, model fitting on the aggregated $4$-label data with $5000$ data points took over a day\todo{(double check this again!)}, with the predictions of the $500,000$ training points taking another day. It would be helpful to note that the formulation of Gaussian process classification used in this study (binary one-vs-all classifiers per label) means the complexity not only scales with number of points, but also in the number of possible labels, with each label requiring another underlying Gaussian process to account for it - for example, data containing $24$ labels would require 24 separate binary Gaussian processes. Due to hardware constraints, the $24$-label cases were not run to completion using the naive approach. As a point of reference, model fitting and predictions were timed for the basic Gaussian process, but only for a subset of the data, as shown below.
+Although Gaussian processes provide the benefit of the possible variance for every prediction, the matrix inversion steps required and their $O(n^3)$ complexity prevents scaling of fitting the model beyond several thousand points (that even on high-end consumer hardware is impractically time-consuming). Using the naive Gaussian process, model fitting on the aggregated $4$-label data with $5000$ data points took over an hour, with the predictions of the $500,000$ training points taking just under half an hour on the machine specified in \Cref{table:ec2specs}. The formulation of Gaussian process classification used in this study (binary one-vs-all classifiers per label) means the complexity not only scales cubically with number of points, but linearly also in the number of possible labels, with each label requiring another underlying Gaussian process to account for it - for example, data containing $24$ labels would require 24 separate binary Gaussian processes. Due to hardware constraints, the $24$-label cases were not run to completion using the naive approach. Model fitting and predictions were timed for the basic Gaussian process with gradually increasing subsets of the data (as well as the full data), to illustrate the speed improvements when using approximation methods in the next section.
 
 \begin{table}[H]
     \parbox{\linewidth}{
@@ -113,24 +116,25 @@ Although Gaussian processes provide the benefit of the possible variance for eve
         2000 &  4 & 00:04:18 \\
         3000 &  4 & 00:10:02 \\
         4000 &  4 & 00:17:35 \\
-        4700 &  4 & 00:32:41 \\
-        1000 & 24 & 00:52:14 (s) \\
-        2000 & 24 & \\
-        3000 & 24 & \\
-        4000 & 24 & \\
-        4700 & 24 & \\
+        4700 &  4 & 00:20:41 \\
+        1000 & 24 & 00:08:39 \\
+        2000 & 24 & 00:26:47\\
+        3000 & 24 & 01:23:14\\
+        4000 & 24 & 02:17:02\\
+        4700 & 24 & 02:51:42\\
         \hline
     \end{tabular}
     \label{table:gpensemble-results}
     \caption{Gaussian process prediction runtimes, using gradually increasing number of points for both simplified and full-label cases.}
 }
 \end{table}
-\todo{(TODO - looks like predictions are not able to even run properly for the 24-label data. might need to cut out half of above table and give a brief justification)}
+% \todo{(TODO - looks like predictions are not able to even run properly for the 24-label data. might need to cut out half of above table and give a brief justification)}
 
 \footnotetext{Note that in these two tables, the time required in the $4$ label cases vs the $24$ ones appears to scale better than linearly. The only reason for this is the use of a $32$-core processor, allowing parallelisation to hide the actual `computing hours' involved  in the computations. A more accurate representation of the time needed independent of multiprocessing would be to multiply the number of labels used by the time taken for each operation (minus some, for the overhead of inter-process communication between Python's process Pools.}
 
 On the other hand, the benefits of Gaussian processes need not be sacrificed on account of this disadvantage of Gaussian processes, as approximations exist to break the original dataset into smaller chunks, allowing parallelisation and model fitting per smaller set of data that is only limited by the available hardware. As seen in \Cref{chapsec:gp-approx}, one such method is to use ensembles of Gaussian processes that allow trivial parallelisation. These experiments were carried out on \textbf{d2.8xlarge} Elastic Container (EC2) instances from Amazon, with the following specifications:
 \begin{table}[H]
+    \caption{Amazon EC2 Instance Machine Specifications}
     \centering
     \begin{tabular}{|c|c|c|c|c|}
         \hline
@@ -138,7 +142,6 @@ On the other hand, the benefits of Gaussian processes need not be sacrificed on 
         d2.8xlarge & 36 & 244 & Intel Xeon E5-2676v3 & 2.4Ghz\\\hline
     \end{tabular}
     \label{table:ec2specs}
-    \caption{Amazon EC2 Instance Machine Specifications}
 \end{table}
 
 To illustrate the usefulness of these approximation methods, experiments were run to measure their accuracy and f-scores, but also the time needed to run them particularly compared to naive Gaussian processes and usefulness of the maps - providing a point of reference when looking at Dirichlet multinomials in the next chapter. The abbreviations of the ensemble methods will be used in the following tables: product of experts (PoE), generalised product of experts (GPoE), Bayesian committee machines (BCM), robust Bayesian committee machines (rBCM).
@@ -207,11 +210,10 @@ To illustrate the usefulness of these approximation methods, experiments were ru
 
     \begin{minipage}{\linewidth}
         \includegraphics[scale=0.7]{gpogpe23_allpreds.pdf}
-        \caption{Argmax map of generalised product of Gaussian process experts for full 23 labels \todo{todo: match colours better, fix colourbars}}
+        \caption{Argmax map of generalised product of Gaussian process experts for full 23 labels}
         \label{fig:gpogpe23}
     \end{minipage}
-
-    \caption{herp}
+    \caption{}
 \end{figure}
 
 Given that random forests were able to best fit the training data in \Cref{chapsec:deterministic}, it is promising that the the simplified generalised product of Gaussian process expert predictions, whereby the label with the maximum probability at each point is taken to be the `absolute' truth, bears close a resemblance to it. If Gaussian processes were used in practice, there is still the variance that can be used to make better use of the predictions. 

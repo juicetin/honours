@@ -22,12 +22,20 @@ We first briefly review the machine learning techniques more commonly used in be
     \caption{Performance of common machine learning models}
 \end{table}
 
-While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. The weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and an average f-score of $0.215$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \Cref{fig:det4maps} visualises the predictions from \Cref{table:detresults} on the full query data for the 4 and 24-label data respectively\todo{(only showing 4-label(?) case atm! and need to include discrete label colourbar!)}. The Support Vector Machines (SVM) that generally provides moderately respectable real-world performance has noticably failed to predict anything other than sand throughout the query space, hinting the underlying data has complexities that require more complex models to explain it. The predictive maps generate using Logistic Regression and kNN bear noticable similarities in many areas of the map, while Random Forests identified regions that the others didn't. 
+While the accuracy of the Logistic Regressor, kNN, and Random Forest Classifier are reasonable (above $0.75$), the former two's f1-scores are very poor at $0.33$, with the latter two at just below $0.5$, which is an equally undesirable result. Looking at the ratio of available labels in the downsampled data in the 4-label case ($232,  470,  446, 3548$ for labels 0, 1, 2, 3 respectively) reveals that label 3 accounts for $0.7556$ of the dataset - a value very close to the accuracy of predict. The weighted f1-score of a `naive' classifier that always predicts label 3 has an accuracy of  $0.75554$ and an average f-score of $0.215$ - highlighting the fact that these simpler models are not able to produce results that confidently outperform simply guessing one label for any given datapoint. \Cref{fig:det4maps} visualises the predictions from \Cref{table:detresults} on the full query data for the 4 and 24-label data respectively. The Support Vector Machines (SVM) that generally provides moderately respectable real-world performance has noticably failed to predict anything other than sand throughout the query space, hinting the underlying data has complexities that require more complex models to explain it. The predictive maps generate using Logistic Regression and kNN bear noticable similarities in many areas of the map, while Random Forests identified regions that the others didn't. 
 
 \begin{figure}[H]
-    \includegraphics[width=\linewidth]{det4_preds.pdf}
-    \caption{Full predictive map using SVMs, Logistic Regression, kNN, and Random Forests \todo{(TODO colourbar)}}
+    \includegraphics[scale=0.61]{det4_preds.pdf}
+    \includegraphics[scale=0.45]{det4_preds_colourbar.pdf}
+    \caption{Full aggregated label predictive map using SVMs, Logistic Regression, kNN, and Random Forests}
     \label{fig:det4maps}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[scale=0.61]{det24_preds.pdf}
+    \includegraphics[scale=0.45]{det24_preds_colourbar.pdf}
+    \caption{Full predictive map using SVMs, Logistic Regression, kNN, and Random Forests}
+    \label{fig:det24maps}
 \end{figure}
 
 The maps in \Cref{fig:det4maps} (with the exception of the SVM-generated one) provide some insight into where certain habitats occur in Scott Reef. However, as the results of the other three models were comparable, particularly for Random Forests and K-Nearest Neighbours, it is not obvious which one is more `trustworthy', and what prediction to take in areas that they disagree on. One piece of information that can aid in this regard is if a level of \textit{confidence}, which we explore in the next section.

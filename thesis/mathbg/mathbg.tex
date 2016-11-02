@@ -1,0 +1,15 @@
+\chapter{Background} \label{chap:mathbg}
+
+This chapter will go through in detail the two key methods applied in this thesis - Gaussian process classification, 
+and Dirichlet multinomial regression. Gaussian process classification is able to provide probabilistic outputs over the space over possible labels, with variances on each prediction reprsenting the spread of possible predictive values. Dirichlet multinomial regression, on the other hand, allows regression to be performed over multiple outputs that represent a distribution of possible labels, where any given output vector adds up to $1$.
+
+In each of these methods, the motivation for applying it to benthic habitat mapping is briefly explained, followed by explanations the mathematical theory involved, as well as examples to illustrate their behaviour on simple $2$D datasets before applying them to the Scott Reef data in \Cref{chap:experiments}, where the increased number of dimensions prevents makes it harder to visualise any phenomena that occur.
+
+%%%%% GP
+\input{mathbg/gp.tex}
+\input{mathbg/gp_large.tex}
+
+
+%%%%% DM
+\input{mathbg/dm.tex}
+

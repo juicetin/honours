@@ -1,0 +1,43 @@
+\section{Limitations}
+
+There were a number of properties regarding the data collected that likely had a negative effect on the experimental results, detracting from the figures surrounding accuracy scores, but not from the broader observations about qualitative use of predictions themselves.
+
+\textbf{Class imbalance} -  There is a significant class imbalance in the training data (\Cref{fig:multilabeldistr}), with each of the labels $1, 16, 18-21, 23, 24$ in particular having a total count of less than $10\%$ of the average label counts. This results in many of the labels not being predicted (when f-scores are $0$ or close to $0$), illustrated by performing cross-validation using the derministic algorithms explored in \Cref{chapsec:deterministic}. For the aggregated labels, label $0$ (\Cref{fig:det4_f1s}) tends to get an f-score of 0, while in the 24-label case, around half the labels (more, in some cases) obtain f-scores of $0$ (\Cref{fig:det24_f1s}) when performing 10-fold cross validation on the training set, at least in part because of the occurrence of some labels is too low for any model to properly account for it. 
+
+Given that the only features available are depth, rugosity, and slope (where the latter two are derived from the depth), there is little that can be done about the inability to detect the `rare' classes in the training data, short of collecting more data for the labels that occur less. 
+
+\begin{figure}
+    \centering{\includegraphics[width=0.70\linewidth]{det4_f1s.pdf}}
+    \caption{Plot of f1-scores for each of the $4$ aggreated classes using basic deterministic algorithms}
+    \label{fig:det4_f1s}
+\end{figure}
+% \begin{table}[H]
+%     \caption{F-scores over for the aggregated ($4$) labels}
+%     \begin{tabular}{|c|c|l|}
+%         \hline
+%         Algorithm & F-scores \\\hline
+%         Logistic Regressor & [0.0, 0.265, 0.172, 0.872]\\
+%         SVM & [0.0, 0.0, 0.0, 0.861]\\
+%         kNN & [0.088, 0.482, 0.462, 0.889]\\
+%         Random Forest & [0.078, 0.455, 0.437, 0.891]\\
+%         \hline
+%     \end{tabular}
+% \end{table}
+
+\begin{figure}
+    \centering{\includegraphics[width=0.70\linewidth,trim={0, 0.8cm, 0, 0.8cm}]{det24_f1s.pdf}}
+    \caption{Plot of f1-scores for $23$ classes using basic deterministic algorithms. Note that label $21$ is missing as there were no occurrences of it after taking the most frequent label per point for single-output labels. }
+    \label{fig:det24_f1s}
+\end{figure}
+
+% \textbf{Image Clusters} - For any unsupervised algorithm that clusters images based on any number of properties from the image alone, any necessary pre-processing or normalisation of them needs to be done beforehand, to prevent unintended features such as discrepancies in lighting or saturation from misleading the clustering process. This was not the case here, however, as the lighting was at times quite variable at least in between clusters, and in one particular case, resulted in pitch-black photos as in \Cref{fig:class-0}. It appears that photos were taken during different times of day, causing at least part of the difference. Distortion could also have come from external sources independent of the time of day, so pre-processing of all images beforehand to standardise any visual features that the clustering algorithm relies on should be required.
+% 
+% \begin{figure}[H]
+%     \includegraphics[width=\linewidth]{class_0_strip.jpg}
+%     \includegraphics[width=\linewidth]{class_24_strip.jpg}
+%     \caption{Set of images corresponding to class 0 and 24, with the former containing only blacked-out images, and the latter with a large portion of the same.}
+%     \label{fig:class-0}
+% \end{figure}
+
+\textbf{Ecological soundness of full predictions} - as all the predictions made were done so from a purely machine learning standpoint without consulting an expert in benthic ecosystems, it is not clear whether the predictions are ecologically sound, i.e., if it is likely that the habitats could in fact exist as predicted by the models tested (independent from whether they are actually the same - which cannot be verified without obtaining detailed image data for the entire of Scott Reef in any case). While this also tends to be case in almost all machine-learning studies involving benthic habitat predictions, the lack of a moderately large, thoroughly explored region also makes it hard to verify performance on the training data, despite running cross-validation due to the previously mentioned dominance of a single habitat (for the aggreagted labels).
+

@@ -55,9 +55,14 @@ Looking at a comparison of deterministic results with Gaussian processes on this
 ## gp maps (and gpogpe)
 The full predictive maps for the standard GP and generalised product of GP experts were quite different, but as we see later, the approximation method's maps are in fact closer to the Dirichlet multinomial's that properly model the original data without simplfying the original labels counts to a single label.
 
-# DM maps
+## gp - probabilities and variance
+Looking at the underlying probabilities of the most likely labels at each point, we can see that they all sit in the 62-69% range, which is not very high - with the deviation of each one being quite large as well. This points to the fact that the GP is not very certain about its predictions, and this could likely be due to the biodiversity present in Scott Reef - something we will look at in the next section, when using Dirichlet multinomial regression
 
-# DM entropy
+## DM maps
+Using Dirichlet multinomial regression, we can see how often labels occur and their densities separately - label 3 being the most common, occurring at a rate of more than 50% for over 75% of the points throughout Scott Reef. We can see that label 1 dominates the reef for small section on the far left, with a mix of labels 0, 1, and 3 in the upper-left region.
+
+## DM entropy
+Using the DM, we can also visualise how 'likely' the predictions are using the entropy of each point across the label distribution of every label. This entropy heatmap shows that the entropy for the predictions are quite low throughout the Scott Reef, with no noticable are of high entropy. The particularly dark purple areas indicate a very low entropy, and comparing back to the predictions for the simplified labels, these were the same areas where there were noticable amounts of a consistent mix of labels.
 
 ## timing of GP vs DM
 Given that the aim of approximation was to overcome the data limitations of a standard GP, we would want to see the different in run times for the a GP and its approximation, as well as the Dirichlet multinomial as well. Training of a generalised product of GP experts is considerably faster than a GP, as matrix inversions are limited to matrices of 200x200, compared to the GP that needs to invert a 4700x4700. Because of the overhead of a large number of experts though, as the matrix operations can be optimised, predictions for the approximation take longer than for the standard one, but is still much faster. The Dirichlet multinomial, on the other hand, does not involve the expensive steps that GPs do and only need top optimise over their parameter space - their speed is only in the seconds and are instantaneous compared to either the GP or its approximations.
@@ -66,3 +71,6 @@ Given that the aim of approximation was to overcome the data limitations of a st
 As seen earlier, the cross validation scores did not directly reflect in the quality of the predictive maps - one contributor to this may have been the fact that there was a significant class imbalance. However, without the opinion of an ecological expert, it is difficult to determine whether the cause may have been intrinsic in the data - and whether in the case of Scott Reef, bathymetry data and derived properties such as roughness and slope alone were enough to be able to clearly differentiate between habitats. The variance on the predictions suggest that this may be the case, as it was quite high for each of the most probable labels throughout the query space.
 
 The resultant maps are also difficult to evaluate both quantitatively and qualitatively without input from marine biologists or similar on whether the patterns that emerge between habitats and their co-existence are plausible or not. Because of these missing sources of knowledge, the analysis on the results are restricted to interpreting the available data and predictions numerically, and only being able to make broad observations as to what they imply.
+
+# Conclusion
+In this thesis, we used approximation methods for Gaussian processes to show that they were a viable approach to scale probabilistic methods to larger datasets, without a loss of quality or usefulness in the resultant data compared to other methods. We then proposed fully utilising the label counts over all the habitats in the original data by using Dirichlet multinomial regression, so that predictions provided a distribution over labels, rather than a single label alone. This output then allowed easy extraction of underlying information of the habitat such as biodiversity that would require more expensive post-processing with other single-output classification methods.

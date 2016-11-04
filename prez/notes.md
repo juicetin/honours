@@ -46,6 +46,23 @@ The other method that was investigated is Dirichlet multinomial regression, whic
 TODO - brief explanation of dirichlet multinomial - briefly explain multinomial, then dirichlet and how it is s a distribution of weights of the multinomial distribution
 
 # Results
+## gp vs deterministic
 Looking at a comparison of deterministic results with Gaussian processes on this dataset, we can see that the standard GP is able to outperform the most common classification methods used, including those often seen in benthic habitat mapping studies. The approximations don't fare as well, but as we will see, this isn't necessarily indicative of real world performance.
 
+## det maps
  The maps generated on the full query dataset by fitting the training data are quite different - only the logistic regressor displays notable areas of label 0, whereas random forests display the most diversity throughout the region, with k-nearest neighbours failing to detect anything other than label 3, which was also the most dominant label in the training data.
+
+## gp maps (and gpogpe)
+The full predictive maps for the standard GP and generalised product of GP experts were quite different, but as we see later, the approximation method's maps are in fact closer to the Dirichlet multinomial's that properly model the original data without simplfying the original labels counts to a single label.
+
+# DM maps
+
+# DM entropy
+
+## timing of GP vs DM
+Given that the aim of approximation was to overcome the data limitations of a standard GP, we would want to see the different in run times for the a GP and its approximation, as well as the Dirichlet multinomial as well. Training of a generalised product of GP experts is considerably faster than a GP, as matrix inversions are limited to matrices of 200x200, compared to the GP that needs to invert a 4700x4700. Because of the overhead of a large number of experts though, as the matrix operations can be optimised, predictions for the approximation take longer than for the standard one, but is still much faster. The Dirichlet multinomial, on the other hand, does not involve the expensive steps that GPs do and only need top optimise over their parameter space - their speed is only in the seconds and are instantaneous compared to either the GP or its approximations.
+
+# Discussion
+As seen earlier, the cross validation scores did not directly reflect in the quality of the predictive maps - one contributor to this may have been the fact that there was a significant class imbalance. However, without the opinion of an ecological expert, it is difficult to determine whether the cause may have been intrinsic in the data - and whether in the case of Scott Reef, bathymetry data and derived properties such as roughness and slope alone were enough to be able to clearly differentiate between habitats. The variance on the predictions suggest that this may be the case, as it was quite high for each of the most probable labels throughout the query space.
+
+The resultant maps are also difficult to evaluate both quantitatively and qualitatively without input from marine biologists or similar on whether the patterns that emerge between habitats and their co-existence are plausible or not. Because of these missing sources of knowledge, the analysis on the results are restricted to interpreting the available data and predictions numerically, and only being able to make broad observations as to what they imply.

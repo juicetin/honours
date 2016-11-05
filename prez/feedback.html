@@ -1,0 +1,60 @@
+<p>motivation 1st slide * have bathymetry map, picture of AUV in water, an examples of images pulled up, training data + explain the problem presented + WHY they're important + protecting environment, knowing what habitats are where, protection of reefs + extrmely labvorious and costly to map entire reef + typically explore small parts of reef, and extraoplate out + used to be done by hand with divers going in water + now robots can go in + learning between depth/slope/roughness/labels, predicting across entire reef + have the example map later + (more visual) + where the labels come form + use ML to cluster into groups + lead into past works + ending motivation - what we want to be able to do is build up a habitat map of this area using relationships learnt, make predictions across entire reef - because we are taking actions, we need to know uncertainty - very expensive computational procedure that ideally can be run on the robot, so we look at no only how to generate map, but fast and efficint and use as much of the data as possible without throwing it away + what's been done before?</p>
+<h1 id="related-works">RELATED WORKS</h1>
+<ul>
+<li>other than by hand - look at pictures and divers' returned maps</li>
+<li>more recently, deterministic methods like random forests (show a picture) (or SVMs)
+<ul>
+<li>these are machine learning models for classification, fast and robust</li>
+<li>no understanding of uncertainty - crucial as decisions are being made</li>
+</ul></li>
+<li>pictures of Ash's stuff when explaining GP/prob stuff
+<ul>
+<li>benefits - however, bottleneck</li>
+<li>bring up equation - matrix inversion - hidden complexity - K matrix size of data, scaling cubically</li>
+</ul></li>
+<li><p>where our work begins - how to speed up these probabilistic maps</p></li>
+<li>how to approximate
+<ul>
+<li>PoE - explain in more detail</li>
+<li>big N^3, small n^3 lots of times</li>
+<li>put numbers side by side - comparison</li>
+<li>each expert is expert in their area</li>
+</ul></li>
+<li>earlier slides on label approximations, how they're grouped
+<ul>
+<li>use more appropriate method for the data</li>
+</ul></li>
+</ul>
+<p><br /><span class="math display"><em>O</em>(<em>n</em><sub>1</sub><sup>3</sup>)+<em>O</em>(<em>n</em><sub>2</sub><sup>3</sup>)+…+<em>O</em>(<em>n</em><sub><em>k</em> − 1</sub><sup>3</sup>)+<em>O</em>(<em>n</em><sub><em>k</em></sub><sup>3</sup>)  ≪  <em>O</em>(<em>N</em><sup>3</sup>)</span><br /></p>
+<p>where <span class="math inline"><em>n</em><sub>1</sub> + <em>n</em><sub>2</sub> + … + <em>n</em><sub><em>k</em> − 1</sub> + <em>n</em><sub><em>k</em></sub> = <em>N</em></span></p>
+<p><br /><span class="math display">if <em>n</em><sub><em>k</em></sub> = <em>n</em><sub><em>k</em></sub> = … = <em>n</em><sub><em>k</em> − 1</sub> = <em>n</em><sub><em>k</em></sub>, and <em>k</em> = 100, <em>N</em> = 20000</span><br /> <br /><span class="math display">100 × <em>O</em>(200<sup>3</sup>)  ≪  <em>O</em>(20000<sup>3</sup>)   →   8 × 10<sup>8</sup>  ≪  8 × 10<sup>12</sup></span><br /></p>
+<ul>
+<li>DM</li>
+<li>designed to output mixture of labels</li>
+<li>show categorical distribution</li>
+<li>GP single label, this gives a mixture
+<ul>
+<li>GP struggle with 24 labels</li>
+<li>smarter model - not only aggregate into larger groups, but label mixtures</li>
+</ul></li>
+<li><p>in this region, expect to see distribution, etc. - just because mix, not different habitats</p></li>
+<li>don't show the distributions over the 4 labels (24 is the important one)</li>
+<li>before entropy - show argmax being richer - query any point, get a multinomial
+<ul>
+<li>show in the next slide, using biodiversity (gif LATER)</li>
+</ul></li>
+<li>bio - high biodivrsity in coral mountain, deep sand no biodiversity</li>
+<li>also get uncertainties on DM using MCMC
+<ul>
+<li>converging on a map</li>
+<li>we can use entropy to show which of those are uncertain, can use thi to guide misssions to uncertain areas</li>
+</ul></li>
+</ul>
+<h1 id="discussion">Discussion</h1>
+<ul>
+<li>separate</li>
+</ul>
+<h1 id="future-work-point">Future work point</h1>
+<ul>
+<li>guide missions using entropy</li>
+</ul>

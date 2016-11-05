@@ -1,14 +1,46 @@
+
+
 =================== script ===================
 # Motivation ~3 minutes
 Given that most of the Earth is made up of our oceans and its role in guiding the global climate and influencing life on Earth in general, it is crucial that we are able to constantly monitor the state of our oceans. However, it's simply not feasible to send robots to comprehensively capture detailed images of the entire ocean - and so we need benthic habitat mapping, where a benthic zone refers to the bottom of a body of water such as a lake bed, or the case that we are interested in, the ocean floor. Modern technology has allowed us to use autonomous underwater vehicles, or AUVs for short, such as the Australian Centre for Field Robotics' Sirius to collect images, while tools such as multibeam echosounders allow ships to collect bathymetry data telling us the depth of a particular position, allowing inference of other information as well such as slope and roughness. 
 
 Because of the comparatively high cost of operating AUVs, the area over which image data is collected can only be a small fraction of the bathymetry data collected. For example, the bathymetry data used in this study contains over 2.7 million points, whereas the images collected only corresponded to 16,502 bathymetry data points. Numerous images are collected within the area covered by each bathymetry data point though - this will be explained in more detail later. We can then model the relationship between the images and bathymetry data where they both exist and apply this model to the areas where only bathymetry data exists - generating a predictive map that removes the need to send AUVs along every inch of the entire ocean floor. Ideally, we want this procedure to be performed directly on the robots during missions, as an understanding of its surroundings can allow it to more efficiently map out the area it is exploring, further reducing the costs of these expensive expeditions. Thus, we not only want to generate maps, but be able to do it as quickly and efficiently as possible by using as much of the available data as possible, if not all of it. With a high level understanding of benthic habitat mapping, let's now look at some of the existing literature.
 
-# Related Works
-The earliest efforts would have involved sending out divers to manually collect sediment samples that experts then used along with any existing knowledge they had to predict very crude habitat maps for an area. Once technology evolved to scale beyond manual sampling of habitats, the amount of data available allowed machine learning techniques to be applied to perform predictions. Methods such as Random Forests are used very often in benthic habitat mapping studies, but in machine learning classification problems in general, due to their robustness. Just briefly, they work by using multiple decision trees that operate on random subsets of the available data, taking the most commonly occurring prediction, or the mode across the DTs, as the final prediction.
+# Related Works ~2.5 minutes
+The earliest efforts would have involved sending out divers to manually collect sediment samples that experts then used along with any existing knowledge they had to draw very crude habitat maps for an area. Once technology evolved to scale beyond manual sampling of habitats, the amount of data available allowed machine learning techniques to be applied to perform predictions. Methods such as Random Forests are used very often in benthic habitat mapping studies, but in machine learning classification problems in general, due to their robustness. Just briefly, they work by using multiple decision trees that operate on random subsets of the available data, taking the most commonly occurring prediction, or the mode across the DTs, as the final prediction.
 
 However, as I mentioned earlier, the point of all these predictive maps is to gain an understanding of our ocean's habitats to inform us of the sort of conservation efforts that are required - and being able to quantify the uncertainty, and hence the risk involved in any planned actions is crucial - and is not something that deterministic methods such as random forests is able to provide us.
 
+One of the few works in benthic habitat mapping that use probabilistic predictions was by Bender, Williams, and Pizarro in 2012, where the use of Gaussian processes showed that using probabilistic labels as input resulted in a lower mean error and variance than using deterministic labels, but in both cases still being able to quantify the variance of the predictions made, corresponding to a level of certainty. But there was a bottleneck that the study faced with the data used, as the covariance matrix inversions scale cubically, making predictions beyond several thousand points infeasible. As a result, only 2500 points were used for the experiments in the study. 
+
+# Approach - GP Approx (~1.5m)
+On this note, the first thing we aimed to do was explore the use of methods to overcome the data restrictions of Gaussian processes. Of the possible approximation methods, we considered two ensemble ones - the product of Gaussian process experts, and generalised product of Gaussian process experts. These function by using a collection of separate Gaussian processes that each model unique subsets of the dataset that are then multiplied back together and weighted by their variance as an approximation to the parameters of the Gaussian over all the data. Let's say we had 20-thousand points and 100 separate GPs - instead of having to invert a single 20-thousand by 20-thousand matrix, we would only need to invert 100 separate 200 by 200 ones - a difference in complexity of four orders of magnitude.
+
+# Approach - Intro to multi-output methods (~1m)
+However, these GP approximations still result in a simplification of the training data that means we are discarding valuable information even before any machine learning happens - because we are only assigning a single label to each bathymetry data point. As you can see here though, the collected data is richer than that - each of the blue dots are bathymetry points, and the coloured squares around them are images. You can see that three of the five cells have a mix of labels, something that even probabilistic methods can't accurately model, as every data point now has multiple outputs in the form of counts of each label, or the equivalent distribution per label.
+
+# Approach - Dirichlet Multinomial Regression
+<TODO>
+So, onto the result to see how they performed.
+
+# Results - GP vs DM vs Deterministic Methods (~0.5m)
+Something to keep in mind here is that for the Gaussian process and Dirichlet multinomial, to be able to compare them their rich outputs to the deterministic methods, the most probable and most frequent labels per point were taken respectively. We can see that the Gaussian process performed the best across both sets of labels in both accuracy and f-scores, while SVM performed the worst in most cases.
+
+# Results - Deterministic Maps (~0.5m)
+Each of the predictive maps generated by the deterministic methods varied quite a lot in terms of the clusters of labels that were present as well as where they occurred - but without any indication of the likelihood of these predictions, it is hard to say that one is better than the other, particularly as the k-nearest neighbour and random forest scores were consistently very close.
+
+# Discussion - GP vs GPoGPE
+* some similarities
+* locations of key clusters different
+* GP needs to learn a single set of hyperparameters for the training data
+* GPoGPE is more flexible, many GPs learning different HPs for different sections of data (corresponding to different regions)
+    + reflected in results - though GPoGPE was on paper worse with cross-val scores, it was much closer to the DM maps
+
+# Discussion - Gaussian process variance
+* 1 standard deviation at most likely labels at each point
+* <todo - need to see GPoGPE results to say anything for sure here>
+
+# 
 
 ================= end script =================
 
@@ -88,3 +120,9 @@ The resultant maps are also difficult to evaluate both quantitatively and qualit
 
 # Conclusion
 In this thesis, we used approximation methods for Gaussian processes to show that they were a viable approach to scale probabilistic methods to larger datasets, without a loss of quality or usefulness in the resultant data compared to other methods. We then proposed fully utilising the label counts over all the habitats in the original data by using Dirichlet multinomial regression, so that predictions provided a distribution over labels, rather than a single label alone. This output then allowed easy extraction of underlying information of the habitat such as biodiversity that would require more expensive post-processing with other single-output classification methods.
+
+
+
+
+# Things to keep in mind
+* check default settings for deterministic methods to be able to answer any questions about the scikit learn algo configurations

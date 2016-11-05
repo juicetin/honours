@@ -20,10 +20,10 @@ motivation 1st slide
 
 # RELATED WORKS
 * other than by hand - look at pictures and divers' returned maps
-* more recetnly, deterministic methods like random forests (show a picture) (or SVMs)
+* more recently, deterministic methods like random forests (show a picture) (or SVMs)
     + these are machine learning models for classification, fast and robust
     + no understanding of uncertainty - crucial as decisions are being made
-* pictures of Ash's stuff when explaiing GP/prob stuff
+* pictures of Ash's stuff when explaining GP/prob stuff
     + benefits - however, bottleneck
     + bring up equation - matrix inversion - hidden complexity - K matrix size of data, scaling cubically
 * where our work begins - how to speed up these probabilistic maps
@@ -35,6 +35,13 @@ motivation 1st slide
     + each expert is expert in their area
 * earlier slides on label approximations, how they're grouped
     + use more appropriate method for the data
+
+$$ O(n_1^3) + O(n_2^3) + \ldots + O(n_{k-1}^3) + O(n_k^3) \text{ } \ll \text{ } O(N^3) $$
+
+where $n_1 + n_2 + \ldots + n_{k-1} + n_k = N$
+
+$$ \text{if  } n_k = n_k = \ldots = n_{k-1} = n_k \text{, and  } k=100, N=20000$$
+$$ 100 \times O(200^3) \ \ll \ O(20000^3) \ \ \rightarrow \ \ 8 \times 10^8 \ \ll \ 8 \times 10^12  $$
 
 * DM
 * designed to output mixture of labels
